@@ -1,0 +1,95 @@
+package KadirClass2;
+
+{$R *.res}
+{$R *.dres}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'Kadir Kontroller'}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  vcl,
+  dbrtl,
+  vclx,
+  vcldb,
+  adortl,
+  tee,
+  VclSmp,
+  ibxpress,
+  dsnap,
+  bdertl,
+  dxCoreD16,
+  cxLibraryD16,
+  dxThemeD16,
+  dxGDIPlusD16,
+  cxEditorsD16,
+  cxDataD16,
+  cxPageControlD16,
+  cxGridD16,
+  dxSkinsCoreD16,
+  dxSkinscxPCPainterD16,
+  dxSkinXmas2008BlueD16,
+  dxSkinBlackD16,
+  dxSkinBlueD16,
+  dxSkinCaramelD16,
+  dxSkinCoffeeD16,
+  dxSkinDarkRoomD16,
+  dxSkinDarkSideD16,
+  dxSkinFoggyD16,
+  dxSkinGlassOceansD16,
+  dxSkiniMaginaryD16,
+  dxSkinLilianD16,
+  dxSkinLiquidSkyD16,
+  dxSkinLondonLiquidSkyD16,
+  dxSkinMcSkinD16,
+  dxSkinMoneyTwinsD16,
+  dxSkinOffice2007BlackD16,
+  dxSkinOffice2007BlueD16,
+  dxSkinOffice2007GreenD16,
+  dxSkinOffice2007PinkD16,
+  dxSkinOffice2007SilverD16,
+  dxSkinOffice2010BlackD16,
+  dxSkinOffice2010BlueD16,
+  dxSkinOffice2010SilverD16,
+  dxSkinPumpkinD16,
+  dxSkinSevenD16,
+  dxSkinSharpD16,
+  dxSkinSilverD16,
+  dxSkinSpringTimeD16,
+  dxSkinStardustD16,
+  dxSkinSummer2008D16,
+  dxSkinValentineD16,
+  dxNavBarD16,
+  vclactnband,
+  vclSQLMemTabled16;
+
+contains
+  KadirLabel in 'KadirLabel.pas',
+  Para in 'Para.pas',
+  KadirType in '..\..\..\Diyaliz\Dializ2007_M3\KadirType.pas',
+  FScxGrid in 'FScxGrid.pas';
+
+end.
