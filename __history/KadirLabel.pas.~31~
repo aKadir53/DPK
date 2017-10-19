@@ -1034,20 +1034,19 @@ end;
 constructor TLogin.Create(AOwner: TComponent);
 begin
     inherited Create(AOwner);
-    FActive := False;
   //  Fado := TADOQuery.Create(nil);
 end;
 
 destructor TLogin.Destroy;
 begin
-  inherited;
  //   Fado.Free;
 end;
 
 function TLogin.getActive : Boolean;
 begin
-  if FActive = False then FWIp := '';
+  if FActive = True then FWIp := '';
   Result := FActive;
+
 end;
 
 procedure TLogin.setActive(const value : Boolean);
@@ -1056,8 +1055,8 @@ const
 var
   Http1 : TIdHTTP;
 begin
-    FActive := Value;
-
+  FActive := Value;
+  Begin
     Http1 := TIdHTTP.Create(nil);
     try
       FWIp := HTTP1.Get(url);
@@ -1065,8 +1064,7 @@ begin
       FWIp := '';
     end;
 
-
-    Http1.Free;
+  Http1.Free;
 end;
 
 function TLogin.Execute : Boolean;

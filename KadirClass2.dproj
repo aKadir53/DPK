@@ -134,6 +134,9 @@
 			<DCCReference Include="dxNavBarD16.dcp"/>
 			<DCCReference Include="vclactnband.dcp"/>
 			<DCCReference Include="vclSQLMemTabled16.dcp"/>
+			<DCCReference Include="IndyCore.dcp"/>
+			<DCCReference Include="IndySystem.dcp"/>
+			<DCCReference Include="IndyProtocols.dcp"/>
 			<DCCReference Include="KadirLabel.pas"/>
 			<DCCReference Include="Para.pas"/>
 			<DCCReference Include="D:\Diyaliz\Dializ2007_M3\KadirType.pas"/>

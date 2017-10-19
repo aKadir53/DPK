@@ -1057,7 +1057,7 @@ var
   Http1 : TIdHTTP;
 begin
     FActive := Value;
-
+    begin
     Http1 := TIdHTTP.Create(nil);
     try
       FWIp := HTTP1.Get(url);

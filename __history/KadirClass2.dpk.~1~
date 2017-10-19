@@ -84,15 +84,12 @@ requires
   dxSkinValentineD16,
   dxNavBarD16,
   vclactnband,
-  vclSQLMemTabled16,
-  IndyCore,
-  IndySystem,
-  IndyProtocols;
+  vclSQLMemTabled16;
 
 contains
   KadirLabel in 'KadirLabel.pas',
   Para in 'Para.pas',
-  KadirType in 'D:\Diyaliz\Dializ2007_M3\KadirType.pas',
+  KadirType in '..\..\..\Diyaliz\Dializ2007_M3\KadirType.pas',
   FScxGrid in 'FScxGrid.pas';
 
 end.

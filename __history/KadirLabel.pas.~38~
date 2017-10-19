@@ -9,7 +9,7 @@ uses
   cxTextEdit,cxCalendar,cxGrid,ComCtrls,KadirMenus,cxGridDBTableView,cxGridDBBandedTableView,
   cxGridCustomView,cxCustomData,cxImageComboBox,FScxGrid,cxFilter,cxGridExportLink,
   cxCheckBox,cxEdit,cxGroupBox,dxLayoutContainer,cxGridStrs, cxFilterConsts,
-  cxFilterControlStrs,cxGridPopupMenuConsts,cxClasses;
+  cxFilterControlStrs,cxGridPopupMenuConsts,cxClasses,IdHttp;
 
 
 type
@@ -22,6 +22,7 @@ type
   TPanelSonuc = (psYan,psDik);
   TTarihValueTip = (tvDate,tvString);
   TShowTip = (stShow,stModal);
+  TLoginInOut = (lgnIn,lgnOut);
 
   THb = class(TPersistent)
   private
@@ -196,6 +197,31 @@ type
        PROPERTY OnRenkChange: TRenkChangeEvent read FOnRenkChange write FOnRenkChange;
        property Giris : string read getGiris write setGiris;
   end;
+
+
+    Tlogin = class(TComponent)
+      private
+       FActive : Boolean;
+       FKullanici : string;
+       FLogin : TLoginInOut;
+       FConnction : TADOConnection;
+    //   FAdo : TADOQuery;
+       FWIp : string;
+      protected
+      public
+       constructor Create(AOwner: TComponent) ; override;
+       destructor Destroy; override;
+       function Execute : Boolean;
+       procedure setActive(const value : Boolean);
+       function getActive : Boolean;
+
+      published
+       property Kullanici : string read FKullanici write FKullanici;
+       property Login : TLoginInOut read FLogin write FLogin;
+       property Connction : TADOConnection read FConnction write FConnction;
+       property Active : Boolean read getActive write setActive;
+       property WIp : string read FWIp;// write FWIp;
+    end;
 
 
     TListeAc = class(TComponent)
@@ -775,6 +801,8 @@ begin
   RegisterComponents('Nokta', [TcxTopPanelKadir]);
   RegisterComponents('Nokta', [TcxDonemComboKadir]);
   RegisterComponents('Nokta', [TGirisFormCreateControl]);
+  RegisterComponents('Nokta', [TLogin]);
+
 
   Classes.RegisterClass(TFScxGridDBTableView);
   Classes.RegisterClass(TdxNavBarKadirItem);
@@ -1002,6 +1030,68 @@ begin
 end;
    *)
 
+
+constructor TLogin.Create(AOwner: TComponent);
+begin
+    inherited Create(AOwner);
+    FActive := False;
+  //  Fado := TADOQuery.Create(nil);
+end;
+
+destructor TLogin.Destroy;
+begin
+  inherited;
+ //   Fado.Free;
+end;
+
+function TLogin.getActive : Boolean;
+begin
+  if FActive = True then FWIp := '';
+  Result := FActive;
+end;
+
+procedure TLogin.setActive(const value : Boolean);
+const
+  url : string = 'http://bot.whatismyipaddress.com';
+var
+  Http1 : TIdHTTP;
+begin
+    FActive := Value;
+
+    Http1 := TIdHTTP.Create(nil);
+    try
+      FWIp := HTTP1.Get(url);
+    except
+      FWIp := '';
+    end;
+
+    Http1.Free;
+end;
+
+function TLogin.Execute : Boolean;
+var
+  sql : string;
+  log : string;
+  ado : TADOQuery;
+begin
+  ado := TADOQuery.Create(nil);
+  if FLogin = lgnIn then log := 'LogIn' else log := 'LogOut';
+  try
+    Ado.Connection := FConnction;
+    sql := 'insert into LoginLog(kullanici,Login,WanIp) values('+ QuotedStr(FKullanici) + ',' +
+                                                                  QuotedStr(log) + ',' +
+                                                                  QuotedStr(FWIp)
+                                                                  +') select @@rowcount';
+    QuerySelect(ado,Sql);
+
+  except
+  end;
+
+  ado.free;
+
+end;
+
+
 constructor TcxImageComboKadir.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -1162,6 +1252,19 @@ begin
         FItem.Value := '';
         FItem.Description := 'Atanmamýþ';
     end;
+
+    if FItemList <> ''
+    Then Begin
+      TList := TStringList.Create;
+      ExtractStrings([','],[],PChar(ItemList),Tlist);
+      for I := 0 to Tlist.Count - 1 do
+      begin
+        FItem := Properties.Items.add;
+        FItem.Value := copy(Tlist[I],1,pos(';',Tlist[I])-1);
+        FItem.Description := copy(Tlist[I],pos(';',Tlist[I])+1,200);
+      end;
+      TList.Free;
+    End;
 
     ado.close;
     ado.Free;
@@ -1878,8 +1981,8 @@ begin
      Items[r].Tag := MenuSatir.KAYITID;
      Items[r].SmallImageIndex := MenuSatir.imageIndex;
      Items[r].Visible := Boolean(MenuSatir.Izin);
-     Items[r].FormId := MenuSatir.formId;
-     Items[r].ShowTip := MenuSatir.ShowTip;
+   //  Items[r].FormId := MenuSatir.formId;
+   //  Items[r].ShowTip := MenuSatir.ShowTip;
 
      for i := 0 to Groups.Count - 1 do
      begin

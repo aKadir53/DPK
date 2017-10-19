@@ -214,10 +214,12 @@ type
        function Execute : Boolean;
        procedure setActive(const value : Boolean);
        function getActive : Boolean;
+       procedure setLogin(const value : TLoginInOut);
+       function getLogin : Boolean;
 
       published
        property Kullanici : string read FKullanici write FKullanici;
-       property Login : TLoginInOut read FLogin write FLogin;
+       property Login : TLoginInOut read getLogin write setLogin;
        property Connction : TADOConnection read FConnction write FConnction;
        property Active : Boolean read getActive write setActive;
        property WIp : string read FWIp;// write FWIp;
@@ -1034,20 +1036,19 @@ end;
 constructor TLogin.Create(AOwner: TComponent);
 begin
     inherited Create(AOwner);
-    FActive := False;
   //  Fado := TADOQuery.Create(nil);
 end;
 
 destructor TLogin.Destroy;
 begin
-  inherited;
  //   Fado.Free;
 end;
 
 function TLogin.getActive : Boolean;
 begin
-  if FActive = False then FWIp := '';
+  if FActive = True then FWIp := '';
   Result := FActive;
+
 end;
 
 procedure TLogin.setActive(const value : Boolean);
@@ -1057,14 +1058,12 @@ var
   Http1 : TIdHTTP;
 begin
     FActive := Value;
-
     Http1 := TIdHTTP.Create(nil);
     try
       FWIp := HTTP1.Get(url);
     except
       FWIp := '';
     end;
-
 
     Http1.Free;
 end;
