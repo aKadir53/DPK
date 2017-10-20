@@ -1982,8 +1982,8 @@ begin
      Items[r].Tag := MenuSatir.KAYITID;
      Items[r].SmallImageIndex := MenuSatir.imageIndex;
      Items[r].Visible := Boolean(MenuSatir.Izin);
-   //  Items[r].FormId := MenuSatir.formId;
-   //  Items[r].ShowTip := MenuSatir.ShowTip;
+     Items[r].FormId := MenuSatir.formId;
+     Items[r].ShowTip := MenuSatir.ShowTip;
 
      for i := 0 to Groups.Count - 1 do
      begin
