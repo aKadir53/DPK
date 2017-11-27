@@ -56,11 +56,11 @@ type
      HastaAdi : TEdit;
      HastaSoyadi : TEdit;
    private
-     FHastaAdi : TEdit;
+     //FHastaAdi : TEdit;
      FTcKimlik : string;
      FDosyaNo : string;
      FHb : THb;
-     FHHastaAdiFont : THastaAdiFont;
+     //FHHastaAdiFont : THastaAdiFont;
      FHastaAdiFont : THastaAdiFont;
      FHastaSoyaAdi : THastaAdiFont;
      FOnHastaAdiFontChange : THastaAdiFontChangeEvent;
@@ -113,7 +113,7 @@ type
      FKullaniciAdi : string;
      FTagC : integer;
      FSlite : integer;
-     FOnHastaAdiFontChange : THastaAdiFontChangeEvent;
+     //FOnHastaAdiFontChange : THastaAdiFontChangeEvent;
    protected
 
    public
@@ -154,7 +154,7 @@ type
       FConn : TADOConnection;
       FOnRenkChange: TRenkChangeEvent;
       FOnDonustur : TNotifyEvent;
-      FOnGuncelle : TNotifyEvent;
+      //FOnGuncelle : TNotifyEvent;
     protected
   //    function CihazTestKodu_To_LisTestKodu(code : string) : string;
     public
@@ -180,7 +180,7 @@ type
       FConn : TADOConnection;
       FOnRenkChange: TRenkChangeEvent;
       FOnDonustur : TNotifyEventDonustur;
-      FOnGuncelle : TNotifyEvent;
+      //FOnGuncelle : TNotifyEvent;
     protected
   //    function CihazTestKodu_To_LisTestKodu(code : string) : string;
     public
@@ -229,22 +229,22 @@ type
     private
       FListeBaslik : string;
       FColCount : integer;
-      FCols : string;
+      //FCols : string;
       FColsW : string;
-      FColbaslik : string;
+      //FColbaslik : string;
       FTable : string;
       FWhere : string;
       FConn : TADOConnection;
-      FSQL : TADOQuery;
+      //FSQL : TADOQuery;
       Fstrings : ArrayListeSecimler;
-      FstringsW : TstringList;
+      //FstringsWX : TstringList;
       FFiltercol : integer;
       FFilter : string;
       FBaslikRenk : tcolor;
       FDipRenk : Tcolor;
       FImajList : TImageList;
       FButtonImajIndex : TImageIndex;
-      FVersiyon : string;
+      //FVersiyon : string;
       FRenkler : TButtonlar;
       FLin : TStrings;
       Flin1 : TStrings;
@@ -259,9 +259,9 @@ type
       procedure SetImageIndex(Value: TImageIndex);
       function GetVersiyon : string;
       procedure setLines(const value : TStrings);
-      function getlines : TStrings;
+      //function getlines : TStrings;
       procedure setLines1(const value : TStrings);
-      function getlines1 : TStrings;
+      //function getlines1 : TStrings;
 
       procedure setBiriktir(const value : Boolean);
       function getBiriktir : Boolean;
@@ -314,7 +314,7 @@ type
      FListeAcTus : TShortCut;
      FBosOlamaz : Boolean;
      FtanimDeger : string;
-     procedure DoEditKeyDown(var Key: Word; Shift: TShiftState);
+     //procedure DoEditKeyDown(var Key: Word; Shift: TShiftState);
    protected
    public
        constructor Create(AOwner: TComponent) ; override;
@@ -474,9 +474,9 @@ type
      FButon2Caption : string;
      ilkTarih : TcxDateEditKadir;
      sonTarih : TcxDateEditKadir;
-     FKurumTip : Boolean;
+     //FKurumTip : Boolean;
      FOnButonClick : TBClick;
-     FButtonTag : integer;
+     //FButtonTag : integer;
    protected
    public
      constructor Create(AOwner: TComponent) ; override;
@@ -566,22 +566,22 @@ end;
     TDoktorComboBox = class(TComboBox)
     private
       FColCount : integer;
-      FCols : string;
+      //FCols : string;
       FColsW : string;
-      FColbaslik : string;
+      //FColbaslik : string;
       FTable : string;
       FWhere : string;
       FConn : TADOConnection;
-      FSQLC : TADOQuery;
-      Fstrings : TstringList;
-      FstringsW : TstringList;
-      FVersiyon : string;
+      //FSQLC : TADOQuery;
+      //Fstrings : TstringList;
+      //FstringsW : TstringList;
+      //FVersiyon : string;
       FLinC : TStrings;
       FCalistir : TGoster;
 //      procedure SetImageIndex(Value: TImageIndex);
 //      function GetVersiyon : string;
       procedure setLines(const value : TStrings);
-      function getlines : TStrings;
+      //function getlines : TStrings;
       procedure dizaynEt(kolonlar : TStrings);
 
     protected
@@ -697,10 +697,10 @@ type
     FCaption: string;
     FFieldName: string;
   //  Fparent : TdxLayoutGroup;
-    Fgrup : string;
+    //Fgrup : string;
     Fuzunluk : integer;
-    FZorunlu : Boolean;
-    procedure Setparent(const Value: TdxLayoutGroup);
+    //FZorunlu : Boolean;
+    //procedure Setparent(const Value: TdxLayoutGroup);
 
   public
     constructor Create(Collection: TCollection); override;
@@ -756,7 +756,7 @@ end;
 
 
 
-procedure QuerySelect(Q: TADOQuery; sql:string);
+procedure QuerySelect(var Q: TADOQuery; sql:string);
 procedure Split (const Delimiter: Char; Input: string; const Strings: TStrings) ;
 function tarihFarki(tarih1,tarih2 : Tdate) : string;
 function tarihal(t: tdate): string;
@@ -833,14 +833,14 @@ begin
 end;
 
 
-procedure TGirisFormItem.Setparent(const Value: TdxLayoutGroup);
-begin
+//procedure TGirisFormItem.Setparent(const Value: TdxLayoutGroup);
+//begin
  // if Fparent <> Value then
  // begin
   //  Fparent := Value;
  //   TGirisFormItems(Collection).InternalChanged;
  // end;
-end;
+//end;
 
 
 function TGirisFormItems.GetItems(Index: Integer): TGirisFormItem;
@@ -914,7 +914,7 @@ begin
     inherited Assign(Source);
 end;
 
-procedure QuerySelect(Q: TADOQuery; sql:string);
+procedure QuerySelect(var Q: TADOQuery; sql:string);
 begin
 //    if Pos ('WHERE',AnsiUpperCase(sql)) <> 0
 //    Then sql := StringReplace(sql,'WHERE','WITH(NOLOCK) WHERE',[rfReplaceAll,rfIgnoreCase])
@@ -954,7 +954,7 @@ begin
     _yil_ := copy(datetostr(date()), 7, 4);
   Tarih := strtodate('01.' + _ay_ + '.'+_yil_);
 
-  sp := DateSeparator;
+  sp := FormatSettings.DateSeparator;
   s := '01' + sp + copy(tarihal(Tarih), 5, 2) + sp + copy(tarihal(Tarih), 1, 4);
   ay := strtoint(copy(tarihal(Tarih), 5, 2));
 
@@ -971,25 +971,25 @@ end;
 
 function tarihFarki(tarih1,tarih2 : Tdate) : string;
 var
-   yil1,yil2, aylik , gunluk  : double;
-   fyil ,ay ,gun : integer;
+   aylik , gunluk  : double;
+   fyil ,ay : integer;
    farkGun : double;
 begin
-     yil1 := strtoint(copy(tarihal(tarih1),1,4));
-     yil2 := strtoint(copy(tarihal(tarih2),1,4));
-     farkGun := (tarih1 - tarih2);
+  //yil1 := strtoint(copy(tarihal(tarih1),1,4));
+  //yil2 := strtoint(copy(tarihal(tarih2),1,4));
+  farkGun := (tarih1 - tarih2);
 
-     fyil := floor((tarih1- tarih2) / 365);
-     aylik := (floor(farkGun) mod 365);
-     ay := floor(aylik /30);
-     gunluk := (floor(aylik) mod 30);
+  fyil := floor((tarih1- tarih2) / 365);
+  aylik := (floor(farkGun) mod 365);
+  ay := floor(aylik /30);
+  gunluk := (floor(aylik) mod 30);
 
-     result := floattostr(fyil) + ',' + FloatToStr(ay) + ',' + FloatToStr(floor(gunluk));
+  result := floattostr(fyil) + ',' + FloatToStr(ay) + ',' + FloatToStr(floor(gunluk));
 end;
 
 function tarihal(t: tdate): string;
 var
- sonuct,s:string;
+ s:string;
 begin
  s := datetostr(t);
  result := copy(s,7,4)+copy(s,4,2)+copy(s,1,2);
@@ -1000,7 +1000,7 @@ var
 ds : char;
 y,a,g : string;
 begin
-    ds := DateSeparator;
+    ds := FormatSettings.DateSeparator;
     y := copy(t,1,4);
     a := copy(t,5,2);
     g := copy(t,7,2);
@@ -1010,9 +1010,9 @@ begin
 end;
 
 function KurumAdi(_kod : string) : string;
-var
-  sql : string;
-  ado : TADOQuery;
+//var
+//  sql : string;
+//  ado : TADOQuery;
 begin
   //sql := 'SELECT * FROM Kurumlar WHERE kurum = ' + _kod;
   //datalar.
@@ -1056,17 +1056,17 @@ const
 var
   Http1 : TIdHTTP;
 begin
-    FActive := Value;
-
-    Http1 := TIdHTTP.Create(nil);
+  FActive := Value;
+  Http1 := TIdHTTP.Create(nil);
+  try
     try
       FWIp := HTTP1.Get(url);
     except
       FWIp := '';
     end;
-
-
+  finally
     Http1.Free;
+  end;
 end;
 
 function TLogin.Execute : Boolean;
@@ -1075,21 +1075,23 @@ var
   log : string;
   ado : TADOQuery;
 begin
+  Result := False;
   ado := TADOQuery.Create(nil);
-  if FLogin = lgnIn then log := 'LogIn' else log := 'LogOut';
   try
-    Ado.Connection := FConnction;
-    sql := 'insert into LoginLog(kullanici,Login,WanIp) values('+ QuotedStr(FKullanici) + ',' +
-                                                                  QuotedStr(log) + ',' +
-                                                                  QuotedStr(FWIp)
-                                                                  +') select @@rowcount';
-    QuerySelect(ado,Sql);
-
-  except
+    if FLogin = lgnIn then log := 'LogIn' else log := 'LogOut';
+    try
+      Ado.Connection := FConnction;
+      sql := 'insert into LoginLog(kullanici,Login,WanIp) values('+ QuotedStr(FKullanici) + ',' +
+                                                                    QuotedStr(log) + ',' +
+                                                                    QuotedStr(FWIp)
+                                                                    +') select @@rowcount';
+      QuerySelect(ado,Sql);
+      Result := True;
+    except
+    end;
+  finally
+    ado.free;
   end;
-
-  ado.free;
-
 end;
 
 
@@ -1230,49 +1232,53 @@ begin
   then begin
     if FTableName = '' then exit;
     ado := TADOQuery.Create(nil);
-    ado.Connection := FConn;
     try
-      ado.SQL.Text := 'select ' + FValueField + ',' + FDisplayField + ' from ' + FTableName +
-      ifthen(FFilter = '','',' where ' + FFilter ) + ' ORDER BY ' + FDisplayField;
-      ado.Open;
-    except
-      ado.Free;
-    end;
+      ado.Connection := FConn;
+      try
+        ado.SQL.Text := 'select ' + FValueField + ',' + FDisplayField + ' from ' + FTableName +
+        ifthen(FFilter = '','',' where ' + FFilter ) + ' ORDER BY ' + FDisplayField;
+        ado.Open;
+      except
+      end;
 
-    while not ado.Eof do
-    begin
+      while not ado.Eof do
+      begin
         FItem := Properties.Items.add;
         FItem.Value := ado.Fields[0].AsString;
         FItem.Description := ado.Fields[1].AsString;
         ado.Next;
-    end;
-
-    if FBosOlamaz = False  then
-    begin
-        FItem := Properties.Items.add;
-        FItem.Value := '';
-        FItem.Description := 'Atanmamýþ';
-    end;
-
-    if FItemList <> ''
-    Then Begin
-      TList := TStringList.Create;
-      ExtractStrings([','],[],PChar(ItemList),Tlist);
-      for I := 0 to Tlist.Count - 1 do
-      begin
-        FItem := Properties.Items.add;
-        FItem.Value := copy(Tlist[I],1,pos(';',Tlist[I])-1);
-        FItem.Description := copy(Tlist[I],pos(';',Tlist[I])+1,200);
       end;
-      TList.Free;
-    End;
 
-    ado.close;
-    ado.Free;
+      if FBosOlamaz = False  then
+      begin
+          FItem := Properties.Items.add;
+          FItem.Value := '';
+          FItem.Description := 'Atanmamýþ';
+      end;
+
+      if FItemList <> ''
+      Then Begin
+        TList := TStringList.Create;
+        try
+          ExtractStrings([','],[],PChar(ItemList),Tlist);
+          for I := 0 to Tlist.Count - 1 do
+          begin
+            FItem := Properties.Items.add;
+            FItem.Value := copy(Tlist[I],1,pos(';',Tlist[I])-1);
+            FItem.Description := copy(Tlist[I],pos(';',Tlist[I])+1,200);
+          end;
+        finally
+          TList.Free;
+        end;
+      End;
+    finally
+      ado.Free;
+    end;
   end
   else
   begin
-      TList := TStringList.Create;
+    TList := TStringList.Create;
+    try
       ExtractStrings([','],[],PChar(ItemList),Tlist);
   //    Split(',',ItemList,TList);
       for I := 0 to Tlist.Count - 1 do
@@ -1281,9 +1287,10 @@ begin
         FItem.Value := copy(Tlist[I],1,pos(';',Tlist[I])-1);
         FItem.Description := copy(Tlist[I],pos(';',Tlist[I])+1,200);
       end;
+    finally
       TList.Free;
+    end;
   end;
-
 end;
 
 
@@ -1299,15 +1306,11 @@ end;
 
 
 function TcxDateEditKadir.GetValue(format : string = 'YYYYMMDD') : string;
-var
-  sonuct,s:string;
 begin
   result := FormatDateTime(format,self.Date);
 end;
 
 function TcxDateEditKadir.GetSQLValue(format : string = 'YYYYMMDD') : string;
-var
-  sonuct,s:string;
 begin
   result := QuotedStr(FormatDateTime(format,self.Date));
 end;
@@ -1444,11 +1447,15 @@ begin
    case TMenuItem(sender).Tag of
 
      0 : begin
-           SD := TSaveDialog.Create(nil);
-           SD.FileName := ifThen(Self.ExcelFileName = '',GetParentForm(Self).Name,Self.ExcelFileName) + '.XLS';
-           SD.Execute;
-           ExportGridToExcel(SD.FileName, self);
-         end;
+       SD := TSaveDialog.Create(nil);
+       try
+         SD.FileName := ifThen(Self.ExcelFileName = '',GetParentForm(Self).Name,Self.ExcelFileName) + '.XLS';
+         if not SD.Execute then Exit;
+         ExportGridToExcel(SD.FileName, self);
+       finally
+         SD.Free;
+       end;
+     end;
    end;
 
 
@@ -1460,17 +1467,20 @@ constructor TLabIslemleri.Create(AOwner: TComponent);
 var
   reg : TREGISTRy;
 begin
-    inherited Create(AOwner);
-    reg := Tregistry.Create;
+  inherited Create(AOwner);
+  reg := Tregistry.Create;
+  try
     reg.OpenKey('Software\NOKTA\NOKTA',True);
-
-    Fconnectionstring := 'Provider=SQLOLEDB.1;Password=1;Persist Security Info=False;User ID=sa;Initial Catalog=KLINIK;Data Source='
-                         + reg.ReadString('servername');
-    reg.CloseKey;
+    try
+      Fconnectionstring := 'Provider=SQLOLEDB.1;Password=1;Persist Security Info=False;User ID=sa;Initial Catalog=KLINIK;Data Source='
+                           + reg.ReadString('servername');
+    finally
+      reg.CloseKey;
+    end;
+  finally
     reg.Free;
-
+  end;
   //  SetLength(Fsonuclar,FTestAdet);
-    
 end;
 
 destructor TLabIslemleri.Destroy;
@@ -1491,44 +1501,48 @@ var
   conn : TADOConnection;
   i , j : integer;
 begin
-   conn := TADOConnection.Create(nil);
-   conn.ConnectionString := Fconnectionstring;
-   Conn.LoginPrompt := False;
-   conn.Connected := True;
-   ado := TADOQuery.Create(nil);
-   ado.Connection := conn;
-   j := 1;
-   for i := 0 to length(FSonuclar) - 1 do
-   begin
-     try
-        sql := 'update laboratuvar_sonuc ' +
-               ' set sonuc1 = ' + QuotedStr(Fsonuclar[i].Sonuc) +
-               ' where barkodNo = ' + QuotedStr(Fsonuclar[i].KabulNo) +
-               ' and parametreadi = ' + QuotedStr(CihazTestKodu_To_LisTestKodu(Fsonuclar[i].TestNo)) +
-               ' select @@rowcount ';
+  conn := TADOConnection.Create(nil);
+  try
+    conn.ConnectionString := Fconnectionstring;
+    Conn.LoginPrompt := False;
+    conn.Connected := True;
+    ado := TADOQuery.Create(nil);
+    try
+      ado.Connection := conn;
+      j := 1;
+      for i := 0 to length(FSonuclar) - 1 do
+      begin
+        try
+           sql := 'update laboratuvar_sonuc ' +
+                  ' set sonuc1 = ' + QuotedStr(Fsonuclar[i].Sonuc) +
+                  ' where barkodNo = ' + QuotedStr(Fsonuclar[i].KabulNo) +
+                  ' and parametreadi = ' + QuotedStr(CihazTestKodu_To_LisTestKodu(Fsonuclar[i].TestNo)) +
+                  ' select @@rowcount ';
 
 
-       QuerySelect(ado,sql);
-       if ado.Fields[0].AsInteger > 0
-       Then Begin
-           SetLength(Sonuclar,j);
-           sonuclar[j].KabulNo := Fsonuclar[i].Sonuc;
-           Sonuclar[j].TestNo := Fsonuclar[i].TestNo;
-           Sonuclar[j].KabulNo := Fsonuclar[i].KabulNo;
-           inc(j);
-       End;
+          QuerySelect(ado,sql);
+          if ado.Fields[0].AsInteger > 0
+          Then Begin
+              SetLength(Sonuclar,j);
+              sonuclar[j].KabulNo := Fsonuclar[i].Sonuc;
+              Sonuclar[j].TestNo := Fsonuclar[i].TestNo;
+              Sonuclar[j].KabulNo := Fsonuclar[i].KabulNo;
+              inc(j);
+          End;
 
-     except
-        result := '0001';
-     end;
-   end;
+        except
+           result := '0001';
+        end;
+      end;
 
-   IF Assigned(OnKaydet) THEN  OnKaydet (Self, Sonuclar);
-
-
-   conn.Connected := False;
-   ado.Free;
-   conn.Free;
+      IF Assigned(OnKaydet) THEN  OnKaydet (Self, Sonuclar);
+      conn.Connected := False;
+    finally
+      ado.Free;
+    end;
+  finally
+    conn.Free;
+  end;
 end;
 
 
@@ -1538,18 +1552,24 @@ var
   ado :TADOQuery;
   conn : TADOConnection;
 begin
-   conn := TADOConnection.Create(nil);
-   conn.ConnectionString := Fconnectionstring;
-   Conn.LoginPrompt := False;
-   conn.Connected := True;
-   ado := TADOQuery.Create(nil);
-   ado.Connection := conn;
+  conn := TADOConnection.Create(nil);
+  try
+    conn.ConnectionString := Fconnectionstring;
+    Conn.LoginPrompt := False;
+    conn.Connected := True;
+    ado := TADOQuery.Create(nil);
+    try
+      ado.Connection := conn;
 
-   sql := 'select parametreadi from laboratuvar_parametre where CihazTestKodu = ' + QuotedStr(code);
-   QuerySelect(ado,sql);
-   result := ado.Fields[0].AsString;
-
-   ado.Free;
+      sql := 'select parametreadi from laboratuvar_parametre where CihazTestKodu = ' + QuotedStr(code);
+      QuerySelect(ado,sql);
+      result := ado.Fields[0].AsString;
+    finally
+      ado.Free;
+    end;
+  finally
+    conn.Free;
+  end;
 
 
 end;
@@ -1564,51 +1584,51 @@ var
   kabulNo : string;
 begin
    conn := TADOConnection.Create(nil);
-   conn.ConnectionString := Fconnectionstring;
-   conn.LoginPrompt := false;
-   conn.Connected := True;
-   ado := TADOQuery.Create(nil);
-   ado.Connection := conn;
-   
    try
-        sql := ' exec sp_YeniLabKabulNoAl ';
-        QuerySelect(ado,sql);
-        kabulNO := ado.Fields[0].AsString;
+     conn.ConnectionString := Fconnectionstring;
+     conn.LoginPrompt := false;
+     conn.Connected := True;
+     ado := TADOQuery.Create(nil);
+     try
+       ado.Connection := conn;
+       try
+         sql := ' exec sp_YeniLabKabulNoAl ';
+         QuerySelect(ado,sql);
+         kabulNO := ado.Fields[0].AsString;
 
-         sql := 'exec sp_YeniLabKabul ' +
-                #39 + FKabulBilgi.dosyaNo + #39 + ',' +
-                FKabulBilgi.gelisNo + ',' +
-                FKabulBilgi.detayNo + ',' +
-                #39 + FKabulBilgi.code + #39 + ',' +
-                #39 + FKabulBilgi.grup + #39 + ',' +
-                #39 + FKabulBilgi.kabulTarihi + #39 + ',' +
-                #39 + FKabulBilgi.kabulEden + #39 + ',' +
-                #39 + FKabulBilgi.durum + #39 + ',' +
-                #39 + FKabulBilgi.Icode + #39 + ',' +
-                #39 + FKabulBilgi.name + #39 + ',' +
-                #39 + FKabulBilgi.sira + #39 + ',' +
-                #39 + kabulNo + #39;
+          sql := 'exec sp_YeniLabKabul ' +
+                 #39 + FKabulBilgi.dosyaNo + #39 + ',' +
+                 FKabulBilgi.gelisNo + ',' +
+                 FKabulBilgi.detayNo + ',' +
+                 #39 + FKabulBilgi.code + #39 + ',' +
+                 #39 + FKabulBilgi.grup + #39 + ',' +
+                 #39 + FKabulBilgi.kabulTarihi + #39 + ',' +
+                 #39 + FKabulBilgi.kabulEden + #39 + ',' +
+                 #39 + FKabulBilgi.durum + #39 + ',' +
+                 #39 + FKabulBilgi.Icode + #39 + ',' +
+                 #39 + FKabulBilgi.name + #39 + ',' +
+                 #39 + FKabulBilgi.sira + #39 + ',' +
+                 #39 + kabulNo + #39;
 
-      //   QueryExec(ado,sql);
-         result := '1'
+       //   QueryExec(ado,sql);
+          result := '1'
 
-   except
-      result := '0001';
+       except
+          result := '0001';
 
+       end;
+     finally
+       ado.Free;
+     end;
+   finally
+     conn.Free;
    end;
-
-   ado.Free;
-
 end;
 
 procedure TLabIslemleri.DiziSet(const value : integer);
-var
- s : string;
 begin
-    FTestAdet := value;
-    SetLength(Fsonuclar,FTestAdet);
-
-
+  FTestAdet := value;
+  SetLength(Fsonuclar,FTestAdet);
 end;
 
 
@@ -1743,8 +1763,6 @@ begin
 end;
 
 function TMainMenuKadir.MenuClick(_tag_ : integer) : integer;
-var
-  i,r , w: integer;
 begin
    MenuClick := _tag_;
 end;
@@ -1803,7 +1821,7 @@ begin
 end;
 
 
-procedure TMainMenuKadir.ActionListExecute(Sender: TObject);
+procedure TMainMenuKadir.ActionListExecute (Sender: TObject);
 begin
 end;
 
@@ -1814,23 +1832,24 @@ var
    ado : TADOQuery;
 begin
   try
-   ado := TADOQuery.Create(nil);
-   ado.Connection := FConn;
-   sql := 'select * from UserMenuSettings U ' +
-          ' join MenuIslem M on M.KAYITID = U.ID ' +
-          ' where Kullanici = ' + QuotedStr(FKullaniciAdi) + ' and shortCut = ' + QuotedStr(tus) + ' and Izin = 1 ';
-   ado.SQL.Text := sql;
-   ado.Open;
+    ado := TADOQuery.Create(nil);
+    try
+      ado.Connection := FConn;
+      sql := 'select * from UserMenuSettings U ' +
+             ' join MenuIslem M on M.KAYITID = U.ID ' +
+             ' where Kullanici = ' + QuotedStr(FKullaniciAdi) + ' and shortCut = ' + QuotedStr(tus) + ' and Izin = 1 ';
+      ado.SQL.Text := sql;
+      ado.Open;
 
-   if not ado.eof
-   then
-    result := ado.FieldByName('KAYITID').AsInteger
-   else result := 0;
-
-   ado.Free;
+      if not ado.eof
+      then
+       result := ado.FieldByName('KAYITID').AsInteger
+      else result := 0;
+    finally
+      ado.Free;
+    end;
   except
    result := 0;
-   ado.Free;
    exit;
   end;
 
@@ -1841,16 +1860,12 @@ end;
 
 procedure TMainMenuKadir.MenuGetir;
 var
-  i,r , w , u , ug : integer;
+  i,r , u , ug : integer;
   sql : string;
   ado : TADOQuery;
-  _action_ : TAction;
-  actItem : TActionClientItem;
-  tmpActItem : TActionClientItem;
-  act : TCustomAction;
   MenuGorunum : array of TMenuGorunum;
   MenuSatir : TMenuGorunum;
-  ItemKadir : TdxNavBarKadirItem;
+  bBenActim: Boolean;
 
 function MenuSatiriVar(ID : integer) : Boolean;
 var
@@ -1876,132 +1891,142 @@ begin
   TimerGizle.OnTimer := TimerGizleTimer;
 
  // OnLinkClick := LinkClick;
-  if ado = nil then ado := TADOQuery.Create(nil);
-  ado.Connection := FConn;
-
+  if ado = nil then
+  begin
+    ado := TADOQuery.Create(nil);
+    bBenActim := True;
+  end
+  else bBenActim := False;
   try
-   sql := 'SELECT US.*,M.* FROM UserGroupMenuSettings US ' +
-          'join MenuIslem M on M.KAYITID = US.ID ' +
-          'join Users U on U.Grup = US.kullanici ' +
-          'WHERE U.Kullanici = ' + QuotedStr(FKullaniciAdi);
-   QuerySelect(ado,sql);
+    i := 0;
+    u := 0;
+    ado.Connection := FConn;
 
-   u := ado.RecordCount;
-   SetLength(MenuGorunum,0);
-   i := 0;
-   if u > 0
-   then begin
-     SetLength(MenuGorunum,u);
-     while not ado.Eof do
-     begin
-         if MenuSatiriVar(ado.FieldByName('KAYITID').AsInteger) = False
-         then begin
-           MenuSatir.Kullanici := ado.FieldByName('Kullanici').AsString;
-           MenuSatir.Menu := ado.FieldByName('Menu').AsString;
-           MenuSatir.Izin := ado.FieldByName('Izin').AsInteger;
-           MenuSatir.KAYITID := ado.FieldByName('KAYITID').AsInteger;
-           MenuSatir.MainMenu := ado.FieldByName('MainMenu').AsString;
-           MenuSatir.Kapsam := ado.FieldByName('Kapsam').AsInteger;
-           MenuSatir.imageIndex := ado.FieldByName('imageIndex').AsInteger;
-           MenuSatir.formId := ado.FieldByName('FormTag').AsInteger;
-           MenuSatir.ShowTip := ado.FieldByName('ShowTip').AsInteger;
-           MenuGorunum[i] := MenuSatir;
-         end;
-         inc(i);
-         ado.Next;
+    try
+     sql := 'SELECT US.*,M.* FROM UserGroupMenuSettings US ' +
+            'join MenuIslem M on M.KAYITID = US.ID ' +
+            'join Users U on U.Grup = US.kullanici ' +
+            'WHERE U.Kullanici = ' + QuotedStr(FKullaniciAdi);
+     QuerySelect(ado,sql);
+
+     u := ado.RecordCount;
+     SetLength(MenuGorunum,0);
+     i := 0;
+     if u > 0
+     then begin
+       SetLength(MenuGorunum,u);
+       while not ado.Eof do
+       begin
+           if MenuSatiriVar(ado.FieldByName('KAYITID').AsInteger) = False
+           then begin
+             MenuSatir.Kullanici := ado.FieldByName('Kullanici').AsString;
+             MenuSatir.Menu := ado.FieldByName('Menu').AsString;
+             MenuSatir.Izin := ado.FieldByName('Izin').AsInteger;
+             MenuSatir.KAYITID := ado.FieldByName('KAYITID').AsInteger;
+             MenuSatir.MainMenu := ado.FieldByName('MainMenu').AsString;
+             MenuSatir.Kapsam := ado.FieldByName('Kapsam').AsInteger;
+             MenuSatir.imageIndex := ado.FieldByName('imageIndex').AsInteger;
+             MenuSatir.formId := ado.FieldByName('FormTag').AsInteger;
+             MenuSatir.ShowTip := ado.FieldByName('ShowTip').AsInteger;
+             MenuGorunum[i] := MenuSatir;
+           end;
+           inc(i);
+           ado.Next;
+       end;
      end;
-   end;
-  except
-    SetLength(MenuGorunum,0);
-  end;
+    except
+      SetLength(MenuGorunum,0);
+    end;
 
 
-  try
-   sql := 'select * from UserMenuSettings U join MenuIslem M on M.KAYITID = U.ID where Kullanici = ' + QuotedStr(FKullaniciAdi);
-   QuerySelect(ado,sql);
-   ug := ado.RecordCount;
-   u := u + ug;
-   if ug > 0
-   then begin
-     SetLength(MenuGorunum,u);
-     while not ado.Eof do
-     begin
-         if MenuSatiriVar(ado.FieldByName('KAYITID').AsInteger) = False
-         then begin
-           MenuSatir.Kullanici := ado.FieldByName('Kullanici').AsString;
-           MenuSatir.Menu := ado.FieldByName('Menu').AsString;
-           MenuSatir.Izin := ado.FieldByName('Izin').AsInteger;
-           MenuSatir.KAYITID := ado.FieldByName('KAYITID').AsInteger;
-           MenuSatir.MainMenu := ado.FieldByName('MainMenu').AsString;
-           MenuSatir.Kapsam := ado.FieldByName('Kapsam').AsInteger;
-           MenuSatir.imageIndex := ado.FieldByName('imageIndex').AsInteger;
-           MenuSatir.ShowTip := ado.FieldByName('ShowTip').AsInteger;
-           MenuSatir.formId := ado.FieldByName('FormTag').AsInteger;
-           MenuGorunum[i] := MenuSatir;
-         end;
-         inc(i);
-         ado.Next;
+    try
+     sql := 'select * from UserMenuSettings U join MenuIslem M on M.KAYITID = U.ID where Kullanici = ' + QuotedStr(FKullaniciAdi);
+     QuerySelect(ado,sql);
+     ug := ado.RecordCount;
+     u := u + ug;
+     if ug > 0
+     then begin
+       SetLength(MenuGorunum,u);
+       while not ado.Eof do
+       begin
+           if MenuSatiriVar(ado.FieldByName('KAYITID').AsInteger) = False
+           then begin
+             MenuSatir.Kullanici := ado.FieldByName('Kullanici').AsString;
+             MenuSatir.Menu := ado.FieldByName('Menu').AsString;
+             MenuSatir.Izin := ado.FieldByName('Izin').AsInteger;
+             MenuSatir.KAYITID := ado.FieldByName('KAYITID').AsInteger;
+             MenuSatir.MainMenu := ado.FieldByName('MainMenu').AsString;
+             MenuSatir.Kapsam := ado.FieldByName('Kapsam').AsInteger;
+             MenuSatir.imageIndex := ado.FieldByName('imageIndex').AsInteger;
+             MenuSatir.ShowTip := ado.FieldByName('ShowTip').AsInteger;
+             MenuSatir.formId := ado.FieldByName('FormTag').AsInteger;
+             MenuGorunum[i] := MenuSatir;
+           end;
+           inc(i);
+           ado.Next;
+       end;
      end;
-   end;
-  except
-    SetLength(MenuGorunum,0);
-  end;
+    except
+      SetLength(MenuGorunum,0);
+    end;
 
-  if Length(MenuGorunum) = 0 then exit;
+    if Length(MenuGorunum) = 0 then exit;
 
 
-  Groups.Clear;
-  Items.Clear;
-  ado.First;
-  i := 0;
-  for MenuSatir in MenuGorunum do
-  begin
-   if MenuSatir.Kapsam = 0
-   then begin
-     Groups.Add.index := i;
-     Groups[i].Caption := MenuSatir.MainMenu;
-     Groups[i].Tag := MenuSatir.KAYITID;
-     Groups[i].SmallImageIndex := MenuSatir.imageIndex;
-     Groups[i].LargeImageIndex := MenuSatir.imageIndex;
-     Groups[i].UseSmallImages := false;
-     Groups[i].Visible := Boolean(MenuSatir.Izin);
-     inc(i);
-   end;
-   ado.Next;
-  end;
-
- // Items := MainMenuItemsKadir;
-  r := 0;
-  for MenuSatir in MenuGorunum do
-  begin
-   if MenuSatir.Kapsam  <> 0
-   then begin
-     Items.Add.Index := r;
-     Items[r].Caption := MenuSatir.MainMenu;
-     Items[r].Hint := MenuSatir.MainMenu;
-     Items[r].Tag := MenuSatir.KAYITID;
-     Items[r].SmallImageIndex := MenuSatir.imageIndex;
-     Items[r].Visible := Boolean(MenuSatir.Izin);
-     Items[r].FormId := MenuSatir.formId;
-     Items[r].ShowTip := MenuSatir.ShowTip;
-
-     for i := 0 to Groups.Count - 1 do
-     begin
-       if Groups[i].Tag = MenuSatir.Kapsam  then
-        Groups[i].CreateLink(items[r]);
+    Groups.Clear;
+    Items.Clear;
+    ado.First;
+    i := 0;
+    for MenuSatir in MenuGorunum do
+    begin
+     if MenuSatir.Kapsam = 0
+     then begin
+       Groups.Add.index := i;
+       Groups[i].Caption := MenuSatir.MainMenu;
+       Groups[i].Tag := MenuSatir.KAYITID;
+       Groups[i].SmallImageIndex := MenuSatir.imageIndex;
+       Groups[i].LargeImageIndex := MenuSatir.imageIndex;
+       Groups[i].UseSmallImages := false;
+       Groups[i].Visible := Boolean(MenuSatir.Izin);
+       inc(i);
      end;
-     inc(r);
-   end;
+     ado.Next;
+    end;
 
+   // Items := MainMenuItemsKadir;
+    r := 0;
+    for MenuSatir in MenuGorunum do
+    begin
+     if MenuSatir.Kapsam  <> 0
+     then begin
+       Items.Add.Index := r;
+       Items[r].Caption := MenuSatir.MainMenu;
+       Items[r].Hint := MenuSatir.MainMenu;
+       Items[r].Tag := MenuSatir.KAYITID;
+       Items[r].SmallImageIndex := MenuSatir.imageIndex;
+       Items[r].Visible := Boolean(MenuSatir.Izin);
+       Items[r].FormId := MenuSatir.formId;
+       Items[r].ShowTip := MenuSatir.ShowTip;
+
+       for i := 0 to Groups.Count - 1 do
+       begin
+         if Groups[i].Tag = MenuSatir.Kapsam  then
+          Groups[i].CreateLink(items[r]);
+       end;
+       inc(r);
+     end;
+
+    end;
+
+    for i := 0 to Groups.Count - 1 do
+    begin
+       Groups[i].Expanded := false;
+    end;
+
+    ado.Close;
+  finally
+    if bBenActim then ado.Free;
   end;
-
-  for i := 0 to Groups.Count - 1 do
-  begin
-     Groups[i].Expanded := false;
-  end;
-
-  ado.Close;
-  ado.Free;
 
 end;
 
@@ -2025,42 +2050,36 @@ var
 
 begin
    ado := TADOQuery.Create(nil);
-   ado.Connection := FConn;
+   try
+     ado.Connection := FConn;
 
-   sql := 'select * from hastaKart where dosyaNO = ' + QuotedStr(FGiris);
-   QuerySelect(ado,sql);
-   Hasta := ado.fieldbyname('HASTAADI').AsString + ' ' + ado.fieldbyname('HASTASOYADI').AsString;
-   dt := tarihyap(ado.fieldbyname('DOGUMTARIHI').AsString);
-   Cins := IfThen(ado.fieldbyname('CINSIYETI').AsString = '0','ERKEK','KADIN');
-   kurum := ado.fieldbyname('Kurum').AsString;
+     sql := 'select * from hastaKart where dosyaNO = ' + QuotedStr(FGiris);
+     QuerySelect(ado,sql);
+     Hasta := ado.fieldbyname('HASTAADI').AsString + ' ' + ado.fieldbyname('HASTASOYADI').AsString;
+     dt := tarihyap(ado.fieldbyname('DOGUMTARIHI').AsString);
+     Cins := IfThen(ado.fieldbyname('CINSIYETI').AsString = '0','ERKEK','KADIN');
+     kurum := ado.fieldbyname('Kurum').AsString;
 
-   sql := 'select ADI1 from Kurumlar where kurum = ' + #39 + kurum + #39;
-   QuerySelect(ado,sql);
-   kurumadi := ado.fieldbyname('ADI1').AsString;
-
-
-   if FSonuc = psYan
-   Then ch := ' - ';
-
-   _now_ := date;
-   yas := tarihFarki(_now_,dt);
+     sql := 'select ADI1 from Kurumlar where kurum = ' + #39 + kurum + #39;
+     QuerySelect(ado,sql);
+     kurumadi := ado.fieldbyname('ADI1').AsString;
 
 
-   Caption := Hasta + ' - ' + Cins + ' - ' + yas + ' - ' + kurumadi;
+     if FSonuc = psYan
+     Then ch := ' - ';
+
+     _now_ := date;
+     yas := tarihFarki(_now_,dt);
 
 
-
-
-   ado.Free;
-
-
-
+     Caption := Hasta + ' - ' + Cins + ' - ' + yas + ' - ' + kurumadi;
+   finally
+     ado.Free;
+   end;
 end;
 
 
 constructor TDoktorComboBox.Create(AOwner: TComponent);
-var
-  L : TStrings;
 begin
     inherited Create(AOwner);
     FLinC := TStringList.Create;
@@ -2068,8 +2087,8 @@ end;
 
 destructor TDoktorComboBox.Destroy;
 begin
-      inherited;
-      FLinC.Free;
+  FLinC.Free;
+  inherited;
 end;
 
 
@@ -2078,28 +2097,26 @@ begin
     FLinC.Assign(value);
 end;
 
-function TDoktorComboBox.getlines : TStrings;
+{function TDoktorComboBox.getlines : TStrings;
 begin
     Result := FlinC;
-end;
+end;{}
 
 
 function TDoktorComboBox.ListeGetir : string;
 var
   sql : string;
   ado : TADOQuery;
-  r , x,j : integer;
+  //x : integer;
 begin
 
-    if FlinC.Count = 0 then exit;
+  if FlinC.Count = 0 then exit;
 
-    ado := TADOQuery.Create(nil);
-
+  ado := TADOQuery.Create(nil);
+  try
  //   Fstrings := TStringList.Create;
-
-
     ado.Connection := FConn;
-    x := FlinC.Count;
+    //x := FlinC.Count;
 
     sql := 'select * from ' + Ftable;
   (*
@@ -2117,14 +2134,12 @@ begin
       Items.Add(ado.fieldbyname(FlinC[0]).AsString + ' - ' + ado.fieldbyname(FlinC[1]).AsString);
       ado.Next;
     end;
-
-
     Result := '0000';
-
+  finally
     ado.Free;
+  end;
     //Lst.Free;
    // lstW.Free;
-
 end;
 
 procedure TDoktorComboBox.dizaynEt(kolonlar : TStrings);
@@ -2136,9 +2151,6 @@ end;
 
 
 constructor TListeAc.Create(AOwner: TComponent);
-var
-  L : TStrings;
-
 begin
     inherited Create(AOwner);
     FGrup := False;
@@ -2150,15 +2162,10 @@ end;
 
 destructor TListeAc.Destroy;
 begin
-      inherited;
-      FLin.Free;
       Flin1.Free;
-
+      FLin.Free;
+      inherited;
 end;
-
-
-
-
 
 procedure TListeAc.setLines(const value : TStrings);
 begin
@@ -2167,10 +2174,10 @@ begin
 
 end;
 
-function TListeAc.getlines : TStrings;
+{function TListeAc.getlines : TStrings;
 begin
     Result := Flin;
-end;
+end;{}
 
 
 
@@ -2205,10 +2212,10 @@ begin
     Flin1.Assign(value);
 end;
 
-function TListeAc.getlines1 : TStrings;
+{function TListeAc.getlines1 : TStrings;
 begin
     Result := Flin1;
-end;
+end;{}
 
 procedure TListeAc.SetImageIndex(Value: TImageIndex);
 begin
@@ -2261,107 +2268,115 @@ function TListeAc.ListeGetir : ArrayListeSecimler;
 var
   sql : string;
   ado : TADOQuery;
-  r , x,j : integer;
-  lst,LstW,LstColB : TStringList;
+  //r : integer;
+  LstW : TStringList;
  // ListeAc1 : TfrmListeAc;
 
 begin
 
-    if FcolsW = ''
-    Then exit;
+  if FcolsW = ''
+  Then exit;
 
-    //if Fcolcount = 0 then exit;
-    if Flin.Count = 0 then exit;
+  //if Fcolcount = 0 then exit;
+  if Flin.Count = 0 then exit;
 
-    ado := TADOQuery.Create(nil);
+  ado := TADOQuery.Create(nil);
+  try
 
-//    Fstrings := TStringList.Create;
-    FstringsW := TStringList.Create;
-    Application.CreateForm(TfrmListeAc, frmListeAc);
+    //Fstrings := TStringList.Create;
+    //FstringsWX := TStringList.Create;
+    try
+      Application.CreateForm(TfrmListeAc, frmListeAc);
+      try
+        frmListeAc.pnlTitle.Color := FbaslikRenk;
+        frmListeAc.pnlOnay.Color := FDipRenk;
 
-
-    frmListeAc.pnlTitle.Color := FbaslikRenk;
-    frmListeAc.pnlOnay.Color := FDipRenk;
-
-//    frmListeAc.btnSec1.Images := FImajList;
-//    frmListeAc.btnSec1.ImageIndex := FButtonImajIndex;
-
-
-    ado.Connection := FConn;
-
-//   lst := TStringList.Create;
-   lstW := TStringList.Create;
- //  LstColB := TStringList.Create;
-
- //  Split(',',Fcols,lst);
-   Split(',',FcolsW,lstW);
- //  Split(',',FColbaslik,LstColB);
-   x := Flin.Count;
- //  lst.Free;
-
-   sql := 'select * from ' + Ftable;
-   if Fwhere <> ''
-   Then
-     sql := sql + ' where ' + FWhere;
-
-   if Ffilter <> ''
-   Then
-     if FWhere = ''
-     Then
-      sql := sql + ' where '+ Flin[FFilterCol] + ' like ' + QuotedStr(FFilter)
-     Else
-      sql := sql + ' and '+ Flin[FFilterCol] + ' like ' + QuotedStr(FFilter);
+        //frmListeAc.btnSec1.Images := FImajList;
+        //frmListeAc.btnSec1.ImageIndex := FButtonImajIndex;
 
 
-   if FSiralamaKolonu <> ''
-   Then
-    sql := sql + ' order by ' + FSiralamaKolonu;
+        ado.Connection := FConn;
+
+        //lst := TStringList.Create;
+        lstW := TStringList.Create;
+        try
+          //LstColB := TStringList.Create;
+
+          //Split(',',Fcols,lst);
+          Split(',',FcolsW,lstW);
+          //Split(',',FColbaslik,LstColB);
+          //x := Flin.Count;
+          //lst.Free;
+
+          sql := 'select * from ' + Ftable;
+          if Fwhere <> ''
+          Then
+            sql := sql + ' where ' + FWhere;
+
+          if Ffilter <> ''
+          Then
+            if FWhere = ''
+            Then
+             sql := sql + ' where '+ Flin[FFilterCol] + ' like ' + QuotedStr(FFilter)
+            Else
+             sql := sql + ' and '+ Flin[FFilterCol] + ' like ' + QuotedStr(FFilter);
+
+
+          if FSiralamaKolonu <> ''
+          Then
+           sql := sql + ' order by ' + FSiralamaKolonu;
 
 
 
 
-   QuerySelect(ado,sql);
+          QuerySelect(ado,sql);
 
-   frmListeAc.Caption := FListeBaslik;
-   frmListeAc.pnlTitle.Caption := FListeBaslik;
-   frmListeAc.DataSource1.DataSet := ado;
-   frmListeAc.dizaynEt(Flin,lstW,Flin1, Ffiltercol,FGrupCol,FGrup,FBiriktirmeliSecim);
+          frmListeAc.Caption := FListeBaslik;
+          frmListeAc.pnlTitle.Caption := FListeBaslik;
+          frmListeAc.DataSource1.DataSet := ado;
+          frmListeAc.dizaynEt(Flin,lstW,Flin1, Ffiltercol,FGrupCol,FGrup,FBiriktirmeliSecim);
 
-   frmListeAc.Liste.ViewData.DataController.Filter.Options :=
-   frmListeAc.Liste.ViewData.DataController.Filter.Options + [fcoCaseInsensitive];
-   frmListeAc.cxGrid1.LookAndFeel.SkinName := FSkinName;
-   frmListeAc.cxGrid2.LookAndFeel.SkinName := FSkinName;
-   frmListeAc.btnSec1.LookAndFeel.SkinName := SkinName;
+          frmListeAc.Liste.ViewData.DataController.Filter.Options :=
+          frmListeAc.Liste.ViewData.DataController.Filter.Options + [fcoCaseInsensitive];
+          frmListeAc.cxGrid1.LookAndFeel.SkinName := FSkinName;
+          frmListeAc.cxGrid2.LookAndFeel.SkinName := FSkinName;
+          frmListeAc.btnSec1.LookAndFeel.SkinName := SkinName;
 
-   frmListeAc.ShowModal;
+          frmListeAc.ShowModal;
 
-   if frmListeAc.tus = 0
-   Then Begin
-     r := frmListeAc.Liste.ViewData.DataController.GetFocusedRecordIndex;
-     SetLength(Fstrings,0);
-     try
-       Fstrings := frmListeAc.strings;
-     except
-     end;
-     if length(Fstrings) = 0
-     then
-     SetLength(Fstrings,1);
-     Result := Fstrings;
-   End
-   Else
-   Begin
-    // if length(Fstrings) = 0
-    // then
-     SetLength(Fstrings,0);
-     Result := Fstrings;
-   End;
-
-
-   ado.Free;
-//   Lst.Free;
-   lstW.Free;
-   frmListeAc.Free;
-
+          if frmListeAc.tus = 0
+          Then Begin
+            //r := frmListeAc.Liste.ViewData.DataController.GetFocusedRecordIndex;
+            SetLength(Fstrings,0);
+            try
+              Fstrings := frmListeAc.strings;
+            except
+            end;
+            if length(Fstrings) = 0
+            then
+            SetLength(Fstrings,1);
+            Result := Fstrings;
+          End
+          Else
+          Begin
+           // if length(Fstrings) = 0
+           // then
+            SetLength(Fstrings,0);
+            Result := Fstrings;
+          End;
+          //Lst.Free;
+        finally
+          lstW.Free;
+        end;
+      finally
+        FreeAndNil (frmListeAc);
+      end;
+    finally
+      //FstringsWX.Free;
+    end;
+  finally
+    ado.Free;
+  end;
 end;
 
 
@@ -2495,9 +2510,9 @@ end;
 
 
 
-procedure TcxButtonEditKadir.DoEditKeyDown(var Key: Word; Shift: TShiftState);
-var
-   Form: TCustomForm;
+{procedure TcxButtonEditKadir.DoEditKeyDown(var Key: Word; Shift: TShiftState);
+//var
+//   Form: TCustomForm;
 begin
     inherited;
 
@@ -2512,7 +2527,7 @@ begin
        end;
     End;
       *)
-end;
+end;{}
 
 procedure TKadirEdit.CNKeyDown(var Message: TWMKeyDown);
 var
@@ -2584,51 +2599,50 @@ var
   sql : string;
   tam,ondalik : double;
 begin
+  ado := TADOQuery.Create(nil);
+  try
+    ado.Connection := FConn;
 
-     ado := TADOQuery.Create(nil);
-     ado.Connection := FConn;
+    if FDonusum = dsDoktorKodToAdi
+    Then
+      sql := 'select DoktorAdi from Doktorlar where Kod = ' + QuotedStr(FGiris);
+    if FDonusum = dsBransKoduToadi
+    Then
+      sql := 'select BransAdi from SERVISLER where Kodu = ' + QuotedStr(Giris);
 
-     if FDonusum = dsDoktorKodToAdi
-     Then
-       sql := 'select DoktorAdi from Doktorlar where Kod = ' + QuotedStr(FGiris);
-     if FDonusum = dsBransKoduToadi
-     Then
-       sql := 'select BransAdi from SERVISLER where Kodu = ' + QuotedStr(Giris);
-
-     if FDonusum = dsRakamToYazi
-     Then Begin
-       try
-        if pos('.',FGiris) > 0
-        Then Begin
-         tam := strtofloat(copy(FGiris,1, pos('.',FGiris)));
-         ondalik := strtofloat(copy(FGiris,pos('.',FGiris)+1,2));
-         Caption := Param(tam) + ' Tl ' + Param(ondalik) + ' Kr';
-        End
-        Else
-        Begin
-         tam := strtofloat(FGiris);
-         Caption := Param(tam) + ' Tl ';
-        End;
-       except
-         Caption := '';
-       end;
-         if Assigned(OnDonustur) then OnDonustur(Self,FGiris);
-         exit;
-     End;
-
-
-     if FDonusum = dsTanimToadi
-     Then
-         sql := 'select SLT from Hizmet_Gruplari where SLB = ' + QuotedStr(FGiris);
-
-       QuerySelect(ado,sql);
-       if not ado.Eof
-       Then Caption := ado.Fields[0].AsString else Caption := 'Sonuç Yok';
-       
+    if FDonusum = dsRakamToYazi
+    Then Begin
+      try
+       if pos('.',FGiris) > 0
+       Then Begin
+        tam := strtofloat(copy(FGiris,1, pos('.',FGiris)));
+        ondalik := strtofloat(copy(FGiris,pos('.',FGiris)+1,2));
+        Caption := Param(tam) + ' Tl ' + Param(ondalik) + ' Kr';
+       End
+       Else
+       Begin
+        tam := strtofloat(FGiris);
+        Caption := Param(tam) + ' Tl ';
+       End;
+      except
+        Caption := '';
+      end;
+        if Assigned(OnDonustur) then OnDonustur(Self,FGiris);
+        exit;
+    End;
 
 
+    if FDonusum = dsTanimToadi
+    Then
+        sql := 'select SLT from Hizmet_Gruplari where SLB = ' + QuotedStr(FGiris);
+
+      QuerySelect(ado,sql);
+      if not ado.Eof
+      Then Caption := ado.Fields[0].AsString else Caption := 'Sonuç Yok';
+  finally
     ado.Free;
-    if Assigned(OnDonustur) then OnDonustur(Self,FGiris);
+  end;
+  if Assigned(OnDonustur) then OnDonustur(Self,FGiris);
 end;
 
 (*

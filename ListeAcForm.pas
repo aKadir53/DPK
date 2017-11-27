@@ -86,7 +86,6 @@ var
   colonS : TcxGridDBColumn;
   sc : integer;
   x : integer;
-  field_ : string;
   ListeW : integer;
   ListeH : integer;
 begin
@@ -136,12 +135,12 @@ end;
 
 procedure TfrmListeAc.ListeDblClick(Sender: TObject);
 var
-  i ,r , c : integer;
+  i ,r : integer;
 
 begin
 
       SetLength(strings,1);
-      r := frmListeAc.Liste.ViewData.DataController.GetFocusedRecordIndex;
+      r := Liste.ViewData.DataController.GetFocusedRecordIndex;
 
       if _Biriktir_ = True then
       begin
@@ -157,12 +156,12 @@ begin
       else
       begin
          try
-           strings[0].kolon1 := frmListeAc.Liste.ViewData.DataController.Values[r ,0];
-           strings[0].kolon2 := frmListeAc.Liste.ViewData.DataController.Values[r ,1];
-           if frmListeAc.Liste.ColumnCount > 2 then
-           strings[0].kolon3 := frmListeAc.Liste.ViewData.DataController.Values[r ,2];
-           if frmListeAc.Liste.ColumnCount > 3 then
-           strings[0].kolon4 := frmListeAc.Liste.ViewData.DataController.Values[r ,3];
+           strings[0].kolon1 := Liste.ViewData.DataController.Values[r ,0];
+           strings[0].kolon2 := Liste.ViewData.DataController.Values[r ,1];
+           if Liste.ColumnCount > 2 then
+           strings[0].kolon3 := Liste.ViewData.DataController.Values[r ,2];
+           if Liste.ColumnCount > 3 then
+           strings[0].kolon4 := Liste.ViewData.DataController.Values[r ,3];
          except
          end;
 
@@ -213,7 +212,7 @@ begin
   if (key in [#27,#13])
   Then Begin
     aramaText := '';
-    frmListeAc.Caption := aramatext;
+    Caption := aramatext;
     if F = True
     Then Begin
        sender.DataController.Filter.Root.Clear;
@@ -225,7 +224,7 @@ begin
   End;
 
 
-  frmListeAc.Caption := aramatext;
+  Caption := aramatext;
   if (key in [#8])
   Then //begin
          if (Length(aramaText) > 0)
@@ -234,7 +233,7 @@ begin
   else
     aramaText := aramaText + s;
 
-   frmListeAc.Caption := aramatext;
+   Caption := aramatext;
 
    if F = True
    Then Begin
@@ -304,10 +303,10 @@ end;
 
 procedure TfrmListeAc.btnSec1Click(Sender: TObject);
 var
-  i ,r , c : integer;
+  i , c : integer;
 begin
    c := Liste.Controller.SelectedRowCount;
-   r := frmListeAc.Liste.ViewData.DataController.GetFocusedRecordIndex;
+   //r := Liste.ViewData.DataController.GetFocusedRecordIndex;
    SetLength(strings,0);
    SetLength(strings,c);
 
