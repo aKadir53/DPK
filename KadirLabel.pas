@@ -9,7 +9,7 @@ uses
   cxTextEdit,cxCalendar,cxGrid,ComCtrls,KadirMenus,cxGridDBTableView,cxGridDBBandedTableView,
   cxGridCustomView,cxCustomData,cxImageComboBox,FScxGrid,cxFilter,cxGridExportLink,
   cxCheckBox,cxEdit,cxGroupBox,dxLayoutContainer,cxGridStrs, cxFilterConsts,
-  cxFilterControlStrs,cxGridPopupMenuConsts,cxClasses,IdHttp;
+  cxFilterControlStrs,cxGridPopupMenuConsts,cxClasses,IdHttp,System.Variants;
 
 
 type
@@ -752,6 +752,7 @@ type
     imageIndex : integer;
     formId : integer;
     ShowTip : integer;
+    Sira : integer;
 end;
 
 
@@ -913,6 +914,9 @@ begin
   else
     inherited Assign(Source);
 end;
+
+
+
 
 procedure QuerySelect(Q: TADOQuery; sql:string);
 begin
@@ -1250,7 +1254,7 @@ begin
     if FBosOlamaz = False  then
     begin
         FItem := Properties.Items.add;
-        FItem.Value := '';
+        FItem.Value := Null;
         FItem.Description := 'Atanmamýþ';
     end;
 
@@ -1852,14 +1856,39 @@ var
   MenuSatir : TMenuGorunum;
   ItemKadir : TdxNavBarKadirItem;
 
-function MenuSatiriVar(ID : integer) : Boolean;
+procedure RemoveIndex(index : Integer);
+var
+  i : Integer;
+  dizitmp : array of TMenuGorunum;
+begin
+  SetLength(dizitmp, Length(MenuGorunum) - 1);
+  for i := 0 to Length(MenuGorunum) - 1 do
+  begin
+    if i < index then
+      dizitmp[i] := MenuGorunum[i]
+    else if i > index then
+      dizitmp[i - 1] := MenuGorunum[i];
+  end;
+  MenuGorunum := nil;
+ // SetLength(MenuGorunum,0);
+  SetLength(MenuGorunum, Length(dizitmp));
+  for i := 0 to Length(dizitmp) - 1 do
+    MenuGorunum[i] := dizitmp[i];
+  dizitmp := nil;
+ // SetLength(dizitmp,0);
+end;
+
+function MenuSatiriVar(ID,Kapsam : integer) : Boolean;
 var
  I : integer;
+ MenuSatir_ : TMenuGorunum;
 begin
   MenuSatiriVar := False;
-  for I := 0 to length(MenuGorunum) - 1 do
+  for MenuSatir_ in MenuGorunum do
   begin
-    if (MenuGorunum[I].KAYITID = ID) and (MenuGorunum[I].Izin = 1)  then
+    if (MenuSatir_.KAYITID = ID) and (MenuSatir_.Kapsam = Kapsam)
+       //and (MenuGorunum[I].Izin = 1)
+    then
     begin
       MenuSatiriVar := True;
       Break;
@@ -1883,7 +1912,8 @@ begin
    sql := 'SELECT US.*,M.* FROM UserGroupMenuSettings US ' +
           'join MenuIslem M on M.KAYITID = US.ID ' +
           'join Users U on U.Grup = US.kullanici ' +
-          'WHERE U.Kullanici = ' + QuotedStr(FKullaniciAdi);
+          'WHERE U.Kullanici = ' + QuotedStr(FKullaniciAdi) + ' and Izin = 1 ' +
+          ' order by sira,KAYITID ';
    QuerySelect(ado,sql);
 
    u := ado.RecordCount;
@@ -1894,7 +1924,7 @@ begin
      SetLength(MenuGorunum,u);
      while not ado.Eof do
      begin
-         if MenuSatiriVar(ado.FieldByName('KAYITID').AsInteger) = False
+         if MenuSatiriVar(ado.FieldByName('KAYITID').AsInteger,ado.FieldByName('KAPSAM').AsInteger) = False
          then begin
            MenuSatir.Kullanici := ado.FieldByName('Kullanici').AsString;
            MenuSatir.Menu := ado.FieldByName('Menu').AsString;
@@ -1905,6 +1935,7 @@ begin
            MenuSatir.imageIndex := ado.FieldByName('imageIndex').AsInteger;
            MenuSatir.formId := ado.FieldByName('FormTag').AsInteger;
            MenuSatir.ShowTip := ado.FieldByName('ShowTip').AsInteger;
+           MenuSatir.Sira := ado.FieldByName('Sira').AsInteger;
            MenuGorunum[i] := MenuSatir;
          end;
          inc(i);
@@ -1917,7 +1948,12 @@ begin
 
 
   try
-   sql := 'select * from UserMenuSettings U join MenuIslem M on M.KAYITID = U.ID where Kullanici = ' + QuotedStr(FKullaniciAdi);
+   sql := 'select *,Kullanici from UserMenuSettings U join MenuIslem M on M.KAYITID = U.ID ' +
+          ' where Kullanici = ' + QuotedStr(FKullaniciAdi) + ' and Izin = 1' +
+          ' union all ' +
+          ' select * from UserMenuSettings U join MenuIslem_SK M on M.KAYITID = U.ID where M.Kullanici = ' + QuotedStr(FKullaniciAdi) +
+          ' and Izin = 1 ' +
+          '  order By sira,KAYITID ';
    QuerySelect(ado,sql);
    ug := ado.RecordCount;
    u := u + ug;
@@ -1926,7 +1962,7 @@ begin
      SetLength(MenuGorunum,u);
      while not ado.Eof do
      begin
-         if MenuSatiriVar(ado.FieldByName('KAYITID').AsInteger) = False
+         if MenuSatiriVar(ado.FieldByName('KAYITID').AsInteger,ado.FieldByName('KAPSAM').AsInteger) = False
          then begin
            MenuSatir.Kullanici := ado.FieldByName('Kullanici').AsString;
            MenuSatir.Menu := ado.FieldByName('Menu').AsString;
@@ -1937,6 +1973,7 @@ begin
            MenuSatir.imageIndex := ado.FieldByName('imageIndex').AsInteger;
            MenuSatir.ShowTip := ado.FieldByName('ShowTip').AsInteger;
            MenuSatir.formId := ado.FieldByName('FormTag').AsInteger;
+           MenuSatir.Sira := ado.FieldByName('Sira').AsInteger;
            MenuGorunum[i] := MenuSatir;
          end;
          inc(i);
@@ -1949,41 +1986,64 @@ begin
 
   if Length(MenuGorunum) = 0 then exit;
 
+  i := 0;
+  while i < Length(MenuGorunum) - 1 do
+  begin
+    if MenuGorunum[i].Izin = 0 then
+    begin
+     RemoveIndex(i);
+     i := 0;
+    end;
+    inc(i);
+  end;
+
 
   Groups.Clear;
   Items.Clear;
   ado.First;
   i := 0;
+   // gruplarý oluþtur
   for MenuSatir in MenuGorunum do
   begin
-   if MenuSatir.Kapsam = 0
+    if MenuSatir.Kapsam = 0 then
+      Groups.Add;
+  end;
+
+  // gruplarý sýrasýna göre doldur
+  for MenuSatir in MenuGorunum do
+  begin
+   if (MenuSatir.Kapsam = 0)// and (MenuSatir.Izin = 1)
    then begin
-     Groups.Add.index := i;
-     Groups[i].Caption := MenuSatir.MainMenu;
-     Groups[i].Tag := MenuSatir.KAYITID;
-     Groups[i].SmallImageIndex := MenuSatir.imageIndex;
-     Groups[i].LargeImageIndex := MenuSatir.imageIndex;
-     Groups[i].UseSmallImages := false;
-     Groups[i].Visible := Boolean(MenuSatir.Izin);
-     inc(i);
+  //   Groups.Add.index := i;
+     Groups[MenuSatir.Sira].Expanded := false;
+     Groups[MenuSatir.Sira].Index := MenuSatir.Sira;
+     Groups[MenuSatir.Sira].Caption := MenuSatir.MainMenu;
+     Groups[MenuSatir.Sira].Tag := MenuSatir.KAYITID;
+     Groups[MenuSatir.Sira].SmallImageIndex := MenuSatir.imageIndex;
+     Groups[MenuSatir.Sira].LargeImageIndex := MenuSatir.imageIndex;
+     Groups[MenuSatir.Sira].UseSmallImages := false;
+     if Groups[MenuSatir.Sira].Tag = 500 then Groups[MenuSatir.Sira].Expanded := True;
+   //  Groups[i].Visible := Boolean(MenuSatir.Izin);
+   //  inc(i);
    end;
    ado.Next;
   end;
 
+  // Gruplarýn itemlerýný doldur.
  // Items := MainMenuItemsKadir;
   r := 0;
   for MenuSatir in MenuGorunum do
   begin
-   if MenuSatir.Kapsam  <> 0
+   if (MenuSatir.Kapsam  <> 0)// and (MenuSatir.Izin = 1)
    then begin
      Items.Add.Index := r;
      Items[r].Caption := MenuSatir.MainMenu;
      Items[r].Hint := MenuSatir.MainMenu;
      Items[r].Tag := MenuSatir.KAYITID;
      Items[r].SmallImageIndex := MenuSatir.imageIndex;
-     Items[r].Visible := Boolean(MenuSatir.Izin);
-   //  Items[r].FormId := MenuSatir.formId;
-   //  Items[r].ShowTip := MenuSatir.ShowTip;
+    // Items[r].Visible := Boolean(MenuSatir.Izin);
+     Items[r].FormId := MenuSatir.formId;
+     Items[r].ShowTip := MenuSatir.ShowTip;
 
      for i := 0 to Groups.Count - 1 do
      begin
@@ -1993,11 +2053,6 @@ begin
      inc(r);
    end;
 
-  end;
-
-  for i := 0 to Groups.Count - 1 do
-  begin
-     Groups[i].Expanded := false;
   end;
 
   ado.Close;
