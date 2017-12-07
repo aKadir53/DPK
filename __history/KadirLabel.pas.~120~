@@ -113,6 +113,8 @@ type
      FKullaniciAdi : string;
      FTagC : integer;
      FSlite : integer;
+     FpressItem : TdxNavBarItem;
+     FtargetGroup : TdxNavBarGroup;
      FOnHastaAdiFontChange : THastaAdiFontChangeEvent;
    protected
 
@@ -123,6 +125,13 @@ type
      procedure MenuGetir;
      function MenuClick(_tag_ : integer) : integer;
      procedure LinkClick(Sender: TObject; ALink: TdxNavBarItemLink);
+     procedure DoLinkMouseDown(Link: TdxNavBarItemLink); override;
+
+     procedure DragOver(Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean); override;
+     procedure DoEndDrag(Target: TObject; X, Y: Integer); override;
+     procedure DragDrop(Source: TObject; X, Y: Integer); override;
+     // LinkPress(Sender: TObject; ALink: TdxNavBarItemLink);
+
      procedure TimerShowTimer(Sender: TObject);
      procedure TimerGizleTimer(Sender: TObject);
      procedure Gizle;
@@ -1621,6 +1630,7 @@ constructor TMainMenuKadir.Create(AOwner: TComponent);
 begin
   try
     inherited Create(AOwner);
+   // OnLinkPress := LinkPress;
   //  MenuGetir;
   finally
   end;
@@ -1772,6 +1782,95 @@ begin
   MenuId := ALink.Item.Tag;
 end;
 
+procedure TMainMenuKadir.DoLinkMouseDown(Link: TdxNavBarItemLink);
+begin
+  inherited;
+  FpressItem := Link.Item;
+end;
+
+
+procedure TMainMenuKadir.DragOver(Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
+begin
+  inherited;
+   if Assigned(FtargetGroup) = True
+   then
+    if FtargetGroup.Tag <> 500 then
+    Accept := False;
+end;
+
+
+procedure TMainMenuKadir.DragDrop(Source: TObject; X, Y: Integer);
+begin
+    inherited;
+    if dxNavBarDragObject.TargetGroup.Tag = 500 then
+    begin
+       FtargetGroup := dxNavBarDragObject.TargetGroup;
+    end
+    else
+    begin
+      FtargetGroup := nil;
+
+    end;
+end;
+
+procedure TMainMenuKadir.DoEndDrag(Target: TObject; X, Y: Integer);
+var
+  i : TdxNavBarItem;
+  sql : string;
+  ado : TADOQuery;
+begin
+    inherited;
+    if Assigned(FtargetGroup) = True
+    then begin
+      // ShowMessage(_pressItem_.Caption,'','','info');
+       sql := ' if not exists (select * from MenuIslem_SK where KAYITID = ' + inttostr(FpressItem.Tag)+ ') ' +
+              'insert into MenuIslem_SK ' +
+              '(Menu, KAYITID, MainMenu, Kapsam, imageIndex, ShowTip, FormTag,Kullanici) ' +
+              ' values (' +
+               QuotedStr(FpressItem.Caption) + ',' +
+               inttostr(FpressItem.Tag) + ',' +
+               QuotedStr(FpressItem.Caption) + ',' +
+               inttostr(FtargetGroup.Tag) + ',' +
+               inttostr(FpressItem.SmallImageIndex) + ',' +
+               inttostr(FpressItem.ShowTip) + ',' +
+               inttostr(FpressItem.FormID) + ',' +
+               QuotedStr(KullaniciAdi) + ')';
+
+       ado := TADOQuery.Create(nil);
+       ado.Connection := Conn;
+       ado.SQL.Text := sql;
+       ado.ExecSQL;
+       ado.Free;
+       //QueryExec(nil,sql);
+    end
+    else
+    begin
+     // if mrYes = ShowMessage('Menu Elemaný Silinecek Emin misiniz?','','','msg')
+    //  then begin
+          sql := 'delete from MenuIslem_SK where KAYITID = ' + inttostr(FpressItem.Tag);
+          ado := TADOQuery.Create(nil);
+          ado.Connection := Conn;
+          ado.SQL.Text := sql;
+          ado.ExecSQL;
+          ado.Free;
+         // datalar.QueryExec(nil,sql);
+     // end;
+    end;
+
+
+    MenuGetir;
+   FtargetGroup := nil;
+
+end;
+
+
+(*
+procedure TMainMenuKadir.LinkPress(Sender: TObject;ALink: TdxNavBarItemLink);
+begin
+  FpressItem := ALink.Item;
+end;
+  *)
+
 procedure TMainMenuKadir.TimerShowTimer(Sender: TObject);
 begin
   left := left + Slite;
@@ -1905,15 +2004,17 @@ begin
   TimerGizle.OnTimer := TimerGizleTimer;
 
  // OnLinkClick := LinkClick;
-  if ado = nil then ado := TADOQuery.Create(nil);
+  ado := TADOQuery.Create(nil);
   ado.Connection := FConn;
 
   try
-   sql := 'SELECT US.*,M.* FROM UserGroupMenuSettings US ' +
+  (* sql := 'SELECT US.*,M.* FROM UserGroupMenuSettings US ' +
           'join MenuIslem M on M.KAYITID = US.ID ' +
           'join Users U on U.Grup = US.kullanici ' +
           'WHERE U.Kullanici = ' + QuotedStr(FKullaniciAdi) + ' and Izin = 1 ' +
-          ' order by sira,KAYITID ';
+          ' order by sira,KAYITID '; *)
+
+   sql := 'exec sp_MenuGetir ' + QuotedStr(FKullaniciAdi);
    QuerySelect(ado,sql);
 
    u := ado.RecordCount;
@@ -1946,7 +2047,7 @@ begin
     SetLength(MenuGorunum,0);
   end;
 
-
+ (*
   try
    sql := 'select *,Kullanici from UserMenuSettings U join MenuIslem M on M.KAYITID = U.ID ' +
           ' where Kullanici = ' + QuotedStr(FKullaniciAdi) + ' and Izin = 1' +
@@ -1983,9 +2084,9 @@ begin
   except
     SetLength(MenuGorunum,0);
   end;
-
+   *)
   if Length(MenuGorunum) = 0 then exit;
-
+ (*
   i := 0;
   while i < Length(MenuGorunum) - 1 do
   begin
@@ -1996,7 +2097,7 @@ begin
     end;
     inc(i);
   end;
-
+   *)
 
   Groups.Clear;
   Items.Clear;
@@ -2005,7 +2106,7 @@ begin
    // gruplarý oluþtur
   for MenuSatir in MenuGorunum do
   begin
-    if MenuSatir.Kapsam = 0 then
+    if (MenuSatir.Kapsam = 0)then
       Groups.Add;
   end;
 
@@ -2015,21 +2116,21 @@ begin
    if (MenuSatir.Kapsam = 0)// and (MenuSatir.Izin = 1)
    then begin
   //   Groups.Add.index := i;
+     Groups[MenuSatir.Sira].Expanded := false;
      Groups[MenuSatir.Sira].Index := MenuSatir.Sira;
      Groups[MenuSatir.Sira].Caption := MenuSatir.MainMenu;
      Groups[MenuSatir.Sira].Tag := MenuSatir.KAYITID;
      Groups[MenuSatir.Sira].SmallImageIndex := MenuSatir.imageIndex;
      Groups[MenuSatir.Sira].LargeImageIndex := MenuSatir.imageIndex;
      Groups[MenuSatir.Sira].UseSmallImages := false;
-   //  Groups[i].Visible := Boolean(MenuSatir.Izin);
+     if Groups[MenuSatir.Sira].Tag = 500 then Groups[MenuSatir.Sira].Expanded := True;
+     Groups[MenuSatir.Sira].Visible := Boolean(MenuSatir.Izin);
    //  inc(i);
    end;
    ado.Next;
   end;
 
-
-
-
+  // Gruplarýn itemlerýný doldur.
  // Items := MainMenuItemsKadir;
   r := 0;
   for MenuSatir in MenuGorunum do
@@ -2041,7 +2142,7 @@ begin
      Items[r].Hint := MenuSatir.MainMenu;
      Items[r].Tag := MenuSatir.KAYITID;
      Items[r].SmallImageIndex := MenuSatir.imageIndex;
-    // Items[r].Visible := Boolean(MenuSatir.Izin);
+     Items[r].Visible := Boolean(MenuSatir.Izin);
      Items[r].FormId := MenuSatir.formId;
      Items[r].ShowTip := MenuSatir.ShowTip;
 
@@ -2055,22 +2156,8 @@ begin
 
   end;
 
-
-  for i := 0 to Groups.Count - 1 do
-  begin
-     if Groups[i].Tag = 500
-     Then begin
-       Groups[i].Expanded := True;
-      // Groups[i].Index := 0;
-     end
-     Else
-       Groups[i].Expanded := false;
-  end;
-
   ado.Close;
   ado.Free;
-
-
 
 end;
 
