@@ -561,6 +561,7 @@ type
    protected
    public
      constructor Create(AOwner: TComponent) ; override;
+     function getItemString : String;
    published
      property TableName : string read FTableName write FTableName;
      property Filter : string read getFilter write setFilter;
@@ -1230,6 +1231,19 @@ begin
 end;
 
 
+
+function TcxImageComboKadir.getItemString : String;
+var
+  I : integer;
+  ss : string;
+begin
+  for I := 0 to TcxImageComboKadir(self).Properties.Items.Count - 1 do
+  begin
+    ss := ss + ',' + TcxImageComboKadir(self).Properties.Items[I].Value;
+  end;
+  getItemString := copy(ss,2,500);
+end;
+
 procedure TcxImageComboKadir.setFilter(const value : string);
 var
   ado : TADOQuery;
@@ -1259,13 +1273,13 @@ begin
         FItem.Description := ado.Fields[1].AsString;
         ado.Next;
     end;
-
+    (*
     if FBosOlamaz = False  then
     begin
         FItem := Properties.Items.add;
         FItem.Value := Null;
         FItem.Description := 'Atanmamýþ';
-    end;
+    end; *)
 
     if FItemList <> ''
     Then Begin
