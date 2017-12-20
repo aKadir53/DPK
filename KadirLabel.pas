@@ -1259,7 +1259,7 @@ begin
     ado := TADOQuery.Create(nil);
     ado.Connection := FConn;
     try
-      ado.SQL.Text := 'select ' + FValueField + ',' + FDisplayField + ' from ' + FTableName +
+      ado.SQL.Text := 'select distinct ' + FValueField + ',' + FDisplayField + ' from ' + FTableName +
       ifthen(FFilter = '','',' where ' + FFilter ) + ' ORDER BY ' + FDisplayField;
       ado.Open;
     except
