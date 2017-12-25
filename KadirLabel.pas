@@ -1110,6 +1110,8 @@ end;
 constructor TcxImageComboKadir.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  self.Properties.ClearKey := VK_DELETE;
+  self.EditValue:= Null;
 end;
 
 
