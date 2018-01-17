@@ -23,6 +23,7 @@ type
   TTarihValueTip = (tvDate,tvString);
   TShowTip = (stShow,stModal);
   TLoginInOut = (lgnIn,lgnOut);
+  TListeAcTableTip = (tpTable,tpSp);
 
   THb = class(TPersistent)
   private
@@ -264,6 +265,7 @@ type
       FSkinName : string;
       FGrup : Boolean;
       FGrupCol : integer;
+      FKaynakTableTip : TListeAcTableTip;
 
       procedure SetImageIndex(Value: TImageIndex);
       function GetVersiyon : string;
@@ -310,6 +312,7 @@ type
       property SkinName : string read FSkinName write FSkinName;
       property Grup : Boolean read FGrup write FGrup;
       property GrupCol : integer read FGrupCol write FGrupCol default -1;
+      property KaynakTableTip : TListeAcTableTip read FKaynakTableTip write FKaynakTableTip default tpTable;
   end;
 
 
@@ -2412,23 +2415,27 @@ begin
    x := Flin.Count;
  //  lst.Free;
 
-   sql := 'select * from ' + Ftable;
-   if Fwhere <> ''
-   Then
-     sql := sql + ' where ' + FWhere;
-
-   if Ffilter <> ''
-   Then
-     if FWhere = ''
+  if FKaynakTableTip = tpTable then
+  begin
+     sql := 'select * from ' + Ftable;
+     if Fwhere <> ''
      Then
-      sql := sql + ' where '+ Flin[FFilterCol] + ' like ' + QuotedStr(FFilter)
-     Else
-      sql := sql + ' and '+ Flin[FFilterCol] + ' like ' + QuotedStr(FFilter);
+       sql := sql + ' where ' + FWhere;
+
+     if Ffilter <> ''
+     Then
+       if FWhere = ''
+       Then
+        sql := sql + ' where '+ Flin[FFilterCol] + ' like ' + QuotedStr(FFilter)
+       Else
+        sql := sql + ' and '+ Flin[FFilterCol] + ' like ' + QuotedStr(FFilter);
 
 
-   if FSiralamaKolonu <> ''
-   Then
-    sql := sql + ' order by ' + FSiralamaKolonu;
+     if FSiralamaKolonu <> ''
+     Then
+      sql := sql + ' order by ' + FSiralamaKolonu;
+  end
+  else sql := FTable;
 
 
 
