@@ -2460,12 +2460,12 @@ begin
      r := frmListeAc.Liste.ViewData.DataController.GetFocusedRecordIndex;
      SetLength(Fstrings,0);
      try
-       Fstrings := frmListeAc.strings;
+       //ÜÖ 20180118 kayýt yokken recordIndex = -1 olduðu halde varmýþ gibi alýyordu, if'e baðladým
+       if r >= 0 then Fstrings := frmListeAc.strings;
      except
      end;
-     if length(Fstrings) = 0
-     then
-     SetLength(Fstrings,1);
+     //ÜÖ 20180118 hiç data yoksa bile seçilmiþ gibi iþlem yapýyordu
+     //if length(Fstrings) = 0 then SetLength(Fstrings,1);
      Result := Fstrings;
    End
    Else
