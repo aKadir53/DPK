@@ -9,7 +9,7 @@ uses
   cxTextEdit,cxCalendar,cxGrid,ComCtrls,KadirMenus,cxGridDBTableView,cxGridDBBandedTableView,
   cxGridCustomView,cxCustomData,cxImageComboBox,FScxGrid,cxFilter,cxGridExportLink,
   cxCheckBox,cxEdit,cxGroupBox,dxLayoutContainer,cxGridStrs, cxFilterConsts,
-  cxFilterControlStrs,cxGridPopupMenuConsts,cxClasses,IdHttp;
+  cxFilterControlStrs,cxGridPopupMenuConsts,cxClasses,IdHttp,System.Variants;
 
 
 type
@@ -23,6 +23,7 @@ type
   TTarihValueTip = (tvDate,tvString);
   TShowTip = (stShow,stModal);
   TLoginInOut = (lgnIn,lgnOut);
+  TListeAcTableTip = (tpTable,tpSp);
 
   THb = class(TPersistent)
   private
@@ -113,6 +114,8 @@ type
      FKullaniciAdi : string;
      FTagC : integer;
      FSlite : integer;
+     FpressItem : TdxNavBarItem;
+     FtargetGroup : TdxNavBarGroup;
      //FOnHastaAdiFontChange : THastaAdiFontChangeEvent;
    protected
 
@@ -123,6 +126,13 @@ type
      procedure MenuGetir;
      function MenuClick(_tag_ : integer) : integer;
      procedure LinkClick(Sender: TObject; ALink: TdxNavBarItemLink);
+     procedure DoLinkMouseDown(Link: TdxNavBarItemLink); override;
+
+     procedure DragOver(Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean); override;
+     procedure DoEndDrag(Target: TObject; X, Y: Integer); override;
+     procedure DragDrop(Source: TObject; X, Y: Integer); override;
+     // LinkPress(Sender: TObject; ALink: TdxNavBarItemLink);
+
      procedure TimerShowTimer(Sender: TObject);
      procedure TimerGizleTimer(Sender: TObject);
      procedure Gizle;
@@ -255,6 +265,7 @@ type
       FSkinName : string;
       FGrup : Boolean;
       FGrupCol : integer;
+      FKaynakTableTip : TListeAcTableTip;
 
       procedure SetImageIndex(Value: TImageIndex);
       function GetVersiyon : string;
@@ -301,6 +312,7 @@ type
       property SkinName : string read FSkinName write FSkinName;
       property Grup : Boolean read FGrup write FGrup;
       property GrupCol : integer read FGrupCol write FGrupCol default -1;
+      property KaynakTableTip : TListeAcTableTip read FKaynakTableTip write FKaynakTableTip default tpTable;
   end;
 
 
@@ -552,6 +564,7 @@ type
    protected
    public
      constructor Create(AOwner: TComponent) ; override;
+     function getItemString : String;
    published
      property TableName : string read FTableName write FTableName;
      property Filter : string read getFilter write setFilter;
@@ -752,6 +765,7 @@ type
     imageIndex : integer;
     formId : integer;
     ShowTip : integer;
+    Sira : integer;
 end;
 
 
@@ -1098,6 +1112,8 @@ end;
 constructor TcxImageComboKadir.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  self.Properties.ClearKey := VK_DELETE;
+  self.EditValue:= Null;
 end;
 
 
@@ -1219,6 +1235,19 @@ begin
 end;
 
 
+
+function TcxImageComboKadir.getItemString : String;
+var
+  I : integer;
+  ss : string;
+begin
+  for I := 0 to TcxImageComboKadir(self).Properties.Items.Count - 1 do
+  begin
+    ss := ss + ',' + TcxImageComboKadir(self).Properties.Items[I].Value;
+  end;
+  getItemString := copy(ss,2,500);
+end;
+
 procedure TcxImageComboKadir.setFilter(const value : string);
 var
   ado : TADOQuery;
@@ -1235,7 +1264,7 @@ begin
     try
       ado.Connection := FConn;
       try
-        ado.SQL.Text := 'select ' + FValueField + ',' + FDisplayField + ' from ' + FTableName +
+        ado.SQL.Text := 'select distinct ' + FValueField + ',' + FDisplayField + ' from ' + FTableName +
         ifthen(FFilter = '','',' where ' + FFilter ) + ' ORDER BY ' + FDisplayField;
         ado.Open;
       except
@@ -1248,13 +1277,13 @@ begin
         FItem.Description := ado.Fields[1].AsString;
         ado.Next;
       end;
-
+      (*
       if FBosOlamaz = False  then
       begin
           FItem := Properties.Items.add;
-          FItem.Value := '';
+          FItem.Value := Null;
           FItem.Description := 'Atanmamýþ';
-      end;
+      end; *)
 
       if FItemList <> ''
       Then Begin
@@ -1637,7 +1666,6 @@ constructor TMainMenuKadir.Create(AOwner: TComponent);
 begin
   try
     inherited Create(AOwner);
-  //  MenuGetir;
   finally
   end;
 end;
@@ -1786,6 +1814,96 @@ begin
   MenuId := ALink.Item.Tag;
 end;
 
+procedure TMainMenuKadir.DoLinkMouseDown(Link: TdxNavBarItemLink);
+begin
+  inherited;
+  FpressItem := Link.Item;
+end;
+
+
+procedure TMainMenuKadir.DragOver(Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
+begin
+  inherited;
+   if Assigned(FtargetGroup) = True
+   then
+    if FtargetGroup.Tag <> 500 then
+    Accept := False;
+end;
+
+
+procedure TMainMenuKadir.DragDrop(Source: TObject; X, Y: Integer);
+begin
+    if dxNavBarDragObject.TargetGroup.Tag = 500 then
+    begin
+       FtargetGroup := dxNavBarDragObject.TargetGroup;
+    end
+    else
+    begin
+      FtargetGroup := nil;
+    end;
+
+   inherited;
+
+end;
+
+procedure TMainMenuKadir.DoEndDrag(Target: TObject; X, Y: Integer);
+var
+  i : TdxNavBarItem;
+  sql : string;
+  ado : TADOQuery;
+begin
+    inherited;
+    if Assigned(FtargetGroup) = True
+    then begin
+      // ShowMessage(_pressItem_.Caption,'','','info');
+       sql := ' if not exists (select * from MenuIslem_SK where KAYITID = ' + inttostr(FpressItem.Tag)+ ') ' +
+              'insert into MenuIslem_SK ' +
+              '(Menu, KAYITID, MainMenu, Kapsam, imageIndex, ShowTip, FormTag,Kullanici) ' +
+              ' values (' +
+               QuotedStr(FpressItem.Caption) + ',' +
+               inttostr(FpressItem.Tag) + ',' +
+               QuotedStr(FpressItem.Caption) + ',' +
+               inttostr(FtargetGroup.Tag) + ',' +
+               inttostr(FpressItem.SmallImageIndex) + ',' +
+               inttostr(FpressItem.ShowTip) + ',' +
+               inttostr(FpressItem.FormID) + ',' +
+               QuotedStr(KullaniciAdi) + ')';
+
+       ado := TADOQuery.Create(nil);
+       ado.Connection := Conn;
+       ado.SQL.Text := sql;
+       ado.ExecSQL;
+       ado.Free;
+       //QueryExec(nil,sql);
+    end
+    else
+    begin
+     // if mrYes = ShowMessage('Menu Elemaný Silinecek Emin misiniz?','','','msg')
+    //  then begin
+          sql := 'delete from MenuIslem_SK where KAYITID = ' + inttostr(FpressItem.Tag);
+          ado := TADOQuery.Create(nil);
+          ado.Connection := Conn;
+          ado.SQL.Text := sql;
+          ado.ExecSQL;
+          ado.Free;
+         // datalar.QueryExec(nil,sql);
+     // end;
+    end;
+
+
+    MenuGetir;
+   FtargetGroup := nil;
+
+end;
+
+
+(*
+procedure TMainMenuKadir.LinkPress(Sender: TObject;ALink: TdxNavBarItemLink);
+begin
+  FpressItem := ALink.Item;
+end;
+  *)
+
 procedure TMainMenuKadir.TimerShowTimer(Sender: TObject);
 begin
   left := left + Slite;
@@ -1865,16 +1983,40 @@ var
   ado : TADOQuery;
   MenuGorunum : array of TMenuGorunum;
   MenuSatir : TMenuGorunum;
-  bBenActim: Boolean;
 
-function MenuSatiriVar(ID : integer) : Boolean;
+procedure RemoveIndex(index : Integer);
+var
+  i : Integer;
+  dizitmp : array of TMenuGorunum;
+begin
+  SetLength(dizitmp, Length(MenuGorunum) - 1);
+  for i := 0 to Length(MenuGorunum) - 1 do
+  begin
+    if i < index then
+      dizitmp[i] := MenuGorunum[i]
+    else if i > index then
+      dizitmp[i - 1] := MenuGorunum[i];
+  end;
+  MenuGorunum := nil;
+ // SetLength(MenuGorunum,0);
+  SetLength(MenuGorunum, Length(dizitmp));
+  for i := 0 to Length(dizitmp) - 1 do
+    MenuGorunum[i] := dizitmp[i];
+  dizitmp := nil;
+ // SetLength(dizitmp,0);
+end;
+
+function MenuSatiriVar(ID,Kapsam : integer) : Boolean;
 var
  I : integer;
+ MenuSatir_ : TMenuGorunum;
 begin
   MenuSatiriVar := False;
-  for I := 0 to length(MenuGorunum) - 1 do
+  for MenuSatir_ in MenuGorunum do
   begin
-    if (MenuGorunum[I].KAYITID = ID) and (MenuGorunum[I].Izin = 1)  then
+    if (MenuSatir_.KAYITID = ID) and (MenuSatir_.Kapsam = Kapsam)
+       //and (MenuGorunum[I].Izin = 1)
+    then
     begin
       MenuSatiriVar := True;
       Break;
@@ -1891,24 +2033,14 @@ begin
   TimerGizle.OnTimer := TimerGizleTimer;
 
  // OnLinkClick := LinkClick;
-  if ado = nil then
-  begin
-    ado := TADOQuery.Create(nil);
-    bBenActim := True;
-  end
-  else bBenActim := False;
+  ado := TADOQuery.Create(nil);
   try
     i := 0;
     u := 0;
     ado.Connection := FConn;
-
     try
-     sql := 'SELECT US.*,M.* FROM UserGroupMenuSettings US ' +
-            'join MenuIslem M on M.KAYITID = US.ID ' +
-            'join Users U on U.Grup = US.kullanici ' +
-            'WHERE U.Kullanici = ' + QuotedStr(FKullaniciAdi);
+     sql := 'exec sp_MenuGetir ' + QuotedStr(FKullaniciAdi);
      QuerySelect(ado,sql);
-
      u := ado.RecordCount;
      SetLength(MenuGorunum,0);
      i := 0;
@@ -1917,7 +2049,7 @@ begin
        SetLength(MenuGorunum,u);
        while not ado.Eof do
        begin
-           if MenuSatiriVar(ado.FieldByName('KAYITID').AsInteger) = False
+         if MenuSatiriVar(ado.FieldByName('KAYITID').AsInteger,ado.FieldByName('KAPSAM').AsInteger) = False
            then begin
              MenuSatir.Kullanici := ado.FieldByName('Kullanici').AsString;
              MenuSatir.Menu := ado.FieldByName('Menu').AsString;
@@ -1928,76 +2060,55 @@ begin
              MenuSatir.imageIndex := ado.FieldByName('imageIndex').AsInteger;
              MenuSatir.formId := ado.FieldByName('FormTag').AsInteger;
              MenuSatir.ShowTip := ado.FieldByName('ShowTip').AsInteger;
+             MenuSatir.Sira := ado.FieldByName('Sira').AsInteger;
              MenuGorunum[i] := MenuSatir;
            end;
            inc(i);
            ado.Next;
        end;
      end;
-    except
+    except on e : exception do
+     begin
       SetLength(MenuGorunum,0);
-    end;
-
-
-    try
-     sql := 'select * from UserMenuSettings U join MenuIslem M on M.KAYITID = U.ID where Kullanici = ' + QuotedStr(FKullaniciAdi);
-     QuerySelect(ado,sql);
-     ug := ado.RecordCount;
-     u := u + ug;
-     if ug > 0
-     then begin
-       SetLength(MenuGorunum,u);
-       while not ado.Eof do
-       begin
-           if MenuSatiriVar(ado.FieldByName('KAYITID').AsInteger) = False
-           then begin
-             MenuSatir.Kullanici := ado.FieldByName('Kullanici').AsString;
-             MenuSatir.Menu := ado.FieldByName('Menu').AsString;
-             MenuSatir.Izin := ado.FieldByName('Izin').AsInteger;
-             MenuSatir.KAYITID := ado.FieldByName('KAYITID').AsInteger;
-             MenuSatir.MainMenu := ado.FieldByName('MainMenu').AsString;
-             MenuSatir.Kapsam := ado.FieldByName('Kapsam').AsInteger;
-             MenuSatir.imageIndex := ado.FieldByName('imageIndex').AsInteger;
-             MenuSatir.ShowTip := ado.FieldByName('ShowTip').AsInteger;
-             MenuSatir.formId := ado.FieldByName('FormTag').AsInteger;
-             MenuGorunum[i] := MenuSatir;
-           end;
-           inc(i);
-           ado.Next;
-       end;
+      exit;
      end;
-    except
-      SetLength(MenuGorunum,0);
     end;
-
-    if Length(MenuGorunum) = 0 then exit;
-
 
     Groups.Clear;
     Items.Clear;
     ado.First;
     i := 0;
+    // gruplarý oluþtur
     for MenuSatir in MenuGorunum do
     begin
-     if MenuSatir.Kapsam = 0
+      if (MenuSatir.Kapsam = 0)then
+        Groups.Add;
+    end;
+
+    // gruplarý sýrasýna göre doldur
+    for MenuSatir in MenuGorunum do
+    begin
+     if (MenuSatir.Kapsam = 0)// and (MenuSatir.Izin = 1)
      then begin
-       Groups.Add.index := i;
-       Groups[i].Caption := MenuSatir.MainMenu;
-       Groups[i].Tag := MenuSatir.KAYITID;
-       Groups[i].SmallImageIndex := MenuSatir.imageIndex;
-       Groups[i].LargeImageIndex := MenuSatir.imageIndex;
-       Groups[i].UseSmallImages := false;
-       Groups[i].Visible := Boolean(MenuSatir.Izin);
-       inc(i);
+       Groups[MenuSatir.Sira].Expanded := false;
+       Groups[MenuSatir.Sira].Index := MenuSatir.Sira;
+       Groups[MenuSatir.Sira].Caption := MenuSatir.MainMenu;
+       Groups[MenuSatir.Sira].Tag := MenuSatir.KAYITID;
+       Groups[MenuSatir.Sira].SmallImageIndex := MenuSatir.imageIndex;
+       Groups[MenuSatir.Sira].LargeImageIndex := MenuSatir.imageIndex;
+       Groups[MenuSatir.Sira].UseSmallImages := false;
+       if Groups[MenuSatir.Sira].Tag = 500 then Groups[MenuSatir.Sira].Expanded := True;
+       Groups[MenuSatir.Sira].Visible := Boolean(MenuSatir.Izin);
      end;
      ado.Next;
     end;
 
-   // Items := MainMenuItemsKadir;
+    // Gruplarýn itemlerýný doldur.
+    // Items := MainMenuItemsKadir;
     r := 0;
     for MenuSatir in MenuGorunum do
     begin
-     if MenuSatir.Kapsam  <> 0
+     if (MenuSatir.Kapsam  <> 0)// and (MenuSatir.Izin = 1)
      then begin
        Items.Add.Index := r;
        Items[r].Caption := MenuSatir.MainMenu;
@@ -2018,14 +2129,9 @@ begin
 
     end;
 
-    for i := 0 to Groups.Count - 1 do
-    begin
-       Groups[i].Expanded := false;
-    end;
-
     ado.Close;
   finally
-    if bBenActim then ado.Free;
+    ado.Free;
   end;
 
 end;
@@ -2268,7 +2374,7 @@ function TListeAc.ListeGetir : ArrayListeSecimler;
 var
   sql : string;
   ado : TADOQuery;
-  //r : integer;
+  r : integer;
   LstW : TStringList;
  // ListeAc1 : TfrmListeAc;
 
@@ -2308,23 +2414,27 @@ begin
           //x := Flin.Count;
           //lst.Free;
 
-          sql := 'select * from ' + Ftable;
-          if Fwhere <> ''
-          Then
-            sql := sql + ' where ' + FWhere;
-
-          if Ffilter <> ''
-          Then
-            if FWhere = ''
+          if FKaynakTableTip = tpTable then
+          begin
+            sql := 'select * from ' + Ftable;
+            if Fwhere <> ''
             Then
-             sql := sql + ' where '+ Flin[FFilterCol] + ' like ' + QuotedStr(FFilter)
-            Else
-             sql := sql + ' and '+ Flin[FFilterCol] + ' like ' + QuotedStr(FFilter);
+              sql := sql + ' where ' + FWhere;
+
+            if Ffilter <> ''
+            Then
+              if FWhere = ''
+              Then
+               sql := sql + ' where '+ Flin[FFilterCol] + ' like ' + QuotedStr(FFilter)
+              Else
+               sql := sql + ' and '+ Flin[FFilterCol] + ' like ' + QuotedStr(FFilter);
 
 
-          if FSiralamaKolonu <> ''
-          Then
-           sql := sql + ' order by ' + FSiralamaKolonu;
+            if FSiralamaKolonu <> ''
+            Then
+              sql := sql + ' order by ' + FSiralamaKolonu;
+          end
+          else sql := FTable;
 
 
 
@@ -2346,15 +2456,15 @@ begin
 
           if frmListeAc.tus = 0
           Then Begin
-            //r := frmListeAc.Liste.ViewData.DataController.GetFocusedRecordIndex;
+            r := frmListeAc.Liste.ViewData.DataController.GetFocusedRecordIndex;
             SetLength(Fstrings,0);
             try
-              Fstrings := frmListeAc.strings;
+              //ÜÖ 20180118 kayýt yokken recordIndex = -1 olduðu halde varmýþ gibi alýyordu, if'e baðladým
+              if r >= 0 then Fstrings := frmListeAc.strings;
             except
             end;
-            if length(Fstrings) = 0
-            then
-            SetLength(Fstrings,1);
+            //ÜÖ 20180118 hiç data yoksa bile seçilmiþ gibi iþlem yapýyordu
+            //if length(Fstrings) = 0 then SetLength(Fstrings,1);
             Result := Fstrings;
           End
           Else
