@@ -1284,7 +1284,7 @@ begin
           FItem.Value := Null;
           FItem.Description := 'Atanmamýþ';
       end; *)
-
+    (*
       if FItemList <> ''
       Then Begin
         TList := TStringList.Create;
@@ -1302,7 +1302,7 @@ begin
       End;
     finally
       ado.Free;
-    end;
+    end; *)
   end
   else
   begin
