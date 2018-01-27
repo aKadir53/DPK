@@ -2374,7 +2374,7 @@ function TListeAc.ListeGetir : ArrayListeSecimler;
 var
   sql : string;
   ado : TADOQuery;
-  //r : integer;
+  r : integer;
   LstW : TStringList;
  // ListeAc1 : TfrmListeAc;
 
@@ -2456,7 +2456,7 @@ begin
 
           if frmListeAc.tus = 0
           Then Begin
-            //r := frmListeAc.Liste.ViewData.DataController.GetFocusedRecordIndex;
+            r := frmListeAc.Liste.ViewData.DataController.GetFocusedRecordIndex;
             SetLength(Fstrings,0);
             try
               //ÜÖ 20180118 kayýt yokken recordIndex = -1 olduðu halde varmýþ gibi alýyordu, if'e baðladým
