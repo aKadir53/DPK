@@ -2069,8 +2069,8 @@ begin
      end;
     except on e : exception do
      begin
-       SetLength(MenuGorunum,0);
-       exit;
+      SetLength(MenuGorunum,0);
+      exit;
      end;
     end;
 
