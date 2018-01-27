@@ -1277,7 +1277,7 @@ begin
         FItem.Description := ado.Fields[1].AsString;
         ado.Next;
       end;
-    (*
+      (*
       if FBosOlamaz = False  then
       begin
           FItem := Properties.Items.add;
@@ -2041,7 +2041,6 @@ begin
     try
      sql := 'exec sp_MenuGetir ' + QuotedStr(FKullaniciAdi);
      QuerySelect(ado,sql);
-
      u := ado.RecordCount;
      SetLength(MenuGorunum,0);
      i := 0;
@@ -2050,7 +2049,7 @@ begin
        SetLength(MenuGorunum,u);
        while not ado.Eof do
        begin
-           if MenuSatiriVar(ado.FieldByName('KAYITID').AsInteger,ado.FieldByName('KAPSAM').AsInteger) = False
+         if MenuSatiriVar(ado.FieldByName('KAYITID').AsInteger,ado.FieldByName('KAPSAM').AsInteger) = False
            then begin
              MenuSatir.Kullanici := ado.FieldByName('Kullanici').AsString;
              MenuSatir.Menu := ado.FieldByName('Menu').AsString;
@@ -2070,18 +2069,16 @@ begin
      end;
     except on e : exception do
      begin
-       SetLength(MenuGorunum,0);
-       Exit;
+      SetLength(MenuGorunum,0);
+      exit;
      end;
     end;
-
-
 
     Groups.Clear;
     Items.Clear;
     ado.First;
     i := 0;
-   // gruplarý oluþtur
+    // gruplarý oluþtur
     for MenuSatir in MenuGorunum do
     begin
       if (MenuSatir.Kapsam = 0)then
@@ -2435,7 +2432,7 @@ begin
 
             if FSiralamaKolonu <> ''
             Then
-             sql := sql + ' order by ' + FSiralamaKolonu;
+              sql := sql + ' order by ' + FSiralamaKolonu;
           end
           else sql := FTable;
 
