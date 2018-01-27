@@ -39,6 +39,7 @@ type
     secimList: TcxGridDBTableView;
     cxGrid2Level1: TcxGridLevel;
     cxGrid2: TcxGrid;
+    cxStyle2: TcxStyle;
     procedure dizaynEt(Fields,FieldsW,FieldsB : TStrings ; filtercol : integer;GrupCol : integer; Grup : Boolean;Biriktir :Boolean = false);
     procedure ListeKeyDown(Sender: TObject; var Key: Word ; Shift: TShiftState);
     procedure KeyPressGridF(Sender: TcxGridDBTableView; var Key: Char ; var arama : string ; colum : integer ; F : Boolean);

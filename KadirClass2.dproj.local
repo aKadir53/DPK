@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>1899.12.30 00:00:00.000.622,=IndyCore.dcp</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.503,D:\Projeler\DELPHI\Klinik\Klinik2007\klinik2007\ListeAcForm.pas=</Transaction>
     <Transaction>1899.12.30 00:00:00.000.261,=D:\Projeler\DELPHI\Klinik\Klinik2007\icons\Icons\Basics\plain\window_sidebar.png</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.503,D:\Projeler\DELPHI\Klinik\Klinik2007\klinik2007\ListeAcForm.pas=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.622,=IndyCore.dcp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.561,D:\Projeler\DELPHI\Klinik\Klinik2007\klinik2007\KadirMenus.pas=</Transaction>
     <Transaction>1899.12.30 00:00:00.000.578,=D:\Projeler\DELPHI\Klinik\Klinik2007\klinik2007\KadirMenus.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.661,=IndyProtocols.dcp</Transaction>

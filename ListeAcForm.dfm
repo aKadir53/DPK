@@ -97,6 +97,8 @@ object frmListeAc: TfrmListeAc
       OptionsView.DataRowHeight = 20
       OptionsView.GroupByHeaderLayout = ghlHorizontal
       Styles.Content = cxStyle1
+      Styles.FilterBox = cxStyle2
+      Styles.FilterRowInfoText = cxStyle2
     end
     object cxGrid1Level1: TcxGridLevel
       GridView = Liste
@@ -12470,6 +12472,15 @@ object frmListeAc: TfrmListeAc
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+    end
+    object cxStyle2: TcxStyle
+      AssignedValues = [svColor, svFont]
+      Color = clYellow
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
     end
