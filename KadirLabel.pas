@@ -2374,7 +2374,7 @@ function TListeAc.ListeGetir : ArrayListeSecimler;
 var
   sql : string;
   ado : TADOQuery;
-  //r : integer;
+  r : integer;
   LstW : TStringList;
  // ListeAc1 : TfrmListeAc;
 
