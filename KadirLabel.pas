@@ -1983,7 +1983,6 @@ var
   ado : TADOQuery;
   MenuGorunum : array of TMenuGorunum;
   MenuSatir : TMenuGorunum;
-  bBenActim: Boolean;
 
 procedure RemoveIndex(index : Integer);
 var
@@ -2034,17 +2033,11 @@ begin
   TimerGizle.OnTimer := TimerGizleTimer;
 
  // OnLinkClick := LinkClick;
-  if ado = nil then
-  begin
-    ado := TADOQuery.Create(nil);
-    bBenActim := True;
-  end
-  else bBenActim := False;
+  ado := TADOQuery.Create(nil);
   try
     i := 0;
     u := 0;
     ado.Connection := FConn;
-
     try
      sql := 'exec sp_MenuGetir ' + QuotedStr(FKullaniciAdi);
      QuerySelect(ado,sql);
@@ -2076,10 +2069,10 @@ begin
      end;
     except on e : exception do
      begin
-      SetLength(MenuGorunum,0);
-     exit;
+       SetLength(MenuGorunum,0);
+       exit;
+     end;
     end;
-  end;
 
     Groups.Clear;
     Items.Clear;
@@ -2110,8 +2103,8 @@ begin
      ado.Next;
     end;
 
-   // Gruplarýn itemlerýný doldur.
-   // Items := MainMenuItemsKadir;
+    // Gruplarýn itemlerýný doldur.
+    // Items := MainMenuItemsKadir;
     r := 0;
     for MenuSatir in MenuGorunum do
     begin
@@ -2138,7 +2131,7 @@ begin
 
     ado.Close;
   finally
-    if bBenActim then ado.Free;
+    ado.Free;
   end;
 
 end;
