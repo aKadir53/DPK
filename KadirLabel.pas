@@ -121,8 +121,6 @@ type
 
    public
       MenuId : integer;
-     CONSTRUCTOR Create(AOwner: TComponent); override;
-  //   destructor Destroy; override;
      procedure MenuGetir;
      function MenuClick(_tag_ : integer) : integer;
      procedure LinkClick(Sender: TObject; ALink: TdxNavBarItemLink);
@@ -1659,31 +1657,6 @@ begin
   FTestAdet := value;
   SetLength(Fsonuclar,FTestAdet);
 end;
-
-
-
-constructor TMainMenuKadir.Create(AOwner: TComponent);
-begin
-  try
-    inherited Create(AOwner);
-  finally
-  end;
-end;
-
-
-
-
-
-(*
-constructor TMainMenuKadirItems.Create(AOwner: TComponent);
-begin
-  try
-    inherited Create(AOwner);
-  finally
-  end;
-end;
-*)
-
 
 constructor THastaBilgileriGroup.Create(AOwner: TComponent);
 begin
