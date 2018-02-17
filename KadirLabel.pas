@@ -8,7 +8,7 @@ uses
   ListeAcForm,registry,dxNavBarBase, dxNavBar,dxNavBarCollns,ActnList,Menus,ActnMan,
   cxTextEdit,cxCalendar,cxGrid,ComCtrls,KadirMenus,cxGridDBTableView,cxGridDBBandedTableView,
   cxGridCustomView,cxCustomData,cxImageComboBox,FScxGrid,cxFilter,cxGridExportLink,
-  cxCheckBox,cxEdit,cxGroupBox,dxLayoutContainer,cxGridStrs, cxFilterConsts,
+  cxCheckBox,cxEdit,cxGroupBox,dxLayoutContainer,cxGridStrs, cxFilterConsts,cxCheckGroup,
   cxFilterControlStrs,cxGridPopupMenuConsts,cxClasses,IdHttp,System.Variants;
 
 
@@ -574,6 +574,40 @@ type
 end;
 
 
+
+type
+  TcxCheckGroupKadir = class(TcxCheckGroup)
+   private
+     FItem : TcxCheckGroupItem;
+     FTableName : string;
+     FFilter : string;
+     FConn : TADOConnection;
+     FValueField : string;
+     FDisplayField : string;
+     FBosOlamaz : Boolean;
+     FItemList : string;
+  //   FGetItemList : TStringList;
+     procedure setFilter(const value : string);
+     function getFilter : string;
+   protected
+   public
+     constructor Create(AOwner: TComponent) ; override;
+   //  destructor Destroy; override;
+     function getItemString : String;
+     function getItemCheckString : String;
+   published
+     property TableName : string read FTableName write FTableName;
+     property Filter : string read getFilter write setFilter;
+     property Conn : TADOConnection read FConn write FConn;
+     property ValueField : string read FValueField write FValueField;
+     property DisplayField : string read FDisplayField write FDisplayField;
+     property BosOlamaz : Boolean read FBosOlamaz write FBosOlamaz;
+     property ItemList : string read FItemList write FItemList;
+end;
+
+
+
+
     TDoktorComboBox = class(TComboBox)
     private
       FColCount : integer;
@@ -809,6 +843,7 @@ begin
   RegisterComponents('Nokta', [TToolButtonKadir]);
   RegisterComponents('Nokta', [TFScxGrid]);
   RegisterComponents('Nokta', [TcxImageComboKadir]);
+  RegisterComponents('Nokta', [TcxCheckGroupKadir]);
   RegisterComponents('Nokta', [TcxCheckBoxKadir]);
   RegisterComponents('Nokta', [TcxTopPanelKadir]);
   RegisterComponents('Nokta', [TcxDonemComboKadir]);
@@ -1318,6 +1353,133 @@ begin
       TList.Free;
     end;
   end;
+end;
+
+
+constructor TcxCheckGroupKadir.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  self.Properties.ClearKey := VK_DELETE;
+ // FGetItemList := TStringList.Create;
+  //  self.EditValue:= Null;
+end;
+
+(*
+destructor TcxCheckGroupKadir.Destroy;
+begin
+//  FGetItemList.free;
+end;
+*)
+
+procedure TcxCheckGroupKadir.setFilter(const value : string);
+var
+  ado : TADOQuery;
+  Tlist : TstringList;
+  i : integer;
+  s : string;
+begin
+  FFilter := value;
+  Properties.Items.Clear;
+
+  if FConn <> nil
+  then begin
+    if FTableName = '' then exit;
+    ado := TADOQuery.Create(nil);
+    try
+      ado.Connection := FConn;
+      try
+        ado.SQL.Text := 'select distinct ' + FValueField + ',' + FDisplayField + ' from ' + FTableName +
+        ifthen(FFilter = '','',' where ' + FFilter ) + ' ORDER BY ' + FDisplayField;
+        ado.Open;
+      except
+      end;
+
+  //    EditValue := '';
+      while not ado.Eof do
+      begin
+        FItem := Properties.Items.add;
+        FItem.Tag := ado.Fields[0].AsInteger;
+        FItem.Caption := ado.Fields[1].AsString;
+        ado.Next;
+      end;
+       // FillChar(s , ado.RecordCount, '1');
+        EditValue := StringOfChar('1', ado.RecordCount);
+      (*
+      if FBosOlamaz = False  then
+      begin
+          FItem := Properties.Items.add;
+          FItem.Value := Null;
+          FItem.Description := 'Atanmamýþ';
+      end; *)
+
+      if FItemList <> ''
+      Then Begin
+        TList := TStringList.Create;
+        try
+          ExtractStrings([','],[],PChar(ItemList),Tlist);
+          for I := 0 to Tlist.Count - 1 do
+          begin
+            FItem := Properties.Items.add;
+            FItem.Tag := strtoint(copy(Tlist[I],1,pos(';',Tlist[I])-1));
+            FItem.Caption := copy(Tlist[I],pos(';',Tlist[I])+1,200);
+          end;
+        finally
+          TList.Free;
+        end;
+      End;
+    finally
+      ado.Free;
+    end;
+  end
+  else
+  begin
+    TList := TStringList.Create;
+    try
+      ExtractStrings([','],[],PChar(ItemList),Tlist);
+  //    Split(',',ItemList,TList);
+      for I := 0 to Tlist.Count - 1 do
+      begin
+        FItem := Properties.Items.add;
+        FItem.Tag := strtoint(copy(Tlist[I],1,pos(';',Tlist[I])-1));
+        FItem.Caption := copy(Tlist[I],pos(';',Tlist[I])+1,200);
+      end;
+    finally
+      TList.Free;
+    end;
+  end;
+end;
+
+
+
+function TcxCheckGroupKadir.getFilter;
+begin
+  result := FFilter;
+end;
+
+function TcxCheckGroupKadir.getItemString : String;
+var
+  I : integer;
+  ss : string;
+begin
+  for I := 0 to Properties.Items.Count - 1 do
+  begin
+    ss := ss + ',' + inttostr(Properties.Items[I].Tag);
+  end;
+  getItemString := copy(ss,2,500);
+end;
+
+
+function TcxCheckGroupKadir.getItemCheckString : String;
+var
+  I : integer;
+  ss : string;
+begin
+  for I := 1 to length(EditingValue) do
+  begin
+     if  vartoStr(EditingValue)[I] = '1' then
+      ss := ss + ',' + inttostr(Properties.Items[I-1].Tag);
+  end;
+  getItemCheckString := ss;
 end;
 
 
