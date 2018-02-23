@@ -24,6 +24,7 @@ type
   TShowTip = (stShow,stModal);
   TLoginInOut = (lgnIn,lgnOut);
   TListeAcTableTip = (tpTable,tpSp);
+  TCheckGrupSiralamaTip = (value,display);
 
   THb = class(TPersistent)
   private
@@ -584,8 +585,9 @@ type
      FConn : TADOConnection;
      FValueField : string;
      FDisplayField : string;
-     FBosOlamaz : Boolean;
+     FTumuSecili : Boolean;
      FItemList : string;
+     FOrderField : TCheckGrupSiralamaTip;
   //   FGetItemList : TStringList;
      procedure setFilter(const value : string);
      function getFilter : string;
@@ -595,14 +597,16 @@ type
    //  destructor Destroy; override;
      function getItemString : String;
      function getItemCheckString : String;
+     procedure setItemStringCheck(value : string);
    published
      property TableName : string read FTableName write FTableName;
      property Filter : string read getFilter write setFilter;
      property Conn : TADOConnection read FConn write FConn;
      property ValueField : string read FValueField write FValueField;
      property DisplayField : string read FDisplayField write FDisplayField;
-     property BosOlamaz : Boolean read FBosOlamaz write FBosOlamaz;
+     property TumuSecili : Boolean read FTumuSecili write FTumuSecili default True;
      property ItemList : string read FItemList write FItemList;
+     property OrderField : TCheckGrupSiralamaTip read FOrderField write FOrderField default display;
 end;
 
 
@@ -1389,7 +1393,8 @@ begin
       ado.Connection := FConn;
       try
         ado.SQL.Text := 'select distinct ' + FValueField + ',' + FDisplayField + ' from ' + FTableName +
-        ifthen(FFilter = '','',' where ' + FFilter ) + ' ORDER BY ' + FDisplayField;
+        ifthen(FFilter = '','',' where ' + FFilter ) +
+        ' ORDER BY ' + ifThen(FOrderField=display,FDisplayField, FValueField);
         ado.Open;
       except
       end;
@@ -1403,7 +1408,11 @@ begin
         ado.Next;
       end;
        // FillChar(s , ado.RecordCount, '1');
-        EditValue := StringOfChar('1', ado.RecordCount);
+       if FTumuSecili then
+         EditValue := StringOfChar('1', ado.RecordCount)
+        else
+         EditValue := StringOfChar('0', ado.RecordCount);
+
       (*
       if FBosOlamaz = False  then
       begin
@@ -1480,6 +1489,37 @@ begin
       ss := ss + ',' + inttostr(Properties.Items[I-1].Tag);
   end;
   getItemCheckString := ss;
+end;
+
+procedure TcxCheckGroupKadir.setItemStringCheck(value : string);
+var
+  s : TStringList;
+  I,r : integer;
+  Ev : string;
+begin
+  s:= TStringList.Create;
+  Ev := '';
+  try
+    ExtractStrings([','],[],PChar(value),s);
+    Ev := StringOfChar ('0',Properties.Items.Count);
+   // FillChar(Ev,Properties.Items.Count, '0');
+    EditValue := Ev;
+
+    for r := 0 to s.Count - 1 do
+    begin
+        for I := 0 to self.Properties.Items.Count - 1 do
+        begin
+          if s[r] = inttostr(Properties.Items[I].Tag) then
+          EditValue := StuffString(EditValue, I+1, 1, '1');
+          //else
+         // EditValue := StuffString(EditValue, I, 1, '0');
+        end;
+    end;
+  finally
+    s.free;
+  end;
+
+
 end;
 
 
