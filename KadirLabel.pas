@@ -325,6 +325,7 @@ type
      FListeAcTus : TShortCut;
      FBosOlamaz : Boolean;
      FtanimDeger : string;
+     FIdentity : Boolean;
      //procedure DoEditKeyDown(var Key: Word; Shift: TShiftState);
    protected
    public
@@ -337,6 +338,7 @@ type
      property ListeAcTus : TShortCut read FListeAcTus write FListeAcTus;
      property BosOlamaz : Boolean read FBosOlamaz write FBosOlamaz Default false;
      property tanimDeger : string read FtanimDeger write FtanimDeger;
+     property Identity : Boolean read FIdentity write FIdentity Default false;
 end;
 
 Values = Array of Variant;
