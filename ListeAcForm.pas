@@ -157,12 +157,12 @@ begin
       else
       begin
          try
-           strings[0].kolon1 := Liste.ViewData.DataController.Values[r ,0];
-           strings[0].kolon2 := Liste.ViewData.DataController.Values[r ,1];
+           strings[0].kolon1 := VarToStr (Liste.ViewData.DataController.Values[r ,0]);
+           strings[0].kolon2 := VarToStr (Liste.ViewData.DataController.Values[r ,1]);
            if Liste.ColumnCount > 2 then
-           strings[0].kolon3 := Liste.ViewData.DataController.Values[r ,2];
+           strings[0].kolon3 := VarToStr (Liste.ViewData.DataController.Values[r ,2]);
            if Liste.ColumnCount > 3 then
-           strings[0].kolon4 := Liste.ViewData.DataController.Values[r ,3];
+           strings[0].kolon4 := VarToStr (Liste.ViewData.DataController.Values[r ,3]);
          except
          end;
 
