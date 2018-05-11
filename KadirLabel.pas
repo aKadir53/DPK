@@ -554,6 +554,7 @@ type
    private
      FItem : TcxImageComboBoxItem;
      FTableName : string;
+     FTableTip : TListeAcTableTip;
      FFilter : string;
      FConn : TADOConnection;
      FValueField : string;
@@ -574,6 +575,7 @@ type
      property DisplayField : string read FDisplayField write FDisplayField;
      property BosOlamaz : Boolean read FBosOlamaz write FBosOlamaz;
      property ItemList : string read FItemList write FItemList;
+     property TableTip : TListeAcTableTip read FTableTip write FTableTip Default tpTable;
 end;
 
 
@@ -1153,6 +1155,7 @@ begin
   inherited Create(AOwner);
   self.Properties.ClearKey := VK_DELETE;
   self.EditValue:= Null;
+  self.TableTip := tpTable;
 end;
 
 
@@ -1303,17 +1306,28 @@ begin
     try
       ado.Connection := FConn;
       try
-        ado.SQL.Text := 'select distinct ' + FValueField + ',' + FDisplayField + ' from ' + FTableName +
-        ifthen(FFilter = '','',' where ' + FFilter ) + ' ORDER BY ' + FDisplayField;
+
+        if FTableTip = tpTable then
+        begin
+         ado.SQL.Text := 'select distinct ' + FValueField + ',' + FDisplayField + ' from ' + FTableName +
+         ifthen(FFilter = '','',' where ' + FFilter ) + ' ORDER BY ' + FValueField;
+        end;
+        if FTableTip = tpSp then
+        begin
+         ado.SQL.Text := FTableName;
+        end;
+
         ado.Open;
+
+
       except
       end;
 
       while not ado.Eof do
       begin
         FItem := Properties.Items.add;
-        FItem.Value := ado.Fields[0].AsString;
-        FItem.Description := ado.Fields[1].AsString;
+        FItem.Value := ado.FieldByName(FValueField).AsString;
+        FItem.Description := ado.FieldByName(FDisplayField).AsString;
         ado.Next;
       end;
       (*
@@ -1359,6 +1373,7 @@ begin
       TList.Free;
     end;
   end;
+  ItemIndex := 0;
 end;
 
 
