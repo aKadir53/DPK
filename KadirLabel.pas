@@ -1373,7 +1373,7 @@ begin
       TList.Free;
     end;
   end;
-  ItemIndex := 0;
+//  ItemIndex := 0;
 end;
 
 
