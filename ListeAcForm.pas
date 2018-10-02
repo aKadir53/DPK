@@ -201,6 +201,9 @@ var
   s : string;
 begin
  
+  if not sender.FilterRow.Visible then exit;
+
+
   if Key  = 'ý' Then Key := 'I';
   if Key  = 'i' Then Key := 'Ý';
 

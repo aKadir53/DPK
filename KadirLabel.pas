@@ -249,6 +249,7 @@ type
       //FstringsWX : TstringList;
       FFiltercol : integer;
       FFilter : string;
+      FFilterRowGizle : Boolean;
       FBaslikRenk : tcolor;
       FDipRenk : Tcolor;
       FImajList : TImageList;
@@ -267,6 +268,7 @@ type
       FKaynakTableTip : TListeAcTableTip;
 
       procedure SetImageIndex(Value: TImageIndex);
+
       function GetVersiyon : string;
       procedure setLines(const value : TStrings);
       //function getlines : TStrings;
@@ -296,6 +298,7 @@ type
       property Conn : TADOConnection read FConn write FConn;
       property Filtercol : integer read Ffiltercol write Ffiltercol;
       property Filter : string read Ffilter write Ffilter;
+      property FilterRowGizle : Boolean read FFilterRowGizle write FFilterRowGizle default false;
       property BaslikRenk : Tcolor read FBaslikRenk write FBaslikRenk;
       property DipRenk : Tcolor read FDipRenk write FDipRenk;
       property ImajList : TImageList read FImajList write FImajList;
@@ -2057,8 +2060,8 @@ begin
                QuotedStr(FpressItem.Caption) + ',' +
                inttostr(FtargetGroup.Tag) + ',' +
                inttostr(FpressItem.SmallImageIndex) + ',' +
-               inttostr(FpressItem.ShowTip) + ',' +
-               inttostr(FpressItem.FormID) + ',' +
+             inttostr(FpressItem.ShowTip) + ',' +
+             inttostr(FpressItem.FormID) + ',' +
                QuotedStr(KullaniciAdi) + ')';
 
        ado := TADOQuery.Create(nil);
@@ -2308,8 +2311,8 @@ begin
        Items[r].Tag := MenuSatir.KAYITID;
        Items[r].SmallImageIndex := MenuSatir.imageIndex;
        Items[r].Visible := Boolean(MenuSatir.Izin);
-       Items[r].FormId := MenuSatir.formId;
-       Items[r].ShowTip := MenuSatir.ShowTip;
+      Items[r].FormId := MenuSatir.formId;
+      Items[r].ShowTip := MenuSatir.ShowTip;
 
        for i := 0 to Groups.Count - 1 do
        begin
@@ -2527,6 +2530,8 @@ begin
   end;
 end;
 
+
+
 function TListeAc.Getversiyon : string;
 begin
      Result := 'Ver 1.0 Nokta Yazýlým';
@@ -2643,6 +2648,8 @@ begin
           frmListeAc.cxGrid1.LookAndFeel.SkinName := FSkinName;
           frmListeAc.cxGrid2.LookAndFeel.SkinName := FSkinName;
           frmListeAc.btnSec1.LookAndFeel.SkinName := SkinName;
+          frmListeAc.Liste.FilterRow.Visible := not FFilterRowGizle;
+
 
           frmListeAc.ShowModal;
 
