@@ -3,11 +3,11 @@ unit KadirLabel;
 interface
 
 uses
-  SysUtils, Classes, Controls, StdCtrls,Graphics,Dialogs,Messages,windows,cxButtonEdit,
+  SysUtils, Classes, Controls, StdCtrls,Dialogs,Messages,cxButtonEdit,
   forms,adodb,ImgList,Para,strUtils,ExtCtrls, Math,db,buttons, Types, kadirType,cxButtons,
-  ListeAcForm,registry,dxNavBarBase, dxNavBar,dxNavBarCollns,ActnList,Menus,ActnMan,
+  ListeAcForm,registry,dxNavBarBase, dxNavBar,dxNavBarCollns,ActnList,Menus,ActnMan, Vcl.Graphics,
   cxTextEdit,cxCalendar,cxGrid,ComCtrls,KadirMenus,cxGridDBTableView,cxGridDBBandedTableView,
-  cxGridCustomView,cxCustomData,cxImageComboBox,FScxGrid,cxFilter,cxGridExportLink,
+  cxGridCustomView,cxCustomData,cxImageComboBox,FScxGrid,cxFilter,cxGridExportLink,ShellApi,Winapi.Windows,
   cxCheckBox,cxEdit,cxGroupBox,dxLayoutContainer,cxGridStrs, cxFilterConsts,cxCheckGroup,
   cxFilterControlStrs,cxGridPopupMenuConsts,cxClasses,IdHttp,System.Variants;
 
@@ -812,6 +812,107 @@ type
 end;
 
 
+type
+  tDirections = (aniForward,aniReverse);
+  TAnimationThread = Class;
+  TAnimatedIcon = class;
+  TAnimatedFormIcon = class;
+
+  TAnimationThread = Class(TThread)
+                      Private
+                       fAniIcon : TAnimatedIcon;
+                       fAniFormIcon : TAnimatedFormIcon;
+                       fActFrame : Integer;
+                       fFramesDone,
+                       fMinFrames : Integer;
+                       fShallSuspend : Boolean;
+                      Protected
+                       Procedure NextFrame;
+                      Public
+                       Procedure PaintFrame;
+                       Procedure Execute;Override;
+                       Constructor Initialize(aAniIcon : TComponent);
+                      Published
+                       Property AniIcon : TAnimatedIcon Read fAniIcon Write fAniIcon;
+                       Property AniFormIcon : TAnimatedFormIcon Read fAniFormIcon Write fAniFormIcon;
+                       Property MinFrames : Integer Read fMinFrames write fMinFrames;
+                       Property FramesDone : Integer Read fFramesDone Write fFramesDone;
+                       Property ShallSuspend : Boolean read fShallSuspend write fShallSuspend;
+                     End;
+
+
+  TAnimatedFormIcon = class(TComponent)
+  private
+    fImageList : TImageList;
+    fImageBase : Integer;
+    fImageCount : Integer;
+    fThread : TAnimationThread;
+    FAnimated : Boolean;
+    fDelay : Integer;
+    fDirection :  tDirections;
+    Procedure SetAnimated(aValue : Boolean);
+    Procedure SetPriority(aValue :TThreadPriority);
+    Function GetPriority:TThreadPriority;
+    Procedure SetMinFrames(aValue : Integer);
+    Function GetMinFrames:Integer;
+    Procedure SetDelay(aValue : Integer);
+  protected
+   Constructor Create(aOwner : TComponent);override;
+   Destructor Destroy;Override;
+  public
+  published
+   Property ImageList : TImageList Read fImageList Write fImageList;
+   Property Animated : Boolean Read FAnimated Write SetAnimated;
+   Property Delay : Integer read fDelay Write SetDelay default 100;
+   Property Priority : TThreadPriority Read GetPriority Write SetPriority default tpLowest;
+   Property Direction : tDirections read fDirection write fDirection;
+   Property MinFramesToRun : Integer Read GetMinFrames Write SetMinFrames;
+  end;
+
+
+  TAnimatedIcon = class(TCustomPanel)
+  private
+    fImageList : TImageList;
+    fImageBase : Integer;
+    fImageCount : Integer;
+    fThread : TAnimationThread;
+    FAnimated : Boolean;
+    fDelay : Integer;
+    fDirection :  tDirections;
+    Procedure SetAnimated(aValue : Boolean);
+    Procedure SetPriority(aValue :TThreadPriority);
+    Function GetPriority:TThreadPriority;
+    Procedure SetMinFrames(aValue : Integer);
+    Function GetMinFrames:Integer;
+    Procedure SetDelay(aValue : Integer);
+  protected
+   Procedure WMEraseBkgnd(Var Msg : TMessage); MEssage WM_EraseBkgnd;
+   Procedure Paint;Override;
+   Constructor Create(aOwner : TComponent);override;
+   Destructor Destroy;Override;
+  public
+  published
+   Property Align;
+   Property Color;
+   Property ImageList : TImageList Read fImageList Write fImageList;
+   Property Animated : Boolean Read FAnimated Write SetAnimated;
+   Property Delay : Integer read fDelay Write SetDelay default 100;
+   Property Priority : TThreadPriority Read GetPriority Write SetPriority default tpLowest;
+   Property Direction : tDirections read fDirection write fDirection;
+   Property MinFramesToRun : Integer Read GetMinFrames Write SetMinFrames;
+   Property BevelInner;
+   Property BevelOuter;
+   Property BevelWidth;
+  end;
+
+  tAniImageList = Class(TImageList)
+                  Public
+                   Procedure LoadAniBMPFromResource(Const ResId : Integer;Overlapped : Boolean);
+                   Procedure LoadAniIconsFromResource(Const ResId : Integer;aCount : Integer);
+                  End;
+
+
+
 
 procedure QuerySelect(var Q: TADOQuery; sql:string);
 procedure Split (const Delimiter: Char; Input: string; const Strings: TStrings) ;
@@ -861,6 +962,9 @@ begin
   RegisterComponents('Nokta', [TGirisFormCreateControl]);
   RegisterComponents('Nokta', [TLogin]);
 
+  RegisterComponents('Nokta', [TAnimatedFormIcon]);
+  RegisterComponents('Nokta', [TAnimatedIcon]);
+  RegisterComponents('Nokta', [TAniImageList]);
 
   Classes.RegisterClass(TFScxGridDBTableView);
   Classes.RegisterClass(TdxNavBarKadirItem);
@@ -870,6 +974,304 @@ begin
 
 
 end;
+
+
+Procedure TAniImageList.LoadAniBMPFromResource(Const ResId : Integer;Overlapped : Boolean);
+Var tmpBmp,
+    Bmp : Vcl.Graphics.TBitmap;
+    Ofset,w,h : Integer;
+Begin
+ Bmp := Vcl.Graphics.TBitmap.Create;
+ clear;
+ Try
+  bmp.Handle:=LoadBitmap(HInstance,MakeIntResource(resId));
+
+  if bmp.handle=0 then Exit;
+  w:=bmp.Width;h:=bmp.Height;
+  if h=0 then Exit;
+  allocBy:=(w div h);
+  width:=h;
+  Height:=h;
+  masked:=False;
+  if (W < H) then Exception.Create('Illigal bitmap extends');
+  Ofset:=0;
+  Repeat
+    TmpBmp:=Vcl.Graphics.TBitmap.Create;
+    TmpBmp.Palette:=bmp.Palette;
+    RealizePalette(Bmp.Canvas.Handle);
+    RealizePalette(TmpBmp.Canvas.Handle);
+    TmpBmp.width:=h;TmpBmp.Height:=h;
+    BitBlt(TmpBmp.Canvas.handle,0,0,h,h,Bmp.Canvas.Handle,Ofset,0,srcCopy);
+    Add(TmpBmp,Nil);
+    inc(Ofset,h-integer(Overlapped));
+  Until ofset >= w -integer(Overlapped);
+ Finally
+  Bmp.Free;
+ End;
+End;
+
+Procedure TAniImageList.LoadAniIconsFromResource(Const ResId : Integer;aCount : Integer);
+Var Icon : TIcon;
+    hIcon : THandle;
+    C : Integer;
+Begin
+ c:=0;
+ Width:=32;
+ Height:=32;
+ masked:=False;
+ Repeat
+  hIcon:=LoadIcon(hInstance,MakeIntResource(c+resId));
+  if hIcon <> 0 then
+   Begin
+    Icon:=TIcon.Create;
+    Icon.Handle:=hIcon;
+    AddIcon(Icon);
+   End;
+  inc(C);
+ Until (hIcon=0) or ( (aCount <> -1) and (c > aCount));
+End;
+
+
+Constructor TAnimationThread.Initialize(aAniIcon : TComponent);
+BEgin
+ inherited Create(false);
+ freeOnTerminate:=False;
+ fFramesDone:=0;
+ if aAniIcon is tAnimatedIcon then
+  fAniICon:=tAnimatedIcon (aAniIcon) else fAniIcon:=NIL;
+ if aAniIcon is tAnimatedFormIcon then
+  fAniFormIcon:=tAnimatedFormIcon(aAniIcon) else fAniFormIcon:=NIL;
+ if (fAniIcon = Nil) and (fAniFormIcon = Nil ) then Exception.Create('Ups? Who called me???');
+ fActFrame:=0;
+ Priority:=tplowest;
+ fFramesDone:=0;
+ suspend;
+End;
+
+Procedure TAnimationThread.PaintFrame;
+Var x ,y : Integer;
+{    Data : TNotifyIconData;}
+Begin
+ if assigned (fAniIcon) then
+  Begin
+   x:=(TAnimatedIcon(fAniIcon).Width div 2) - (TAnimatedIcon(fAniIcon).ImageList.Width div 2);
+   y:=(TAnimatedIcon(fAniIcon).Height div 2) - (TAnimatedIcon(fAniIcon).ImageList.Height div 2);
+   try
+    if Assigned(TAnimatedIcon(fAniIcon).Canvas) then
+     TAnimatedIcon(fAniIcon).ImageList.Draw(TAnimatedIcon(fAniIcon).Canvas,x,y,fActFrame);
+    Finally
+    End;
+  end
+ else
+  Begin
+   fAniFormIcon.ImageList.GetIcon(fActFrame,TForm(fAniFormIcon.Owner).Icon);
+   if Assigned(Application.MainForm) then
+    if TForm(fAniFormIcon.Owner) = Application.MainForm then Application.Icon:=TForm(fAniFormIcon.Owner).Icon;
+
+{ In Future for TrayIcons???
+   Data.cbSize:=SizeOf(Data);
+   Data.wnd:=TForm(fAniFormIcon.Owner).Handle;
+   Data.hIcon:=TForm(fAniFormIcon.Owner).Icon.Handle;
+   Data.uFlags:=NIF_Icon;
+   Data.uCallbackMessage:=0;
+   Shell_NotifyIcon(NIM_Add,@Data);
+   Shell_NotifyIcon(NIM_modify,@Data)
+}
+  End;
+End;
+
+
+Procedure TAnimationThread.NextFrame;
+var ImageList : TImageList;
+    Direction : TDirections;
+Begin
+try
+ Try
+ if assigned (fAniIcon) then
+  Begin
+   If Not Assigned(fAniIcon.ImageList) then Exit;
+   Direction:=fAniIcon.Direction;
+   ImageList:=fAniIcon.ImageList;
+  end
+ else
+  Begin
+   If Not Assigned(fAniFormIcon.ImageList) then Exit;
+   Direction:=fAniFormIcon.Direction;
+   ImageList:=fAniFormIcon.ImageList;
+  End;
+  if ImageList.Count=0 then Exit;
+
+  if Direction=AniReverse then
+   Begin
+    Dec(fActFrame);
+    if fActFrame < 0 then fActFrame:=ImageList.Count-1
+   End
+  else
+   Begin
+    inc(fActFrame);
+    if fActFrame > ImageList.Count-1 then fActFrame:=0;
+   End;
+
+   Inc(fFramesDone);
+   if Terminated then Exit;
+    synchronize(PaintFrame);
+  Finally
+   if fShallSuspend and ((fMinFrames = 0) or (fFramesDone >= fMinFrames) ) then
+    Begin
+     fFramesDone:=0;
+     Suspend;
+    End;
+  End;
+ except
+  Suspend;
+ End;
+End;
+
+Procedure TAnimationThread.Execute;
+Var Delay : Integer;
+Begin
+ Repeat
+  if assigned (fAniIcon) then
+    Delay:=fAniIcon.Delay
+  else
+   Delay:=fAniFormIcon.Delay;
+   if WaitForSingleObject(Handle,Delay) = WAIT_TIMEOUT	then
+    NextFrame
+   else
+    Exit;
+  if Terminated then Exit;
+ Until false;
+End;
+
+Constructor TAnimatedIcon.Create(aOwner : TComponent);
+Begin
+ Inherited Create(aOwner);
+ delay:=100;
+ Caption:='';
+ FAnimated := false;
+ bevelOuter:=bvNone;
+ fThread:=TAnimationThread.Initialize(TAnimatedFormIcon(self));
+End;
+
+Procedure TAnimatedIcon.WMEraseBkgnd(Var Msg : TMessage);
+Begin
+ Exit;
+End;
+
+Procedure TAnimatedIcon.Paint;
+Begin
+ Inherited Paint;
+  fThread.PaintFrame;
+End;
+
+
+Procedure TAnimatedIcon.SetDelay(aValue : Integer);
+Begin
+ if aValue < 10 then avalue := 10;
+ fDelay:=aValue;
+End;
+
+
+Destructor TAnimatedIcon.Destroy;
+Begin
+ Inherited Destroy;
+End;
+
+Procedure TAnimatedIcon.SetMinFrames(aValue : Integer);
+Begin
+ fThread.MinFrames:=aValue;
+End;
+
+Function TAnimatedIcon.GetMinFrames:Integer;
+Begin
+ Result:=fThread.MinFrames;
+End;
+
+Function TAnimatedIcon.GetPriority:TThreadPriority;
+Begin
+ Result:=fThread.Priority;
+End;
+
+Procedure TAnimatedIcon.SetPriority(aValue :TThreadPriority);
+Begin
+ fThread.Priority := aValue;
+End;
+
+Procedure TAnimatedIcon.SetAnimated;
+Begin
+ fAnimated:=aValue;
+  if fAnimated then
+   Begin
+    fThread.ShallSUspend:=False;
+    if fThread.Suspended then
+     fThread.Resume
+    End
+  else
+    if not fThread.Suspended then
+      fThread.ShallSUspend:=True;
+End;
+
+{ TAnimatedFormIcon }
+
+Constructor TAnimatedFormIcon.Create(aOwner : TComponent);
+Begin
+ Inherited Create(aOwner);
+
+ if not ((owner is tForm) or
+         (Assigned(TForm(Owner).Icon))) then
+  Exception.Create('Parent has no default Icon');
+ delay:=100;
+ FAnimated := false;
+ fThread:=TAnimationThread.Initialize(self);
+End;
+
+Procedure TAnimatedFormIcon.SetDelay(aValue : Integer);
+Begin
+ if aValue < 10 then avalue := 10;
+ fDelay:=aValue;
+End;
+
+
+Destructor TAnimatedFormIcon.Destroy;
+Begin
+ Inherited Destroy;
+End;
+
+Procedure TAnimatedFormIcon.SetMinFrames(aValue : Integer);
+Begin
+ fThread.MinFrames:=aValue;
+End;
+
+Function TAnimatedFormIcon.GetMinFrames:Integer;
+Begin
+ Result:=fThread.MinFrames;
+End;
+
+Function TAnimatedFormIcon.GetPriority:TThreadPriority;
+Begin
+ Result:=fThread.Priority;
+End;
+
+Procedure TAnimatedFormIcon.SetPriority(aValue :TThreadPriority);
+Begin
+ fThread.Priority := aValue;
+End;
+
+Procedure TAnimatedFormIcon.SetAnimated;
+Begin
+ fAnimated:=aValue;
+ if  (csDesigning in ComponentState) then Exit;
+  if fAnimated then
+   Begin
+    fThread.ShallSUspend:=False;
+    if fThread.Suspended then
+     fThread.Resume
+    End
+  else
+    if not fThread.Suspended then
+      fThread.ShallSUspend:=True;
+End;
+
 
 constructor TGirisFormItem.Create(Collection: TCollection);
 begin

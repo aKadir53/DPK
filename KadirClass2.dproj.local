@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>1899.12.30 00:00:00.000.959,=D:\Projeler\DELPHI\Diyaliz\Dializ_M4\kadir.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.226,D:\Projeler\DELPHI\Diyaliz\Dializ_M4\kadir.pas=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.261,=D:\Projeler\DELPHI\Klinik\Klinik2007\icons\Icons\Basics\plain\window_sidebar.png</Transaction>
     <Transaction>1899.12.30 00:00:00.000.503,D:\Projeler\DELPHI\Klinik\Klinik2007\klinik2007\ListeAcForm.pas=</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.578,=D:\Projeler\DELPHI\Klinik\Klinik2007\klinik2007\KadirMenus.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.622,=IndyCore.dcp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.561,D:\Projeler\DELPHI\Klinik\Klinik2007\klinik2007\KadirMenus.pas=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.578,=D:\Projeler\DELPHI\Klinik\Klinik2007\klinik2007\KadirMenus.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.661,=IndyProtocols.dcp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.614,=vclSQLMemTabled16.dcp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.673,=D:\Projeler\DELPHI\Klinik\Klinik2007\klinik2007\FScxGrid.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.642,=IndySystem.dcp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.132,D:\Projeler\DELPHI\Klinik\Klinik2007\KadirMenus.pas=</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.622,=IndyCore.dcp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.766,=D:\Projeler\DELPHI\Klinik\Klinik2007\klinik2007\Unit2.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.261,=D:\Projeler\DELPHI\Klinik\Klinik2007\icons\Icons\Basics\plain\window_sidebar.png</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.226,D:\Projeler\DELPHI\Diyaliz\Dializ_M4\kadir.pas=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.959,=D:\Projeler\DELPHI\Diyaliz\Dializ_M4\kadir.pas</Transaction>
   </Transactions>
 	<ProjectSortOrder AutoSort="0" SortType="0">
     <File Path="..\..\DELPHI"/>
