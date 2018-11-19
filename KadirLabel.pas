@@ -26,6 +26,8 @@ type
   TListeAcTableTip = (tpTable,tpSp);
   TCheckGrupSiralamaTip = (value,display);
 
+  ArrayOfString = array of string;
+
   THb = class(TPersistent)
   private
    FDosyaNo,FTc : string;
@@ -604,7 +606,10 @@ type
    //  destructor Destroy; override;
      function getItemString : String;
      function getItemCheckString : String;
+     function getItemCheckArrayOfString : ArrayOfString;
      procedure setItemStringCheck(value : string);
+     function getItemCheckCount : integer;
+
    published
      property TableName : string read FTableName write FTableName;
      property Filter : string read getFilter write setFilter;
@@ -1911,6 +1916,38 @@ begin
       ss := ss + ',' + inttostr(Properties.Items[I-1].Tag);
   end;
   getItemCheckString := ss;
+end;
+
+
+function TcxCheckGroupKadir.getItemCheckArrayOfString : ArrayOfString;
+var
+  I , r : integer;
+  ss : ArrayOfString;
+begin
+  r := 0;
+  SetLength(ss,getItemCheckCount);
+  for I := 1 to length(EditingValue) do
+  begin
+     if  vartoStr(EditingValue)[I] = '1'
+     then begin
+      ss[r] := inttostr(Properties.Items[I-1].Tag);
+      r := r + 1;
+     end;
+  end;
+  getItemCheckArrayOfString := ss;
+end;
+
+
+function TcxCheckGroupKadir.getItemCheckCount: integer;
+var
+ I : integer;
+begin
+  Result := 0;
+  for I := 0 to length(EditingValue) - 1 do
+  begin
+    if  vartoStr(EditingValue)[I] = '1' then
+    Result := Result + 1;
+  end;
 end;
 
 procedure TcxCheckGroupKadir.setItemStringCheck(value : string);
