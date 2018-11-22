@@ -26,7 +26,7 @@ type
   TListeAcTableTip = (tpTable,tpSp);
   TCheckGrupSiralamaTip = (value,display);
 
-  ArrayOfString = array of string;
+
 
   THb = class(TPersistent)
   private
@@ -1720,7 +1720,7 @@ begin
         if FTableTip = tpTable then
         begin
          ado.SQL.Text := 'select distinct ' + FValueField + ',' + FDisplayField + ' from ' + FTableName +
-         ifthen(FFilter = '','',' where ' + FFilter ) + ' ORDER BY ' + FValueField;
+         ifthen(FFilter = '','',' where ' + FFilter ) + ' ORDER BY ' + FDisplayField;
         end;
         if FTableTip = tpSp then
         begin
