@@ -1943,7 +1943,7 @@ var
  I : integer;
 begin
   Result := 0;
-  for I := 0 to length(EditingValue) - 1 do
+  for I := 1 to length(EditingValue) do
   begin
     if  vartoStr(EditingValue)[I] = '1' then
     Result := Result + 1;
