@@ -329,8 +329,10 @@ type
      FwhereColum : string;
      FListeAcTus : TShortCut;
      FBosOlamaz : Boolean;
-     FtanimDeger : string;
+     FtanimDeger : string; //kolon2
      FIdentity : Boolean;
+     Fkolon3 : string;
+     Fkolon4 : string;
      //procedure DoEditKeyDown(var Key: Word; Shift: TShiftState);
    protected
    public
@@ -344,6 +346,9 @@ type
      property BosOlamaz : Boolean read FBosOlamaz write FBosOlamaz Default false;
      property tanimDeger : string read FtanimDeger write FtanimDeger;
      property Identity : Boolean read FIdentity write FIdentity Default false;
+     property kolon3 : string read Fkolon3 write Fkolon3;
+     property kolon4 : string read Fkolon4 write Fkolon4;
+
 end;
 
 Values = Array of Variant;
@@ -1737,7 +1742,9 @@ begin
       begin
         FItem := Properties.Items.add;
         FItem.Value := ado.FieldByName(FValueField).AsString;
-        FItem.Description := ado.FieldByName(FDisplayField).AsString;
+        FItem.Description := ado.FieldByName(
+        stringReplace(stringReplace(FDisplayField,'[','',[rfReplaceAll]),']','',[rfReplaceAll])
+        ).AsString;
         ado.Next;
       end;
       (*

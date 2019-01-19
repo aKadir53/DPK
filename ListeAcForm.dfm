@@ -65,6 +65,18 @@ object frmListeAc: TfrmListeAc
       TabOrder = 0
       OnClick = btnSec1Click
     end
+    object cxButton1: TcxButton
+      Tag = 1
+      Left = 1
+      Top = 1
+      Width = 113
+      Height = 30
+      Align = alLeft
+      Caption = '&Se'#231'im Yapmadan '#199#305'k'
+      ModalResult = 2
+      TabOrder = 1
+      OnClick = btnSec1Click
+    end
   end
   object cxGrid1: TcxGrid
     Left = 0

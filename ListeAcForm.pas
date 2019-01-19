@@ -40,6 +40,7 @@ type
     cxGrid2Level1: TcxGridLevel;
     cxGrid2: TcxGrid;
     cxStyle2: TcxStyle;
+    cxButton1: TcxButton;
     procedure dizaynEt(Fields,FieldsW,FieldsB : TStrings ; filtercol : integer;GrupCol : integer; Grup : Boolean;Biriktir :Boolean = false);
     procedure ListeKeyDown(Sender: TObject; var Key: Word ; Shift: TShiftState);
     procedure KeyPressGridF(Sender: TcxGridDBTableView; var Key: Char ; var arama : string ; colum : integer ; F : Boolean);
@@ -309,6 +310,14 @@ procedure TfrmListeAc.btnSec1Click(Sender: TObject);
 var
   i , c : integer;
 begin
+
+   if TcxButton(Sender).Tag = 1 then
+   begin
+        SetLength(strings,0);
+        exit;
+   end;
+
+
    c := Liste.Controller.SelectedRowCount;
    //r := Liste.ViewData.DataController.GetFocusedRecordIndex;
    SetLength(strings,0);
