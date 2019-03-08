@@ -35,7 +35,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_UsePackage>rtl;dsnap;dbrtl;ibxpress;IndyCore;IndySystem;IndyProtocols;$(DCC_UsePackage)</DCC_UsePackage>
+			<DCC_UsePackage>rtl;dsnap;dbrtl;ibxpress;IndyCore;IndySystem;IndyProtocols;soaprtl;inet;$(DCC_UsePackage)</DCC_UsePackage>
 			<VerInfo_Locale>1055</VerInfo_Locale>
 			<VerInfo_Keys>CompanyName=Nokta Yazılım;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 			<DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;Winapi;Data.Win;System.Win;$(DCC_Namespace)</DCC_Namespace>
@@ -137,10 +137,15 @@
 			<DCCReference Include="IndyCore.dcp"/>
 			<DCCReference Include="IndySystem.dcp"/>
 			<DCCReference Include="IndyProtocols.dcp"/>
+			<DCCReference Include="soaprtl.dcp"/>
+			<DCCReference Include="inet.dcp"/>
 			<DCCReference Include="KadirLabel.pas"/>
 			<DCCReference Include="Para.pas"/>
 			<DCCReference Include="D:\Diyaliz\Dializ2007_M3\KadirType.pas"/>
 			<DCCReference Include="FScxGrid.pas"/>
+			<DCCReference Include="KadirHTTPRIOUnit.pas"/>
+			<DCCReference Include="MedulaHastaKabul.pas"/>
+			<DCCReference Include="C:\medula3wsdl\hastaKabulIslemleriWS.pas"/>
 			<RcItem Include="..\icons\Icons\Basics\plain\window_sidebar.png">
 				<ResourceType>RCDATA</ResourceType>
 				<ResourceId>PngImage_1</ResourceId>

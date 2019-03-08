@@ -119,6 +119,7 @@ type
      FSlite : integer;
      FpressItem : TdxNavBarItem;
      FtargetGroup : TdxNavBarGroup;
+     FProgramTip : string;
      //FOnHastaAdiFontChange : THastaAdiFontChangeEvent;
    protected
 
@@ -150,6 +151,7 @@ type
     property TagC : integer read GetTagC write setTagC;
     property Slite : integer read FSlite write FSlite;
     property Conn : TADOConnection read FConn write FConn;
+    property ProgramTip : string read FProgramTip write FProgramTip;
  //   property OnHastaAdiFontChange: THastaAdiFontChangeEvent read FOnHAstaAdiFontChange write FOnHastaAdiFontChange;
 //    property HastaSoyad : TEdit read HastaSoyadi write HastaSoyadi;
   end;
@@ -1710,6 +1712,7 @@ var
   ado : TADOQuery;
   Tlist : TstringList;
   i : integer;
+  chr : string;
 begin
   FFilter := value;
   Properties.Items.Clear;
@@ -1757,14 +1760,16 @@ begin
 
       if FItemList <> ''
       Then Begin
+        chr := ';';
         TList := TStringList.Create;
         try
           ExtractStrings([','],[],PChar(ItemList),Tlist);
           for I := 0 to Tlist.Count - 1 do
           begin
+            Tlist[I] := StringReplace(Tlist[I],'|',chr,[rfReplaceAll]);
             FItem := Properties.Items.add;
-            FItem.Value := copy(Tlist[I],1,pos(';',Tlist[I])-1);
-            FItem.Description := copy(Tlist[I],pos(';',Tlist[I])+1,200);
+            FItem.Value := copy(Tlist[I],1,pos(chr,Tlist[I])-1);
+            FItem.Description := copy(Tlist[I],pos(chr,Tlist[I])+1,200);
           end;
         finally
           TList.Free;
@@ -2680,7 +2685,7 @@ begin
     u := 0;
     ado.Connection := FConn;
     try
-     sql := 'exec sp_MenuGetir ' + QuotedStr(FKullaniciAdi);
+     sql := 'exec sp_MenuGetir ' + QuotedStr(FKullaniciAdi);/// + ',' + QuotedStr(FProgramTip);
      QuerySelect(ado,sql);
      u := ado.RecordCount;
      SetLength(MenuGorunum,0);

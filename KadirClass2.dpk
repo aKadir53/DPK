@@ -87,12 +87,17 @@ requires
   vclSQLMemTabled16,
   IndyCore,
   IndySystem,
-  IndyProtocols;
+  IndyProtocols,
+  soaprtl,
+  inet;
 
 contains
   KadirLabel in 'KadirLabel.pas',
   Para in 'Para.pas',
   KadirType in 'D:\Diyaliz\Dializ2007_M3\KadirType.pas',
-  FScxGrid in 'FScxGrid.pas';
+  FScxGrid in 'FScxGrid.pas',
+  KadirHTTPRIOUnit in 'KadirHTTPRIOUnit.pas',
+  MedulaHastaKabul in 'MedulaHastaKabul.pas',
+  hastaKabulIslemleriWS in 'C:\medula3wsdl\hastaKabulIslemleriWS.pas';
 
 end.
