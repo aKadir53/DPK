@@ -10,12 +10,35 @@ uses
   cxCheckBox,cxEdit,cxGroupBox,dxLayoutContainer,cxGridStrs, cxFilterConsts,cxCheckGroup,
   cxFilterControlStrs,cxGridPopupMenuConsts,cxClasses,System.Variants,
 
-  hastaKabulIslemleriWS
-  ;
+  hastaKabulIslemleriWS ;
 
+
+  Const
+    yardimciIslemURL = 'https://medula.sgk.gov.tr/medula/hastane/yardimciIslemlerWS';
+    yardimciIslemURLTest = 'http://sgkt.sgk.gov.tr/medula/hastane/yardimciIslemlerWS';
+
+    DiabetFormURL = 'https://medula.sgk.gov.tr/medula/hastane/takipFormuIslemleriWS';
+    sevkURL = 'https://medula.sgk.gov.tr/medula/hastane/sevkIslemleriWS';
+
+    hastaKabulURL = 'https://medula.sgk.gov.tr/medula/hastane/hastaKabulIslemleriWS';
+    hastaKabulTestURL = 'https://sgkt.sgk.gov.tr/medula/hastane/hastaKabulIslemleriWS';
+
+    faturaKayitURL = 'https://medula.sgk.gov.tr/medula/hastane/faturaKayitIslemleriWS';
+    //'https://saglikt.sgk.gov.tr/medula/hastane/faturaKayitIslemleriWS';
+
+    hizmetKayitURL = 'https://medula.sgk.gov.tr/medula/hastane/hizmetKayitIslemleriWS';
+ //   hizmetKayitURL = 'https://sgkt.sgk.gov.tr/medula/hastane/hizmetKayitIslemleriWS';
+
+    receteURL = 'https://medeczane.sgk.gov.tr/eczanews/services/SaglikTesisiReceteIslemleri';
+    raporIlacURL = 'https://medeczane.sgk.gov.tr/medula/eczane/saglikTesisiRaporIslemleriWS';
+    raporURL = 'https://medula.sgk.gov.tr/medula/hastane/raporIslemleriWS';
+    DyopURL = 'https://wsdis.saglik.gov.tr/KRIZMA.DIS.TREATMENTSERVICE.asmx';
+    DonemSonlandir = 'https://medula.sgk.gov.tr/hastane/login.jsf';
+    AppalicationVer : integer = 2201;
+    ktsHbysKodu : string = 'C740D0288EFAC45FE0407C0A04162BDD';
 
 type
-  TMethods = (mYok,mHizmetKayit,mProvizyon,mFaturaKayit);
+  TMethods = (mTest,mGercek);
 
 type
 
@@ -29,20 +52,33 @@ type
        FIslemRef : string;
        FBeklemeSuresi : integer;
        FGirisParametre : provizyonGirisDVO;
+       FGirisSil : takipSilGirisDVO;
+       FCevapSil : takipSilCevapDVO;
        FCevap : provizyonCevapDVO;
-
+       FTakipOkuGiris : TakipOkuGirisDVO;
+       FTakip : TakipDVO;
 
        procedure setMethod(const value : TMethods);
        function getMethod : TMethods;
        procedure setUsername(const value : string);
        procedure setPassword(const value : string);
+
        procedure setGiris(const value : provizyonGirisDVO);
        procedure setCevap(const value : provizyonCevapDVO);
+       procedure setGirisSil(const value : takipSilGirisDVO);
+       procedure setCevapSil(const value : takipSilCevapDVO);
+       procedure setTakipOkuGiris(const value : takipOkuGirisDVO);
+       procedure setTakip(const value : takipDVO);
 
        function getUsername : string;
        function getPassword : string;
        function getGiris : provizyonGirisDVO;
        function getCevap : provizyonCevapDVO;
+       function getGirisSil : takipSilGirisDVO;
+       function getCevapSil : takipSilCevapDVO;
+       function getTakipOkuGiris : takipOkuGirisDVO;
+       function getTakip : takipDVO;
+
 
        procedure Head;
 
@@ -52,6 +88,9 @@ type
        procedure DoAfterExecute(const MethodName: string; SOAPResponse: TStream);override;
        CONSTRUCTOR Create(AOwner: TComponent); override;
        function TakipAl_3KimlikDorulama : Boolean;
+       function TakipSil_3 : Boolean;
+       function KabulOku : Boolean;
+
     published
        property Method : TMethods read getMethod write setMethod;
        property Header : string read FHeader write FHeader;
@@ -61,7 +100,12 @@ type
        property IslemRef : string read FIslemRef write FIslemRef;
        property BeklemeSuresi : integer read FBeklemeSuresi write FBeklemeSuresi;
        property GirisParametre : provizyonGirisDVO read getGiris write setGiris;
+       property GirisSil : takipSilGirisDVO read getGirisSil write setGirisSil;
        property Cevap : provizyonCevapDVO read FCevap write FCevap;
+       property CevapSil : takipSilCevapDVO read FCevapSil write FCevapSil;
+       property TakipOkuGiris : takipOkuGirisDVO read getTakipOkuGiris write setTakipOkuGiris;
+       property Takip : takipDVO read getTakip write setTakip;
+
  end;
 
 
@@ -93,13 +137,14 @@ constructor THastaKabul.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FGirisParametre := provizyonGirisDVO.Create;
-  FGirisParametre.yeniDoganBilgisi := yeniDoganBilgisiDVO.Create;
-  Self.Method := mYok;
+  FTakipOkuGiris := takipOkuGirisDVO.Create;
+  FGirisSil := takipSilGirisDVO.Create;
+  Self.Method := mGercek;
 end;
+
 
 procedure THastaKabul.DoAfterExecute(const MethodName: string; SOAPResponse: TStream);
 var
-  memo : Tmemo;
   m : TStringList;
   R: UTF8String;
 begin
@@ -112,7 +157,7 @@ begin
      m.Add(FormatXMLData(R));
      m.SaveToFile(XmlOutPath + '\' + IslemRef + '_' + MethodName + '_Cevap_' + FormatDateTime('DDMMYYYY_HHMMSS',now)  + '_.XML');
    finally
-     memo.Free;
+     m.Free;
    end;
 
    Sleep(BeklemeSuresi*1000);
@@ -130,39 +175,17 @@ var
   Body , xmlKaydet: TStringList;
 begin
   inherited;
-
   StrList1 := TStringList.Create;
-  Body := TStringList.Create;
-
   try
-
     SetLength(Request, SOAPRequest.Size);
     SOAPRequest.Position := 0;
     SOAPRequest.Read(Request[1], Length(Request));
     StrList1.add(Request);
 
-(*
-    FHeader := '<SOAP-ENV:Envelope'+
-    ' xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"'+
-    ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'+
-    ' xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"'+
-    ' xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"'+
-    ' xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"'+
-    ' xmlns:ser="http://servisler.ws.gss.sgk.gov.tr">'+
-    ' <SOAP-ENV:Header>'+
-    '  <wsse:Security>'+
-    '    <wsse:UsernameToken wsu:Id="SecurityToken-04ce24bd-9c7c-4ca9-9764-92c53b0662c5">'+
-    '      <wsse:Username>'+Fusername+'</wsse:Username>'+
-    '      <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">'+FPassword+'</wsse:Password>'+
-    '    </wsse:UsernameToken>'+
-    '  </wsse:Security>'+
-    ' </SOAP-ENV:Header>';
-    *)
     StrList1.text := StringReplace(StrList1.text,'<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">',FHeader,[RfReplaceAll]);
 
     StrList1.text := StringReplace(StrList1.text,'<hastaKabul xmlns="http://servisler.ws.gss.sgk.gov.tr">','<tns5:hastaKabul>',[RfReplaceAll]);
     StrList1.text := StringReplace(StrList1.text,'</hastaKabul>','</tns5:hastaKabul>',[RfReplaceAll]);
-
 
     StrList1.text := StringReplace(StrList1.text,'<hastaKabulIptal xmlns="http://servisler.ws.gss.sgk.gov.tr">','<tns5:hastaKabulIptal>',[RfReplaceAll]);
     StrList1.text := StringReplace(StrList1.text,'</hastaKabulIptal>','</tns5:hastaKabulIptal>',[RfReplaceAll]);
@@ -170,19 +193,14 @@ begin
     StrList1.text := StringReplace(StrList1.text,'<hastaKabulOku xmlns="http://servisler.ws.gss.sgk.gov.tr">','<tns5:hastaKabulOku>',[RfReplaceAll]);
     StrList1.text := StringReplace(StrList1.text,'</hastaKabulOku>','</tns5:hastaKabulOku>',[RfReplaceAll]);
 
-
-
     StrList1.text := StringReplace(StrList1.text,'<basvuruTakipOku xmlns="http://servisler.ws.gss.sgk.gov.tr">','<ser:basvuruTakipOku>',[RfReplaceAll]);
-    StrList1.text := StringReplace(StrList1.text,'</basvuruTakipOku>','</ser:basvuruTakipOku>',[RfReplaceAll]);
+    StrList1.text := StringReplace(StrList1.text,'</basvuruTakipOku>','</tns5:basvuruTakipOku>',[RfReplaceAll]);
 
     StrList1.text := StringReplace(StrList1.text,'<hastaKabulKimlikDogrulama xmlns="http://servisler.ws.gss.sgk.gov.tr">','<tns5:hastaKabulKimlikDogrulama>',[RfReplaceAll]);
     StrList1.text := StringReplace(StrList1.text,'</hastaKabulKimlikDogrulama>','</tns5:hastaKabulKimlikDogrulama>',[RfReplaceAll]);
 
-
     StrList1.text := StringReplace(StrList1.text,' xmlns=""','',[RfReplaceAll]);
     StrList1.text := UTF8Encode(StrList1.text);
-
-
 
     SOAPRequest.Position := 0;
     StrList1.SaveToStream(SOAPRequest);
@@ -191,17 +209,12 @@ begin
     SOAPRequest.Position := 0;
     SOAPRequest.Read(Request[1], Length(Request));
 
- //   StrList1.SaveToFile('wsHizmetKayit.xml');
     StrList1.SaveToFile(XmlOutPath + '\' + IslemRef + '_' + MethodName + '_Sorgu_' + FormatDateTime('DDMMYYYY_HHMMSS',now)  + '_.XML');
 
   finally
     StrList1.Free;
-    Body.Free;
   end;
 end;
-
-
-
 
 
 function THastaKabul.getUsername: string;
@@ -219,7 +232,7 @@ begin
     ' xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"'+
     ' xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"'+
     ' xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"'+
-    ' xmlns:ser="http://servisler.ws.gss.sgk.gov.tr">'+
+    ' xmlns:tns5="http://servisler.ws.gss.sgk.gov.tr">'+
     ' <SOAP-ENV:Header>'+
     '  <wsse:Security>'+
     '    <wsse:UsernameToken wsu:Id="SecurityToken-04ce24bd-9c7c-4ca9-9764-92c53b0662c5">'+
@@ -230,15 +243,43 @@ begin
     ' </SOAP-ENV:Header>';
 end;
 
+function THastaKabul.KabulOku: Boolean;
+begin
+    Result := False;
+    Cevap := provizyonCevapDVO.Create;
+    try
+      Application.ProcessMessages;
+      url := ifThen(FMethod = mTest,hastaKabulTestURL,hastaKabulURL);
+      TakipOkuGiris.ktsHbysKodu := ktsHbysKodu;
+      Takip := (self as HastaKabulIslemleri).hastaKabulOku(TakipOkuGiris);
+      Result := True;
+    except
+
+    end;
+
+end;
+
 procedure THastaKabul.setCevap(const value: provizyonCevapDVO);
 begin
   FCevap := value;
 end;
 
+procedure THastaKabul.setCevapSil(const value: takipSilCevapDVO);
+begin
+  FCevapSil := value;
+end;
+
+
 procedure THastaKabul.setGiris(const value: provizyonGirisDVO);
 begin
   FGirisParametre := value;
 end;
+
+procedure THastaKabul.setGirisSil(const value: takipSilGirisDVO);
+begin
+  FGirisSil := value;
+end;
+
 
 procedure THastaKabul.setMethod(const value: TMethods);
 begin
@@ -255,9 +296,20 @@ begin
   Result := FCevap;
 end;
 
+function THastaKabul.getCevapSil: takipSilCevapDVO;
+begin
+  Result := FCevapSil;
+end;
+
+
 function THastaKabul.getGiris: provizyonGirisDVO;
 begin
   Result := FGirisParametre;
+end;
+
+function THastaKabul.getGirisSil: takipSilGirisDVO;
+begin
+  Result := FGirisSil;
 end;
 
 function THastaKabul.getMethod: TMethods;
@@ -271,10 +323,30 @@ begin
 end;
 
 
+function THastaKabul.getTakip: takipDVO;
+begin
+     Result := FTakip;
+end;
+
+function THastaKabul.getTakipOkuGiris: takipOkuGirisDVO;
+begin
+      Result := FTakipOkuGiris;
+end;
+
 procedure THastaKabul.setPassword(const value: string);
 begin
     FPassword := value;
     if (FUserName <> '') and (FPassword <> '') then Head;
+end;
+
+procedure THastaKabul.setTakip(const value: takipDVO);
+begin
+   FTakip := value;
+end;
+
+procedure THastaKabul.setTakipOkuGiris(const value: takipOkuGirisDVO);
+begin
+  FTakipOkuGiris := value;
 end;
 
 procedure THastaKabul.setUsername(const value: string);
@@ -289,6 +361,8 @@ begin
     Cevap := provizyonCevapDVO.Create;
     try
       Application.ProcessMessages;
+      url := ifThen(FMethod = mTest,hastaKabulTestURL,hastaKabulURL);
+      GirisParametre.ktsHbysKodu := ktsHbysKodu;
       Cevap := (self as HastaKabulIslemleri).hastaKabulKimlikDogrulama(GirisParametre);
       Result := True;
     except
@@ -299,5 +373,42 @@ begin
       end;
     end;
 end;
+
+
+function THastaKabul.TakipSil_3 : Boolean;
+begin
+    Result := False;
+    CevapSil := takipSilCevapDVO.Create;
+    try
+      Application.ProcessMessages;
+      url := ifThen(FMethod = mTest,hastaKabulTestURL,hastaKabulURL);
+      GirisSil.ktsHbysKodu := ktsHbysKodu;
+      CevapSil := (self as HastaKabulIslemleri).hastaKabulIptal(GirisSil);
+      Result := True;
+    except
+      on E : sysUtils.Exception do
+      begin
+        Showmessage(E.Message);
+        Result := False;
+      end;
+    end;
+
+          (*
+          if PrvSilCvp.sonucKodu = '0000'
+          Then Begin
+            Result := PrvSilCvp.sonucKodu;
+            TakipSilYaz(PrvSilGir.takipNo);
+          End
+          else
+          if PrvSilCvp.sonucKodu = '0535'
+          Then Begin
+             TakipSilYaz(PrvSilGir.takipNo);
+             Result := PrvSilCvp.sonucKodu;
+          End
+          Else Result := PrvSilCvp.sonucKodu + '-' + PrvSilCvp.sonucMesaji;
+            *)
+
+end;
+
 
 end.

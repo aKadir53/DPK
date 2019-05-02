@@ -63,7 +63,7 @@
 			<Icon_MainIcon>KadirClass2_Icon.ico</Icon_MainIcon>
 			<DCC_Namespace>Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_Locale>1033</VerInfo_Locale>
-			<DCC_UsePackage>vcl;vclactnband;vclx;bdertl;VclSmp;Tee;vcldb;adortl;dxCoreD16;cxLibraryD16;dxThemeD16;dxGDIPlusD16;cxEditorsD16;cxDataD16;cxPageControlD16;dxNavBarD16;cxGridD16;dxSkinsCoreD16;dxSkinscxPCPainterD16;dxSkinXmas2008BlueD16;dxSkinBlackD16;dxSkinBlueD16;dxSkinCaramelD16;dxSkinCoffeeD16;dxSkinDarkRoomD16;dxSkinDarkSideD16;dxSkinFoggyD16;dxSkinGlassOceansD16;dxSkiniMaginaryD16;dxSkinLilianD16;dxSkinLiquidSkyD16;dxSkinLondonLiquidSkyD16;dxSkinMcSkinD16;dxSkinMoneyTwinsD16;dxSkinOffice2007BlackD16;dxSkinOffice2007BlueD16;dxSkinOffice2007GreenD16;dxSkinOffice2007PinkD16;dxSkinOffice2007SilverD16;dxSkinOffice2010BlackD16;dxSkinOffice2010BlueD16;dxSkinOffice2010SilverD16;dxSkinPumpkinD16;dxSkinSevenD16;dxSkinSharpD16;dxSkinSilverD16;dxSkinSpringTimeD16;dxSkinStardustD16;dxSkinSummer2008D16;dxSkinValentineD16;vclSQLMemTabled16;$(DCC_UsePackage)</DCC_UsePackage>
+			<DCC_UsePackage>vcl;vclactnband;vclx;bdertl;VclSmp;Tee;vcldb;adortl;dxCoreD16;cxLibraryD16;dxThemeD16;dxGDIPlusD16;cxEditorsD16;cxDataD16;cxPageControlD16;dxNavBarD16;cxGridD16;dxSkinsCoreD16;dxSkinscxPCPainterD16;dxSkinXmas2008BlueD16;dxSkinBlackD16;dxSkinBlueD16;dxSkinCaramelD16;dxSkinCoffeeD16;dxSkinDarkRoomD16;dxSkinDarkSideD16;dxSkinFoggyD16;dxSkinGlassOceansD16;dxSkiniMaginaryD16;dxSkinLilianD16;dxSkinLiquidSkyD16;dxSkinLondonLiquidSkyD16;dxSkinMcSkinD16;dxSkinMoneyTwinsD16;dxSkinOffice2007BlackD16;dxSkinOffice2007BlueD16;dxSkinOffice2007GreenD16;dxSkinOffice2007PinkD16;dxSkinOffice2007SilverD16;dxSkinOffice2010BlackD16;dxSkinOffice2010BlueD16;dxSkinOffice2010SilverD16;dxSkinPumpkinD16;dxSkinSevenD16;dxSkinSharpD16;dxSkinSilverD16;dxSkinSpringTimeD16;dxSkinStardustD16;dxSkinSummer2008D16;dxSkinValentineD16;vclSQLMemTabled16;dxmdsD16;$(DCC_UsePackage)</DCC_UsePackage>
 			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
@@ -139,13 +139,20 @@
 			<DCCReference Include="IndyProtocols.dcp"/>
 			<DCCReference Include="soaprtl.dcp"/>
 			<DCCReference Include="inet.dcp"/>
+			<DCCReference Include="dxmdsD16.dcp"/>
 			<DCCReference Include="KadirLabel.pas"/>
 			<DCCReference Include="Para.pas"/>
 			<DCCReference Include="D:\Diyaliz\Dializ2007_M3\KadirType.pas"/>
 			<DCCReference Include="FScxGrid.pas"/>
 			<DCCReference Include="KadirHTTPRIOUnit.pas"/>
 			<DCCReference Include="MedulaHastaKabul.pas"/>
-			<DCCReference Include="C:\medula3wsdl\hastaKabulIslemleriWS.pas"/>
+			<DCCReference Include="hastaKabulIslemleriWS.pas"/>
+			<DCCReference Include="hizmetKayitIslemleriWS.pas"/>
+			<DCCReference Include="MedulaFaturaKayit.pas"/>
+			<DCCReference Include="MedulaYardimciIslem.pas"/>
+			<DCCReference Include="yardimciIslemlerWS.pas"/>
+			<DCCReference Include="faturaKayitIslemleriWS.pas"/>
+			<DCCReference Include="MedulaHizmetKayit.pas"/>
 			<RcItem Include="..\icons\Icons\Basics\plain\window_sidebar.png">
 				<ResourceType>RCDATA</ResourceType>
 				<ResourceId>PngImage_1</ResourceId>

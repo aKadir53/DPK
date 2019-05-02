@@ -89,7 +89,8 @@ requires
   IndySystem,
   IndyProtocols,
   soaprtl,
-  inet;
+  inet,
+  dxmdsD16;
 
 contains
   KadirLabel in 'KadirLabel.pas',
@@ -98,6 +99,12 @@ contains
   FScxGrid in 'FScxGrid.pas',
   KadirHTTPRIOUnit in 'KadirHTTPRIOUnit.pas',
   MedulaHastaKabul in 'MedulaHastaKabul.pas',
-  hastaKabulIslemleriWS in 'C:\medula3wsdl\hastaKabulIslemleriWS.pas';
+  hastaKabulIslemleriWS in 'hastaKabulIslemleriWS.pas',
+  hizmetKayitIslemleriWS in 'hizmetKayitIslemleriWS.pas',
+  MedulaFaturaKayit in 'MedulaFaturaKayit.pas',
+  MedulaYardimciIslem in 'MedulaYardimciIslem.pas',
+  yardimciIslemlerWS in 'yardimciIslemlerWS.pas',
+  faturaKayitIslemleriWS in 'faturaKayitIslemleriWS.pas',
+  MedulaHizmetKayit in 'MedulaHizmetKayit.pas';
 
 end.

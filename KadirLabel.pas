@@ -2511,7 +2511,7 @@ begin
                QuotedStr(FpressItem.Caption) + ',' +
                inttostr(FtargetGroup.Tag) + ',' +
                inttostr(FpressItem.SmallImageIndex) + ',' +
-             inttostr(FpressItem.ShowTip) + ',' +
+            inttostr(FpressItem.ShowTip) + ',' +
              inttostr(FpressItem.FormID) + ',' +
                QuotedStr(KullaniciAdi) + ')';
 
