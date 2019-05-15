@@ -39,6 +39,8 @@ type
        FDamarIziDogrulamaSorguCevap : DamarIziDogrulamaSorguCevapDVO;
        FTakipAraGiris : TakipAraGirisDVO;
        FTakipAraCevap : TakipAraCevapDVO;
+       FYurtDisiYardimHakkiGetirGiris : YurtDisiYardimHakkiGetirGirisDVO;
+       FYurtDisiYardimHakkiGetirCevap : YurtDisiYardimHakkiGetirCevapDVO;
 
        procedure setMethod(const value : TMethods);
        function getMethod : TMethods;
@@ -50,7 +52,8 @@ type
        procedure setDamarIziDogrulamaSorguCevap(const value : DamarIziDogrulamaSorguCevapDVO);
        procedure setTakipAraGiris (const value : takipAraGirisDVO);
        procedure setTakipAraCevap(const value : takipAraCevapDVO);
-
+       procedure setYurtDisiYardimHakkiGetirGiris(const value : YurtDisiYardimHakkiGetirGirisDVO);
+       procedure setYurtDisiYardimHakkiGetirCevap(const value : YurtDisiYardimHakkiGetirCevapDVO);
 
        function getUsername : string;
        function getPassword : string;
@@ -59,7 +62,8 @@ type
        function getDamarIziDogrulamaSorguCevap : DamarIziDogrulamaSorguCevapDVO;
        function getTakipAraGiris : takipAraGirisDVO;
        function getTakipAraCevap : takipAraCevapDVO;
-
+       function getYurtDisiYardimHakkiGetirGiris : YurtDisiYardimHakkiGetirGirisDVO;
+       function getYurtDisiYardimHakkiGetirCevap : YurtDisiYardimHakkiGetirCevapDVO;
 
        procedure Head;
 
@@ -70,6 +74,7 @@ type
        CONSTRUCTOR Create(AOwner: TComponent); override;
        function DamarIziDogrulamaSorgula : Boolean;
        function TakipAra : Boolean;
+       function yurtDisiYardimHakkiGetir : Boolean;
     published
        property Method : TMethods read getMethod write setMethod;
        property Header : string read FHeader write FHeader;
@@ -82,6 +87,8 @@ type
        property DamarIziDogrulamaSorguCevap : damarIziDogrulamaSorguCevapDVO read getDamarIziDogrulamaSorguCevap write setDamarIziDogrulamaSorguCevap;
        property takipAraGiris : takipAraGirisDVO read getTakipAraGiris write setTakipAraGiris;
        property takipAraCevap : takipAraCevapDVO read getTakipAraCevap write setTakipAraCevap;
+       property YurtDisiYardimHakkiGetirGiris : YurtDisiYardimHakkiGetirGirisDVO read getYurtDisiYardimHakkiGetirGiris write setYurtDisiYardimHakkiGetirGiris;
+       property YurtDisiYardimHakkiGetirCevap : YurtDisiYardimHakkiGetirCevapDVO read getYurtDisiYardimHakkiGetirCevap write setYurtDisiYardimHakkiGetirCevap;
 
  end;
 
@@ -103,6 +110,7 @@ begin
   inherited Create(AOwner);
   FDamarIziDogrulamaSorguGiris := damarIziDogrulamaSorguGirisDVO.Create;
   FTakipAraGiris := takipAraGirisDVO.Create;
+  FYurtDisiYardimHakkiGetirGiris := yurtDisiYardimHakkiGetirGirisDVO.Create;
   Self.Method := mGercek;
 end;
 
@@ -147,6 +155,27 @@ begin
     end;
 end;
 
+
+function TYardimciIslem.yurtDisiYardimHakkiGetir: Boolean;
+var
+  sql , s ,ss : string;
+  x,y : integer;
+begin
+    Result := False;
+    YurtDisiYardimHakkiGetirCevap := yurtDisiYardimHakkiGetirCevapDVO.Create;
+    try
+      Application.ProcessMessages;
+      url := ifThen(FMethod = mTest,yardimciIslemURLTest,yardimciIslemURL);
+      YurtDisiYardimHakkiGetirCevap := (self as YardimciIslemler).yurtDisiYardimHakkiGetir(YurtDisiYardimHakkiGetirGiris);
+    except
+      on E: SysUtils.Exception do
+      begin
+        Showmessage(E.Message);
+        Result := False;
+      end;
+    end;
+
+end;
 
 procedure TYardimciIslem.DoAfterExecute(const MethodName: string; SOAPResponse: TStream);
 var
@@ -194,6 +223,9 @@ begin
 
     StrList1.text := StringReplace(StrList1.text,'<damarIziDogrulamaSorgu xmlns="http://servisler.ws.gss.sgk.gov.tr">','<ser:damarIziDogrulamaSorgu>',[RfReplaceAll]);
     StrList1.text := StringReplace(StrList1.text,'</damarIziDogrulamaSorgu>','</ser:damarIziDogrulamaSorgu>',[RfReplaceAll]);
+
+    StrList1.text := StringReplace(StrList1.text,'<yurtDisiYardimHakkiGetir xmlns="http://servisler.ws.gss.sgk.gov.tr">','<ser:yurtDisiYardimHakkiGetir>',[RfReplaceAll]);
+    StrList1.text := StringReplace(StrList1.text,'</yurtDisiYardimHakkiGetir>','</ser:yurtDisiYardimHakkiGetir>',[RfReplaceAll]);
 
     StrList1.text := StringReplace(StrList1.text,' xmlns=""','',[RfReplaceAll]);
     StrList1.text := UTF8Encode(StrList1.text);
@@ -253,6 +285,20 @@ begin
 end;
 
 
+procedure TYardimciIslem.setYurtDisiYardimHakkiGetirCevap(
+  const value: YurtDisiYardimHakkiGetirCevapDVO);
+begin
+    FYurtDisiYardimHakkiGetirCevap := value;
+end;
+
+procedure TYardimciIslem.setYurtDisiYardimHakkiGetirGiris(
+  const value: YurtDisiYardimHakkiGetirGirisDVO);
+begin
+   FYurtDisiYardimHakkiGetirGiris := value;
+end;
+
+
+
 procedure TYardimciIslem.setMethod(const value: TMethods);
 begin
   FMethod := value;
@@ -271,6 +317,18 @@ function TYardimciIslem.getDamarIziDogrulamaSorguGiris: DamarIziDogrulamaSorguGi
 begin
     Result := FDamarIziDogrulamaSorguGiris;
 end;
+
+
+function TYardimciIslem.getYurtDisiYardimHakkiGetirCevap: YurtDisiYardimHakkiGetirCevapDVO;
+begin
+    Result := FYurtDisiYardimHakkiGetirCevap;
+end;
+
+function TYardimciIslem.getYurtDisiYardimHakkiGetirGiris: YurtDisiYardimHakkiGetirGirisDVO;
+begin
+    Result := FYurtDisiYardimHakkiGetirGiris;
+end;
+
 
 
 function TYardimciIslem.getMethod: TMethods;

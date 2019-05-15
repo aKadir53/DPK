@@ -105,6 +105,8 @@ contains
   MedulaYardimciIslem in 'MedulaYardimciIslem.pas',
   yardimciIslemlerWS in 'yardimciIslemlerWS.pas',
   faturaKayitIslemleriWS in 'faturaKayitIslemleriWS.pas',
-  MedulaHizmetKayit in 'MedulaHizmetKayit.pas';
+  MedulaHizmetKayit in 'MedulaHizmetKayit.pas',
+  MedulaRaporIslem in 'MedulaRaporIslem.pas',
+  raporIslemleriWS in 'raporIslemleriWS.pas';
 
 end.

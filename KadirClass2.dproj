@@ -153,6 +153,8 @@
 			<DCCReference Include="yardimciIslemlerWS.pas"/>
 			<DCCReference Include="faturaKayitIslemleriWS.pas"/>
 			<DCCReference Include="MedulaHizmetKayit.pas"/>
+			<DCCReference Include="MedulaRaporIslem.pas"/>
+			<DCCReference Include="raporIslemleriWS.pas"/>
 			<RcItem Include="..\icons\Icons\Basics\plain\window_sidebar.png">
 				<ResourceType>RCDATA</ResourceType>
 				<ResourceId>PngImage_1</ResourceId>
