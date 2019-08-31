@@ -2007,12 +2007,20 @@ end;
 
 function TcxDateEditKadir.GetValue(format : string = 'YYYYMMDD') : string;
 begin
+  if self.EditValue = null
+  then Result := 'NULL'
+  else
   result := FormatDateTime(format,self.Date);
 end;
 
 function TcxDateEditKadir.GetSQLValue(format : string = 'YYYYMMDD') : string;
+var
+  _d_ : TDate;
 begin
-  result := QuotedStr(FormatDateTime(format,self.Date));
+  if self.EditValue = null
+  then Result := 'NULL'
+  else
+   result := QuotedStr(FormatDateTime(format,self.Date));
 end;
 
 
