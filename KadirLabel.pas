@@ -562,8 +562,6 @@ type
 end;
 
 
-
-
 type
   TcxImageComboKadir = class(TcxImageComboBox)
    private
