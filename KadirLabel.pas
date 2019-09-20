@@ -20,12 +20,15 @@ type
   TGoster = (fgEvet,fgHayir);
   TDonusum = (dsRakamToYazi,dsDoktorKodToAdi,dsBransKoduToadi,dsHizmetKoduToAdi,dsTckimlikToHasta,dsTanimToadi);
   TPanelSonuc = (psYan,psDik);
-  TTarihValueTip = (tvDate,tvString);
+  TTarihValueTip = (tvDate,tvTime,tvString);
   TShowTip = (stShow,stModal);
   TLoginInOut = (lgnIn,lgnOut);
   TListeAcTableTip = (tpTable,tpSp);
   TCheckGrupSiralamaTip = (value,display);
-
+  TimageComboKadirFilterSet = (fsEvetHayýr,fsGunler,fsAylar,fsA_Z,fs0_9,fsCinsiyet,
+                               fsKanGrubu,fsUyruk,fsMedeniHal,fsOdemeTip,fsParaBirim,
+                               fsDoktorlar,fsBranslar,fsHemsireler,fsSirketler,
+                               fsNone);
 
 
   THb = class(TPersistent)
@@ -573,8 +576,12 @@ type
      FDisplayField : string;
      FBosOlamaz : Boolean;
      FItemList : string;
+     FFilterSet : TimageComboKadirFilterSet;
      procedure setFilter(const value : string);
      function getFilter : string;
+     procedure setFilterSet(const value : TimageComboKadirFilterSet);
+     function getFilterSet: TimageComboKadirFilterSet;
+
    protected
    public
      constructor Create(AOwner: TComponent) ; override;
@@ -588,6 +595,7 @@ type
      property BosOlamaz : Boolean read FBosOlamaz write FBosOlamaz;
      property ItemList : string read FItemList write FItemList;
      property TableTip : TListeAcTableTip read FTableTip write FTableTip Default tpTable;
+     property FilterSet : TimageComboKadirFilterSet read getFilterSet write setFilterSet;
 end;
 
 
@@ -1573,6 +1581,9 @@ begin
   self.Properties.ClearKey := VK_DELETE;
   self.EditValue:= Null;
   self.TableTip := tpTable;
+  self.Conn := nil;
+  self.FilterSet := fsNone;
+  self.ItemList := '';
 end;
 
 
@@ -1695,6 +1706,11 @@ end;
 
 
 
+function TcxImageComboKadir.getFilterSet: TimageComboKadirFilterSet;
+begin
+  result := FFilterSet;
+end;
+
 function TcxImageComboKadir.getItemString : String;
 var
   I : integer;
@@ -1708,10 +1724,14 @@ begin
 end;
 
 procedure TcxImageComboKadir.setFilter(const value : string);
+const
+  harflerK = 'abcçdefgðhýijklmnoöpqrsþtuüvwxyz';
+  harflerB = 'ABCÇDEFGÐHIÝJKLMNOÖPQRSÞTUÜVWXYZXW';
+  rakamlar = '0123456789';
 var
   ado : TADOQuery;
   Tlist : TstringList;
-  i : integer;
+  i , startIndex , endIndex : integer;
   chr : string;
 begin
   FFilter := value;
@@ -1760,20 +1780,21 @@ begin
 
       if FItemList <> ''
       Then Begin
-        chr := ';';
-        TList := TStringList.Create;
-        try
-          ExtractStrings([','],[],PChar(ItemList),Tlist);
-          for I := 0 to Tlist.Count - 1 do
-          begin
-            Tlist[I] := StringReplace(Tlist[I],'|',chr,[rfReplaceAll]);
-            FItem := Properties.Items.add;
-            FItem.Value := copy(Tlist[I],1,pos(chr,Tlist[I])-1);
-            FItem.Description := copy(Tlist[I],pos(chr,Tlist[I])+1,200);
-          end;
-        finally
-          TList.Free;
-        end;
+            chr := ';';
+            TList := TStringList.Create;
+            try
+              ExtractStrings([','],[],PChar(ItemList),Tlist);
+              for I := 0 to Tlist.Count - 1 do
+              begin
+                Tlist[I] := StringReplace(Tlist[I],'|',chr,[rfReplaceAll]);
+                FItem := Properties.Items.add;
+                FItem.Value := copy(Tlist[I],1,pos(chr,Tlist[I])-1);
+                FItem.Description := copy(Tlist[I],pos(chr,Tlist[I])+1,200);
+              end;
+            finally
+              TList.Free;
+            end;
+
       End;
     finally
       ado.Free;
@@ -1781,23 +1802,150 @@ begin
   end
   else
   begin
-    TList := TStringList.Create;
-    try
-      ExtractStrings([','],[],PChar(ItemList),Tlist);
-  //    Split(',',ItemList,TList);
-      for I := 0 to Tlist.Count - 1 do
-      begin
-        FItem := Properties.Items.add;
-        FItem.Value := copy(Tlist[I],1,pos(';',Tlist[I])-1);
-        FItem.Description := copy(Tlist[I],pos(';',Tlist[I])+1,200);
-      end;
-    finally
-      TList.Free;
-    end;
+        if pos('..',FItemList) > 0
+        then begin
+           if pos(copy(FItemList,1,1),rakamlar) > 0
+           then begin
+              try
+               startIndex := strToint(copy(FItemList,1, pos('.',FItemList)-1));
+               endIndex := strToint(copy(FItemList,pos('..',FItemList)+2,10));
+              except
+                startIndex := 0;
+                endIndex := 0;
+              end;
+              for I := startIndex to endIndex do
+              begin
+                FItem := Properties.Items.add;
+                FItem.Value := intToStr(I);
+                FItem.Description := intToStr(I);
+              end;
+           end
+           else
+           if pos(copy(FItemList,1,1),harflerK) > 0
+           then begin
+              startIndex := pos(copy(FItemList,1,1),harflerK);
+              endIndex := pos(copy(FItemList,4,1),harflerK);
+              for I := startIndex to endIndex do
+              begin
+                FItem := Properties.Items.add;
+                FItem.Value := harflerK[I];
+                FItem.Description := harflerK[I];
+              end;
+           end
+           else
+           if pos(copy(FItemList,1,1),harflerB) > 0
+           then begin
+              startIndex := pos(copy(FItemList,1,1),harflerB);
+              endIndex := pos(copy(FItemList,4,1),harflerB);
+              for I := startIndex to endIndex do
+              begin
+                FItem := Properties.Items.add;
+                FItem.Value := harflerB[I];
+                FItem.Description := harflerB[I];
+              end;
+           end;
+        end
+        else
+        begin
+            TList := TStringList.Create;
+            try
+              ExtractStrings([','],[],PChar(ItemList),Tlist);
+          //    Split(',',ItemList,TList);
+              for I := 0 to Tlist.Count - 1 do
+              begin
+                FItem := Properties.Items.add;
+                FItem.Value := copy(Tlist[I],1,pos(';',Tlist[I])-1);
+                FItem.Description := copy(Tlist[I],pos(';',Tlist[I])+1,200);
+              end;
+            finally
+              TList.Free;
+            end;
+        end;
   end;
 //  ItemIndex := 0;
 end;
 
+
+procedure TcxImageComboKadir.setFilterSet(const value: TimageComboKadirFilterSet);
+begin
+
+        FFilterSet := value;
+        self.Properties.Items.Clear;
+
+        if FFilterSet = fsDoktorlar
+        then begin
+           FTableName := 'DoktorlarT';
+           FValueField := 'kod';
+           FDisplayField := 'tanimi';
+           FFilter := ' Aktif = 1';
+        end
+        else
+        if FFilterSet = fsSirketler
+        then begin
+           FTableName := 'SIRKETLER_TNM';
+           FValueField := 'kod';
+           FDisplayField := 'tanimi';
+           FFilter := ' Aktif = 1';
+        end
+        else
+        begin
+            FConn := nil;
+            if FFilterSet = fsParaBirim
+            then begin
+               FItemList := '1;TL,2;ABD(Dolarý),3;Euro';
+            end
+            else
+            if FFilterSet = fsOdemeTip
+            then begin
+               FItemList := '1;Nakit,2;Kredi Kart,3;Çek,4;Senet';
+            end
+            else
+            if FFilterSet = fsMedeniHal
+            then begin
+               FItemList := '1;Evli,0;Bekar,2;Boþanmýþ,3;Dul';
+            end
+            else
+            if FFilterSet = fsKanGrubu
+            then begin
+               FItemList := '1;A Rh(+),2;A Rh(-),3;B Rh(+),4;B Rh(-),5;AB Rh(+),6;AB Rh(-),7;0 Rh(+),8;0 Rh(-)';
+            end
+            else
+            if FFilterSet = fsCinsiyet
+            then begin
+               FItemList := '1;Erkek,0;Bayan';
+            end
+            else
+            if FFilterSet = fs0_9
+            then begin
+               FItemList := '0..9';
+            end
+            else
+            if FFilterSet = fsA_Z
+            then begin
+               FItemList := 'A..Z';
+            end
+            else
+            if FFilterSet = fsEvetHayýr
+            then begin
+               FItemList := '1;Evet,0;Hayýr';
+             end
+            else
+            if FFilterSet = fsGunler
+            then begin
+               FItemList := '0;PAZAR,1;PAZARTESÝ,2;SALI,3;ÇARÞAMBA,4;PERÞEMBE,5;CUMA,6;CUMARTESÝ';
+            end
+            else
+            if FFilterSet = fsAylar
+            then begin
+               FItemList := '01;OCAK,02;ÞUBAT,03;MART,04;NÝSAN,05;MAYIS,06;HAZÝRAN,07;TEMMUZ,08;AÐUSTOS,09;EYLÜL,10;EKÝM,11;KASIM,12;ARALIK';
+            end
+            else
+            begin
+            end;
+            Filter := '';
+
+        end;
+end;
 
 constructor TcxCheckGroupKadir.Create(AOwner: TComponent);
 begin
@@ -2520,7 +2668,7 @@ begin
                inttostr(FtargetGroup.Tag) + ',' +
                inttostr(FpressItem.SmallImageIndex) + ',' +
             inttostr(FpressItem.ShowTip) + ',' +
-             inttostr(FpressItem.FormID) + ',' +
+            inttostr(FpressItem.FormID) + ',' +
                QuotedStr(KullaniciAdi) + ')';
 
        ado := TADOQuery.Create(nil);
@@ -2770,8 +2918,8 @@ begin
        Items[r].Tag := MenuSatir.KAYITID;
        Items[r].SmallImageIndex := MenuSatir.imageIndex;
        Items[r].Visible := Boolean(MenuSatir.Izin);
-      Items[r].FormId := MenuSatir.formId;
-      Items[r].ShowTip := MenuSatir.ShowTip;
+     Items[r].FormId := MenuSatir.formId;
+     Items[r].ShowTip := MenuSatir.ShowTip;
 
        for i := 0 to Groups.Count - 1 do
        begin
