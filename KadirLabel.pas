@@ -554,9 +554,7 @@ type
      property Yil : string read getYil write setYil;
      property ilkTarih : TDate read FilkTarih write FilkTarih;
      property sonTarih : TDate read FsonTarih write FsonTarih;
-end;
-
-
+en
 
 
 type
