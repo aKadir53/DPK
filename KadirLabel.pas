@@ -20,13 +20,11 @@ type
   TGoster = (fgEvet,fgHayir);
   TDonusum = (dsRakamToYazi,dsDoktorKodToAdi,dsBransKoduToadi,dsHizmetKoduToAdi,dsTckimlikToHasta,dsTanimToadi);
   TPanelSonuc = (psYan,psDik);
-  TTarihValueTip = (tvDate,tvString);
+  TTarihValueTip = (tvDate,tvTime,tvString);
   TShowTip = (stShow,stModal);
   TLoginInOut = (lgnIn,lgnOut);
   TListeAcTableTip = (tpTable,tpSp);
   TCheckGrupSiralamaTip = (value,display);
-
-
 
   THb = class(TPersistent)
   private
