@@ -7,6 +7,7 @@ uses
   forms,adodb,ImgList,Para,strUtils,ExtCtrls, Math,db,buttons, Types, kadirType,cxButtons,
   ListeAcForm,registry,dxNavBarBase, dxNavBar,dxNavBarCollns,ActnList,Menus,ActnMan, Vcl.Graphics,
   cxTextEdit,cxCalendar,cxGrid,ComCtrls,KadirMenus,cxGridDBTableView,cxGridDBBandedTableView,
+  cxNavigator,cxGridCustomTableView, cxGridLevel,
   cxGridCustomView,cxCustomData,cxImageComboBox,FScxGrid,cxFilter,cxGridExportLink,ShellApi,Winapi.Windows,
   cxCheckBox,cxEdit,cxGroupBox,dxLayoutContainer,cxGridStrs, cxFilterConsts,cxCheckGroup,
   cxFilterControlStrs,cxGridPopupMenuConsts,cxClasses,IdHttp,System.Variants;
@@ -28,6 +29,7 @@ type
   TimageComboKadirFilterSet = (fsEvetHayýr,fsGunler,fsAylar,fsA_Z,fs0_9,fsCinsiyet,
                                fsKanGrubu,fsUyruk,fsMedeniHal,fsOdemeTip,fsParaBirim,
                                fsDoktorlar,fsBranslar,fsHemsireler,fsSirketler,
+                               fsVatandasTip,fsAktifPasif,fsSgkDurumTip,
                                fsNone);
 
 
@@ -357,6 +359,43 @@ type
 end;
 
 Values = Array of Variant;
+
+
+
+
+type
+    TcxGridDBTableViewKadir = class;
+    TcxGridDBTableViewKadir = class(TcxGridDBTableView)
+//    procedure NavigatorButtonsButtonClick(Sender: TObject; AButtonIndex: Integer; var ADone: Boolean);virtual;
+
+    private
+      FPopupForm : Boolean;
+   protected
+   public
+      constructor Create(AOwner: TComponent) ; override;
+      procedure NavigatorButtonsButtonClick(Sender: TObject; AButtonIndex: Integer; var ADone: Boolean);virtual;
+
+   published
+
+   property PopupForm : Boolean read FPopupForm write FPopupForm;
+
+end;
+
+
+type
+    TcxGridDBTableViewK = class;
+    TcxGridDBTableViewK = class(TcxGridDBTableViewKadir)
+    private
+    protected
+    public
+      constructor Create(AOwner: TComponent) ; override;
+      procedure NavigatorButtonsButtonClick(Sender: TObject; AButtonIndex: Integer; var ADone: Boolean);override;
+    published
+end;
+
+
+
+
 type
   TcxGridKadir = class(TcxGrid)
     private
@@ -365,22 +404,30 @@ type
       FExceleGonder : Boolean;
       FDataset : TADOQuery;
       FDataSource : TDataSource;
+      FPopupForm : Boolean;
+
       procedure TClick(sender : TObject);
       procedure cxGridToTr;
       procedure DatasetAfterOpen(DataSet: TDataSet);
 
+
+
    protected
    public
       constructor Create(AOwner: TComponent) ; override;
-    //  destructor Destroy; override;
+   //   destructor Destroy; override;
       function SelectedCellValue(ColonFieldName : string ; Row : integer) : Variant; overload;
       function SelectedCellValue(ColonFieldName : string) : Values; overload;
       procedure SelectedCellSetValue(ColonName : string ; Row : integer ; Value : Variant);
+  //    procedure ButtonsClick(ButtonIndex : integer);
+
+
    published
      property ExcelFileName : string read FExcelFileName write FExcelFileName;
      property ExceleGonder : Boolean read FExceleGonder write FExceleGonder;
      property Dataset : TADOQuery read FDataset write FDataset;
      property DataSource : TDataSource read FDataSource write FDataSource;
+     property PopupForm : Boolean read FPopupForm write FPopupForm;
   end;
 
 
@@ -947,6 +994,9 @@ var
   MenuItem : TMenuItem;
   Liste : TcxGridDBTableView;
   ListeBanded : TcxGridDBBandedTableView;
+  v : TcxGridDBTableViewK;
+  l : TcxGridLevel;
+
 implementation
 
 uses ComObj, Consts, RTLConsts, Themes;
@@ -955,6 +1005,7 @@ uses ComObj, Consts, RTLConsts, Themes;
 
 procedure Register;
 begin
+
   RegisterComponents('Nokta', [TKadirLabel]);
   RegisterComponents('Nokta', [TKadirEdit]);
   RegisterComponents('Nokta', [TListeAc]);
@@ -969,6 +1020,7 @@ begin
   RegisterComponents('Nokta', [TcxDateEditKadir]);
   RegisterComponents('Nokta', [TcxTextEditKadir]);
   RegisterComponents('Nokta', [TcxGridKadir]);
+
   RegisterComponents('Nokta', [TMenuItemModul]);
   RegisterComponents('Nokta', [TToolButtonKadir]);
   RegisterComponents('Nokta', [TFScxGrid]);
@@ -983,11 +1035,6 @@ begin
   RegisterComponents('Nokta', [TAnimatedFormIcon]);
   RegisterComponents('Nokta', [TAnimatedIcon]);
   RegisterComponents('Nokta', [TAniImageList]);
-
-  Classes.RegisterClass(TFScxGridDBTableView);
-  Classes.RegisterClass(TdxNavBarKadirItem);
-  Classes.RegisterClass(TGirisFormItem);
-  Classes.RegisterClass(TGirisFormItems);
 
 
 
@@ -1581,7 +1628,6 @@ begin
   self.TableTip := tpTable;
   self.Conn := nil;
   self.FilterSet := fsNone;
-  self.ItemList := '';
 end;
 
 
@@ -1733,7 +1779,6 @@ var
   chr : string;
 begin
   FFilter := value;
-  Properties.Items.Clear;
 
   if FConn <> nil
   then begin
@@ -1759,6 +1804,8 @@ begin
       except
       end;
 
+      Properties.Items.Clear;
+
       while not ado.Eof do
       begin
         FItem := Properties.Items.add;
@@ -1776,6 +1823,7 @@ begin
           FItem.Description := 'Atanmamýþ';
       end; *)
 
+      (*
       if FItemList <> ''
       Then Begin
             chr := ';';
@@ -1794,14 +1842,17 @@ begin
             end;
 
       End;
+        *)
     finally
       ado.Free;
     end;
   end
   else
   begin
+
         if pos('..',FItemList) > 0
         then begin
+           Properties.Items.Clear;
            if pos(copy(FItemList,1,1),rakamlar) > 0
            then begin
               try
@@ -1811,6 +1862,9 @@ begin
                 startIndex := 0;
                 endIndex := 0;
               end;
+
+              Properties.Items.Clear;
+
               for I := startIndex to endIndex do
               begin
                 FItem := Properties.Items.add;
@@ -1823,6 +1877,8 @@ begin
            then begin
               startIndex := pos(copy(FItemList,1,1),harflerK);
               endIndex := pos(copy(FItemList,4,1),harflerK);
+
+
               for I := startIndex to endIndex do
               begin
                 FItem := Properties.Items.add;
@@ -1869,6 +1925,7 @@ begin
 
         FFilterSet := value;
         self.Properties.Items.Clear;
+ //       FItemList := '';
 
         if FFilterSet = fsDoktorlar
         then begin
@@ -1888,6 +1945,18 @@ begin
         else
         begin
             FConn := nil;
+
+            if FFilterSet = fsSgkDurumTip
+            then begin
+               FItemList := '1;Çalýþan,2;Emekli,3;SSK Kurum Personeli,4;Diðer';
+            end
+            else
+            if FFilterSet = fsVatandasTip
+            then begin
+               FItemList := '0;Vatandaþ,1;Yeni Doðan,2;Sýðýnmacý,4;Yabancý,6;Kimliksiz';
+            end
+            else
+
             if FFilterSet = fsParaBirim
             then begin
                FItemList := '1;TL,2;ABD(Dolarý),3;Euro';
@@ -1900,7 +1969,7 @@ begin
             else
             if FFilterSet = fsMedeniHal
             then begin
-               FItemList := '1;Evli,0;Bekar,2;Boþanmýþ,3;Dul';
+               FItemList := '0;Evli,1;Bekar,2;Boþanmýþ,3;Dul';
             end
             else
             if FFilterSet = fsKanGrubu
@@ -1910,7 +1979,7 @@ begin
             else
             if FFilterSet = fsCinsiyet
             then begin
-               FItemList := '1;Erkek,0;Bayan';
+               FItemList := '0;Bay,1;Bayan';
             end
             else
             if FFilterSet = fs0_9
@@ -1926,6 +1995,11 @@ begin
             if FFilterSet = fsEvetHayýr
             then begin
                FItemList := '1;Evet,0;Hayýr';
+             end
+            else
+            if FFilterSet = fsAktifPasif
+            then begin
+               FItemList := '1;Aktif,0;Pasif,2;Yeni,-1;Tümü';
              end
             else
             if FFilterSet = fsGunler
@@ -2193,11 +2267,20 @@ begin
 end;
 
 
+ (*
 
+procedure TcxGridKadir.ButtonsClick(ButtonIndex: integer);
+var
+  Grid : TcxGridDBTableView;
+begin
+  Grid := TcxGridDBTableView(TcxGridKadir(self).ActiveView);
+  Grid.NavigatorButtons[ButtonIndex].Click;
+end;
+   *)
 
 constructor TcxGridKadir.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
+   inherited Create(AOwner);
 
   FDataset := TADOQuery.Create(self);
   FDataset.AfterOpen := DatasetAfterOpen;
@@ -2210,6 +2293,13 @@ begin
   MenuItem.OnClick := TClick;
   FpMenu.Items.Add(MenuItem);
   PopupMenu := FPMenu;
+
+
+
+  //TcxGridKadir(self).Levels[1].GridView := FGrid;
+
+
+
 
   cxGridToTr;
 
@@ -2293,6 +2383,25 @@ begin
 end;
 
 
+
+
+(*
+destructor TcxGridKadir.Destroy;
+begin
+   FreeAndNil(v);
+  inherited;
+end;
+*)
+
+
+(*
+procedure TcxGridKadir.NavigatorButtonsButtonClick(Sender: TObject;
+  AButtonIndex: Integer; var ADone: Boolean);
+begin
+  inherited;
+//
+end;
+    *)
 procedure TcxGridKadir.TClick(sender : TObject);
 var
   SD : TSaveDialog;
@@ -2665,8 +2774,8 @@ begin
                QuotedStr(FpressItem.Caption) + ',' +
                inttostr(FtargetGroup.Tag) + ',' +
                inttostr(FpressItem.SmallImageIndex) + ',' +
-            inttostr(FpressItem.ShowTip) + ',' +
-            inttostr(FpressItem.FormID) + ',' +
+               inttostr(FpressItem.ShowTip) + ',' +
+               inttostr(FpressItem.FormID) + ',' +
                QuotedStr(KullaniciAdi) + ')';
 
        ado := TADOQuery.Create(nil);
@@ -3834,5 +3943,66 @@ begin
   cxSetResourceString(@cxSGridAvgMenuItem, 'Avaraj'); // 'Average';
   cxSetResourceString(@cxSGridNoneMenuItem, 'Yok'); // 'None';
 end;
+
+{ TcxGridDBTableViewKadir }
+
+constructor TcxGridDBTableViewKadir.Create(AOwner: TComponent);
+begin
+
+
+   inherited Create(AOwner);
+   FPopupForm := False;
+
+   self.Navigator.Visible := True;
+
+
+   self.Navigator.Buttons.Edit.Visible := False;
+   self.Navigator.Buttons.Post.Visible := False;
+   self.Navigator.Buttons.OnButtonClick := NavigatorButtonsButtonClick;
+
+
+
+end;
+
+
+
+procedure TcxGridDBTableViewKadir.NavigatorButtonsButtonClick(Sender: TObject;
+  AButtonIndex: Integer; var ADone: Boolean);
+begin
+  inherited;
+  ShowMessage('Test Ýþlemi');
+
+end;
+
+
+
+{ TcxGridDBTableViewPopup }
+
+constructor TcxGridDBTableViewK.Create(AOwner: TComponent);
+begin
+  inherited;
+
+end;
+
+procedure TcxGridDBTableViewK.NavigatorButtonsButtonClick(Sender: TObject;
+  AButtonIndex: Integer; var ADone: Boolean);
+begin
+  inherited;
+     ShowMessage('s');
+end;
+
+Initialization
+
+  Classes.RegisterClass(TFScxGridDBTableView);
+  Classes.RegisterClass(TdxNavBarKadirItem);
+  Classes.RegisterClass(TGirisFormItem);
+  Classes.RegisterClass(TGirisFormItems);
+  Classes.RegisterClass(TcxGridDBTableViewKadir);
+  Classes.RegisterClass(TcxGridDBTableViewK);
+
+
+
+
+
 
 end.
