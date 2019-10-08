@@ -352,26 +352,26 @@ begin
 
              if Cevap.hataliKayitlar <> nil
              Then
-             for i := 0 to j - 1 do
-             Begin
-                try
-                  if Cevap.hataliKayitlar[i].hataKodu = '1229'
-                  Then Begin
-                       a := pos('önce', string(Cevap.hataliKayitlar[i].hataMesaji));
-                       a := a + 4;
-                       b := pos('numaralý',string(Cevap.hataliKayitlar[i].hataMesaji));
-                       b := b -1;
-                       _islemNo_ := trim(copy(Cevap.hataliKayitlar[i].hataMesaji,a,b-a));
-                       refNo := Cevap.hataliKayitlar[i].hizmetSunucuRefNo;
-                  End;
+               for i := 0 to j - 1 do
+               Begin
+                  try
+                    if Cevap.hataliKayitlar[i].hataKodu = '1229'
+                    Then Begin
+                         a := pos('önce', string(Cevap.hataliKayitlar[i].hataMesaji));
+                         a := a + 4;
+                         b := pos('numaralý',string(Cevap.hataliKayitlar[i].hataMesaji));
+                         b := b -1;
+                         _islemNo_ := trim(copy(Cevap.hataliKayitlar[i].hataMesaji,a,b-a));
+                         refNo := Cevap.hataliKayitlar[i].hizmetSunucuRefNo;
 
-                  Hatali.Add(Cevap.sonucKodu +'-'+ Cevap.takipNo +'-'+ Cevap.hataliKayitlar[i].hataMesaji +
-                                       '- [ islemSiraNo Meduladan Alýnýp Sisteme Yazýldý , Ok..]');
+                         Hatali.Add(Cevap.sonucKodu +'-'+ Cevap.takipNo +'-'+ Cevap.hataliKayitlar[i].hataMesaji +
+                                         '- [ islemSiraNo Meduladan Alýnýp Sisteme Yazýldý , Ok..]');
+                    End;
 
-
-                except
-                end;
-             End
+                    Hatali.Add(Cevap.hataliKayitlar[i].hataKodu + ':' + Cevap.hataliKayitlar[i].hizmetSunucuRefNo + '-' + Cevap.hataliKayitlar[i].hataMesaji);
+                  except
+                  end;
+               End
              Else Hatali.Add(Cevap.sonucKodu+' '+Cevap.sonucMesaji);
 
       end;
