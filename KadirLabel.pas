@@ -1999,7 +1999,7 @@ begin
             else
             if FFilterSet = fsAktifPasif
             then begin
-               FItemList := '1;Aktif,0;Pasif,2;Yeni,-1;Tümü';
+               FItemList := '1;Aktif,0;Pasif,2;Yeni,-1;Tümü,4;Ayrýldý,3;Kara Liste';
              end
             else
             if FFilterSet = fsGunler

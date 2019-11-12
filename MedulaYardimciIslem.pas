@@ -21,8 +21,8 @@ uses
     ktsHbysKodu : string = 'C740D0288EFAC45FE0407C0A04162BDD';
 
 
-type
-  TMethods = (mTest,mGercek);
+//type
+ // TMethods = (mTest,mGercek);
 
 type
 

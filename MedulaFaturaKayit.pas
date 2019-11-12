@@ -20,8 +20,8 @@ uses
     _Service_ = 'FaturaKayitIslemleriService';
     _Port_ = 'FaturaKayitIslemleriPort';
 
-type
-  TMethods = (mTest,mGercek);
+//type
+  //TMethods = (mTest,mGercek);
 
 type
 
