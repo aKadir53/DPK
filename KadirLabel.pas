@@ -420,7 +420,7 @@ type
       function SelectedCellValue(ColonFieldName : string) : Values; overload;
       procedure SelectedCellSetValue(ColonName : string ; Row : integer ; Value : Variant);
   //    procedure ButtonsClick(ButtonIndex : integer);
-
+      procedure ExceleKaydet;
 
    published
      property ExcelFileName : string read FExcelFileName write FExcelFileName;
@@ -3680,6 +3680,14 @@ begin
 
 end;
 *)
+
+procedure TcxGridKadir.ExceleKaydet;
+begin
+    if ExceleGonder = True
+    Then begin
+      ExportGridToExcel(ExcelFileName,Self,False,True);
+    end;
+end;
 
 procedure TcxGridKadir.cxGridToTr;
 begin
