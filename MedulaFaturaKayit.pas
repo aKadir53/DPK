@@ -408,7 +408,7 @@ end;
 function TFaturaKayit.FaturaIptal : Boolean;
 begin
     Result := False;
-    FaturaIptalCevap := FaturaIptalCevap.Create;
+    FaturaIptalCevap := FaturaIptalCevapDVO.Create;
     try
       Application.ProcessMessages;
       url := ifThen(FMethod = mTest,faturaKayitTestURL,faturaKayitURL);

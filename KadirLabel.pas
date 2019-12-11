@@ -29,7 +29,7 @@ type
   TimageComboKadirFilterSet = (fsEvetHayýr,fsGunler,fsAylar,fsA_Z,fs0_9,fsCinsiyet,
                                fsKanGrubu,fsUyruk,fsMedeniHal,fsOdemeTip,fsParaBirim,
                                fsDoktorlar,fsBranslar,fsHemsireler,fsSirketler,
-                               fsVatandasTip,fsAktifPasif,fsSgkDurumTip,
+                               fsVatandasTip,fsAktifPasif,fsDiyalizAktifPasif,fsSgkDurumTip,
                                fsNone);
 
 
@@ -2000,6 +2000,11 @@ begin
             if FFilterSet = fsAktifPasif
             then begin
                FItemList := '1;Aktif,0;Pasif,2;Yeni,-1;Tümü,4;Ayrýldý,3;Kara Liste';
+             end
+             else
+            if FFilterSet = fsDiyalizAktifPasif
+            then begin
+               FItemList := '1;Aktif,0;Pasif,2;Misafir,;Tümü';
              end
             else
             if FFilterSet = fsGunler

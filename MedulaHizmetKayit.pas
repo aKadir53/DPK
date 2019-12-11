@@ -327,6 +327,12 @@ begin
       Cevap := (self as HizmetKayitIslemleriService).hizmetKayit(GirisParametre);
       Result := Cevap.sonucKodu;
 
+      if Cevap.sonucKodu = '9999'
+      then begin
+       result := Cevap.sonucKodu;
+       exit;
+      end
+      else
       if (Cevap.sonucKodu = '0000') or (Cevap.sonucKodu = '9000')
       Then begin
         if Cevap.sonucKodu = '9000' then
