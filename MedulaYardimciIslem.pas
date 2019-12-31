@@ -2,13 +2,12 @@ unit MedulaYardimciIslem;
 interface
 
 uses
-  SysUtils, Classes, Controls, StdCtrls,Dialogs,Messages,cxButtonEdit,SOAPHTTPClient,IdHTTP,SOAPHTTPTrans,
-  forms,adodb,ImgList,Para,strUtils,ExtCtrls, Math,db,buttons, Types, kadirType,cxButtons,
-  registry, ActnList,Menus,ActnMan, Vcl.Graphics,XMLDoc,
-  cxTextEdit,cxCalendar,cxGrid,ComCtrls,KadirMenus,cxGridDBTableView,cxGridDBBandedTableView,
-  cxGridCustomView,cxCustomData,cxImageComboBox,cxFilter,cxGridExportLink,ShellApi,Winapi.Windows,
-  cxCheckBox,cxEdit,cxGroupBox,dxLayoutContainer,cxGridStrs, cxFilterConsts,cxCheckGroup,
-  cxFilterControlStrs,cxGridPopupMenuConsts,cxClasses,System.Variants,
+  SysUtils, Classes, Controls, StdCtrls,Dialogs,Messages,SOAPHTTPClient,IdHTTP,SOAPHTTPTrans,
+  forms,strUtils,ExtCtrls, Math, Types, kadirType,
+  registry, Menus, Vcl.Graphics,XMLDoc,
+  ComCtrls,
+  ShellApi,Winapi.Windows,
+  System.Variants,
   yardimciIslemlerWS ;
 
 
@@ -20,9 +19,10 @@ uses
     YardimciIslemPort = 'YardimciIslemler';
     ktsHbysKodu : string = 'C740D0288EFAC45FE0407C0A04162BDD';
 
-
-//type
- // TMethods = (mTest,mGercek);
+(*
+type
+  TMethods = (mTest,mGercek);
+  *)
 
 type
 
@@ -72,6 +72,7 @@ type
        procedure DoBeforeExecute(const MethodName: string;SOAPRequest: TStream);override;
        procedure DoAfterExecute(const MethodName: string; SOAPResponse: TStream);override;
        CONSTRUCTOR Create(AOwner: TComponent); override;
+       destructor Destroy; override;
        function DamarIziDogrulamaSorgula : Boolean;
        function TakipAra : Boolean;
        function yurtDisiYardimHakkiGetir : Boolean;
@@ -115,9 +116,6 @@ begin
 end;
 
 function TYardimciIslem.DamarIziDogrulamaSorgula: Boolean;
-var
-  sql , s ,ss : string;
-  x,y : integer;
 begin
     Result := False;
     DamarIziDogrulamaSorguCevap := damarIziDogrulamaSorguCevapDVO.Create;
@@ -134,6 +132,15 @@ begin
       end;
     end;
 
+end;
+
+destructor TYardimciIslem.Destroy;
+begin
+  FDamarIziDogrulamaSorguGiris.Free;
+  FTakipAraGiris.Free;
+  FYurtDisiYardimHakkiGetirGiris.Free;
+  DamarIziDogrulamaSorguCevap.Free;
+  inherited;
 end;
 
 function TYardimciIslem.TakipAra: Boolean;
@@ -157,9 +164,6 @@ end;
 
 
 function TYardimciIslem.yurtDisiYardimHakkiGetir: Boolean;
-var
-  sql , s ,ss : string;
-  x,y : integer;
 begin
     Result := False;
     YurtDisiYardimHakkiGetirCevap := yurtDisiYardimHakkiGetirCevapDVO.Create;
@@ -200,13 +204,13 @@ end;
 procedure TYardimciIslem.DoBeforeExecute(const MethodName: string;SOAPRequest: TStream);
 var
   Request: UTF8String;
-  Request1: UTF8String;
+//  Request1: UTF8String;
   StrList1: TStringList;
-  I : integer;
-  HeaderBegin , HeaderEnd : integer;
-  Header  : Widestring;
-  BodyBegin , BodyEnd , ii ,s : integer;
-  Body , xmlKaydet: TStringList;
+//  I : integer;
+ // HeaderBegin , HeaderEnd : integer;
+//  Header  : Widestring;
+//  BodyBegin , BodyEnd , ii ,s : integer;
+//  Body , xmlKaydet: TStringList;
 begin
   inherited;
   StrList1 := TStringList.Create;
@@ -246,8 +250,8 @@ end;
 
 
 function TYardimciIslem.getUsername: string;
-var
- Head : string;
+//var
+// Head : string;
 begin
     Result := FUserName;
 end;
