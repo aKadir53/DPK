@@ -7,7 +7,7 @@ uses
   forms,adodb,ImgList,Para,strUtils,ExtCtrls, Math,db,buttons, Types, kadirType,cxButtons,
   ListeAcForm,registry,dxNavBarBase, dxNavBar,dxNavBarCollns,ActnList,Menus,ActnMan, Vcl.Graphics,
   cxTextEdit,cxCalendar,cxGrid,ComCtrls,KadirMenus,cxGridDBTableView,cxGridDBBandedTableView,
-  cxNavigator,cxGridCustomTableView, cxGridLevel,
+  cxNavigator,cxGridCustomTableView, cxGridLevel,XSBuiltIns,DateUtils,
   cxGridCustomView,cxCustomData,cxImageComboBox,FScxGrid,cxFilter,cxGridExportLink,ShellApi,Winapi.Windows,
   cxCheckBox,cxEdit,cxGroupBox,dxLayoutContainer,cxGridStrs, cxFilterConsts,cxCheckGroup,
   cxFilterControlStrs,cxGridPopupMenuConsts,cxClasses,IdHttp,System.Variants;
@@ -30,7 +30,7 @@ type
                                fsKanGrubu,fsUyruk,fsMedeniHal,fsOdemeTip,fsParaBirim,
                                fsDoktorlar,fsBranslar,fsHemsireler,fsSirketler,
                                fsVatandasTip,fsAktifPasif,fsDiyalizAktifPasif,fsSgkDurumTip,
-                               fsNone);
+                               fsSigortaliTur,fsDevKurum,fsNone);
 
 
   THb = class(TPersistent)
@@ -125,6 +125,7 @@ type
      FpressItem : TdxNavBarItem;
      FtargetGroup : TdxNavBarGroup;
      FProgramTip : string;
+     FLisansTip : integer;
      //FOnHastaAdiFontChange : THastaAdiFontChangeEvent;
    protected
 
@@ -157,6 +158,8 @@ type
     property Slite : integer read FSlite write FSlite;
     property Conn : TADOConnection read FConn write FConn;
     property ProgramTip : string read FProgramTip write FProgramTip;
+    property LisansTip : integer read FLisansTip write FLisansTip;
+
  //   property OnHastaAdiFontChange: THastaAdiFontChangeEvent read FOnHAstaAdiFontChange write FOnHastaAdiFontChange;
 //    property HastaSoyad : TEdit read HastaSoyadi write HastaSoyadi;
   end;
@@ -508,6 +511,7 @@ type
      constructor Create(AOwner: TComponent) ; override;
      function GetValue(format : string = 'YYYYMMDD') : string;
      function GetSQLValue(format : string = 'YYYYMMDD') : string;
+     function GetTXSDateTime : TXSDateTime;
      class function GetPropertiesClass: TcxCustomEditPropertiesClass; override;
    published
      property BosOlamaz : Boolean read FBosOlamaz write FBosOlamaz;
@@ -874,6 +878,7 @@ type
     formId : integer;
     ShowTip : integer;
     Sira : integer;
+    LisansTip : integer;
 end;
 
 
@@ -1477,16 +1482,17 @@ var
 begin
   if _yil_ = '' Then
     _yil_ := copy(datetostr(date()), 7, 4);
+
   Tarih := strtodate('01.' + _ay_ + '.'+_yil_);
 
   sp := FormatSettings.DateSeparator;
-  s := '01' + sp + copy(tarihal(Tarih), 5, 2) + sp + copy(tarihal(Tarih), 1, 4);
-  ay := strtoint(copy(tarihal(Tarih), 5, 2));
+  s := '01' + sp + copy(FormatDateTime('YYYYMMDD',Tarih), 5, 2) + sp + copy(FormatDateTime('YYYYMMDD',Tarih), 1, 4);
+  ay := strtoint(copy(FormatDateTime('YYYYMMDD',Tarih), 5, 2));
 
   inc(ay);
   if ay > 12 then
     ay := 1;
-  yil := strtoint(copy(tarihal(Tarih), 1, 4));
+  yil := strtoint(copy(FormatDateTime('YYYYMMDD',Tarih), 1, 4));
   gun := 1;
   if (ay = 1) and (gun = 1) then
     inc(yil);
@@ -1516,8 +1522,10 @@ function tarihal(t: tdate): string;
 var
  s:string;
 begin
- s := datetostr(t);
- result := copy(s,7,4)+copy(s,4,2)+copy(s,1,2);
+
+// s := datetostr(t);
+ result := FormatDateTime('YYYYMMDD',t);
+ //  copy(s,7,4)+copy(s,4,2)+copy(s,1,2);
 end;
 
 function tarihyap(t: string): tdate;
@@ -1701,7 +1709,7 @@ end;
 
 function TcxDonemComboKadir.getValueSonTarih : string;
 begin
- getValueSonTarih := tarihal(ayliktarih2(EditingValue,FYil));
+ getValueSonTarih := FormatDateTime('YYYYMMDD', ayliktarih2(EditingValue,FYil));
 
 end;
 procedure TcxDonemComboKadir.PopupClick(Sender : TObject);
@@ -1943,17 +1951,36 @@ begin
            FFilter := ' Aktif = 1';
         end
         else
+        if FFilterSet = fsVatandasTip
+        then begin
+           FTableName := 'SKRS_HASTATIPI';
+           FValueField := 'Kodu';
+           FDisplayField := 'ADI';
+           FFilter := ' AKTIF = 1';
+        end
+        else
+        if FFilterSet = fsSigortaliTur
+        then begin
+           FTableName := 'Medula_SigortaliTurleri';
+           FValueField := 'Kod';
+           FDisplayField := 'tanimi';
+           FFilter := '';
+        end
+        else
+        if FFilterSet = fsDevKurum
+        then begin
+           FTableName := 'Medula_DevredilenKurumlar';
+           FValueField := 'Kod';
+           FDisplayField := 'tanimi';
+           FFilter := '';
+        end
+        else
         begin
             FConn := nil;
 
             if FFilterSet = fsSgkDurumTip
             then begin
                FItemList := '1;Çalýþan,2;Emekli,3;SSK Kurum Personeli,4;Diðer';
-            end
-            else
-            if FFilterSet = fsVatandasTip
-            then begin
-               FItemList := '0;Vatandaþ,1;Yeni Doðan,2;Sýðýnmacý,4;Yabancý,6;Kimliksiz';
             end
             else
 
@@ -2246,6 +2273,25 @@ begin
   then Result := 'NULL'
   else
    result := QuotedStr(FormatDateTime(format,self.Date));
+end;
+
+
+function TcxDateEditKadir.GetTXSDateTime : TXSDateTime;
+var
+  _d_ : TDate;
+  t1 : TXSDateTime;
+begin
+  if self.EditValue = null
+  then Result := nil
+  else
+  begin
+    t1 := TXSDateTime.Create;
+    t1.Day := dayof(self.Date);
+    t1.Month := MonthOf(self.Date);
+    t1.Year := YearOf(self.Date);
+    result := t1;
+  end;
+
 end;
 
 
@@ -2953,7 +2999,7 @@ begin
     u := 0;
     ado.Connection := FConn;
     try
-     sql := 'exec sp_MenuGetir ' + QuotedStr(FKullaniciAdi);/// + ',' + QuotedStr(FProgramTip);
+     sql := 'exec sp_MenuGetir @kullanici = ' + QuotedStr(FKullaniciAdi) + ',@LisansTip = ' + IntToStr(FLisansTip) ;/// + ',' + QuotedStr(FProgramTip);
      QuerySelect(ado,sql);
      u := ado.RecordCount;
      SetLength(MenuGorunum,0);
@@ -2975,6 +3021,7 @@ begin
              MenuSatir.formId := ado.FieldByName('FormTag').AsInteger;
              MenuSatir.ShowTip := ado.FieldByName('ShowTip').AsInteger;
              MenuSatir.Sira := ado.FieldByName('Sira').AsInteger;
+             MenuSatir.LisansTip := ado.FieldByName('Lisans').AsInteger;
              MenuGorunum[i] := MenuSatir;
            end;
            inc(i);
@@ -3013,6 +3060,7 @@ begin
        Groups[MenuSatir.Sira].UseSmallImages := false;
        if Groups[MenuSatir.Sira].Tag = 500 then Groups[MenuSatir.Sira].Expanded := True;
        Groups[MenuSatir.Sira].Visible := Boolean(MenuSatir.Izin);
+       Groups[MenuSatir.Sira].Visible := Boolean(MenuSatir.LisansTip);
      end;
      ado.Next;
     end;
@@ -3030,6 +3078,8 @@ begin
        Items[r].Tag := MenuSatir.KAYITID;
        Items[r].SmallImageIndex := MenuSatir.imageIndex;
        Items[r].Visible := Boolean(MenuSatir.Izin);
+       Items[r].Visible := Boolean(MenuSatir.LisansTip);
+
      Items[r].FormId := MenuSatir.formId;
      Items[r].ShowTip := MenuSatir.ShowTip;
 

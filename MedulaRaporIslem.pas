@@ -40,6 +40,7 @@ type
        FRaporGiris : RaporGirisDVO;
        FRaporCevap : RaporCevapDVO;
        FRaporBilgisi : raporSorguDVO;
+     //  FRaporOku : raporOkuDVO;
 
        procedure setMethod(const value : TMethods);
        function getMethod : TMethods;
@@ -51,6 +52,7 @@ type
        procedure setRaporGiris (const value : RaporGirisDVO);
        procedure setRaporBilgisi (const value : raporSorguDVO);
        procedure setRaporCevap(const value : RaporCevapDVO);
+     //  procedure setRaporOku(const value : raporOkuDVO);
 
        function getUsername : string;
        function getPassword : string;
@@ -61,6 +63,7 @@ type
        function getRaporGiris : RaporGirisDVO;
        function getRaporBilgisi: raporSorguDVO;
        function getRaporCevap : RaporCevapDVO;
+     //  function getRaporOku : raporOkuDVO;
 
        procedure Head;
 
@@ -69,9 +72,11 @@ type
        procedure DoBeforeExecute(const MethodName: string;SOAPRequest: TStream);override;
        procedure DoAfterExecute(const MethodName: string; SOAPResponse: TStream);override;
        CONSTRUCTOR Create(AOwner: TComponent); override;
+       destructor Destroy; override;
        function RaporAra : Boolean;
        function raporBilgisiBul: Boolean;
        function RaporKaydet : Boolean;
+       function RaporSil : Boolean;
     published
        property Method : TMethods read getMethod write setMethod;
        property Header : string read FHeader write FHeader;
@@ -85,6 +90,7 @@ type
        property RaporGiris : RaporGirisDVO read getRaporGiris write setRaporGiris;
        property RaporBilgisi  : raporSorguDVO read getRaporBilgisi  write setRaporBilgisi;
        property RaporCevap : RaporCevapDVO read getRaporCevap write setRaporCevap;
+    //  property RaporOku : raporOkuDVO read getRaporOku write setRaporOku;
 
  end;
 
@@ -103,25 +109,27 @@ end;
 
 constructor TRaporIslem.Create(AOwner: TComponent);
 var
-  RaporOku : raporOkuDVO;
+  FRaporOku : raporOkuDVO;
 begin
   inherited Create(AOwner);
   FRaporAraGiris:= RaporOkuTCKimlikNodanDVO.Create;
   FRaporGiris := raporGirisDVO.Create;
-  RaporOku := raporOkuDVO.Create;
+  FRaporCevap := RaporCevapDVO.Create;
+  FRaporAraCevap := RaporCevapTCKimlikNodanDVO.Create;
+  FRaporOku := raporOkuDVO.Create;
   FRaporBilgisi := raporSorguDVO.Create;
-  FRaporBilgisi.raporBilgisi := raporOku;
+  FRaporBilgisi.raporBilgisi := FRaporOku;
   Self.Method := mGercek;
 end;
 
 function TRaporIslem.RaporAra: Boolean;
 begin
     Result := False;
-    RaporAraCevap := RaporCevapTCKimlikNodanDVO.Create;
+  //  FRaporAraCevap := RaporCevapTCKimlikNodanDVO.Create;
     try
       Application.ProcessMessages;
       url := ifThen(FMethod = mTest,RaporIslemURLTest,RaporIslemURL);
-      RaporAraCevap := (self as RaporIslemleri).raporBilgisiBulTCKimlikNodan(RaporAraGiris);
+      FRaporAraCevap := (self as RaporIslemleri).raporBilgisiBulTCKimlikNodan(RaporAraGiris);
       Result := True;
     except
       on E: SysUtils.Exception do
@@ -135,11 +143,11 @@ end;
 function TRaporIslem.raporBilgisiBul: Boolean;
 begin
     Result := False;
-    RaporCevap := raporCevapDVO.Create;
+  //  FRaporCevap := raporCevapDVO.Create;
     try
       Application.ProcessMessages;
       url := ifThen(FMethod = mTest,RaporIslemURLTest,RaporIslemURL);
-      RaporCevap := (self as RaporIslemleri).raporBilgisiBul(RaporBilgisi);
+      FRaporCevap := (self as RaporIslemleri).raporBilgisiBul(RaporBilgisi);
       Result := True;
     except
       on E: SysUtils.Exception do
@@ -153,11 +161,11 @@ end;
 function TRaporIslem.RaporKaydet : Boolean;
 begin
     Result := False;
-    RaporCevap := RaporCevapDVO.Create;
+   // FRaporCevap := RaporCevapDVO.Create;
     try
       Application.ProcessMessages;
       url := ifThen(FMethod = mTest,RaporIslemURLTest,RaporIslemURL);
-      RaporCevap := (self as RaporIslemleri).takipNoileRaporBilgisiKaydet(RaporGiris);
+      FRaporCevap := (self as RaporIslemleri).takipNoileRaporBilgisiKaydet(RaporGiris);
       Result := True;
     except
       on E: SysUtils.Exception do
@@ -166,6 +174,40 @@ begin
         Result := False;
       end;
     end;
+end;
+
+function TRaporIslem.RaporSil : Boolean;
+begin
+    Result := False;
+   // FRaporCevap := RaporCevapDVO.Create;
+    try
+      Application.ProcessMessages;
+      url := ifThen(FMethod = mTest,RaporIslemURLTest,RaporIslemURL);
+      FRaporCevap := (self as RaporIslemleri).raporBilgisiSil(RaporBilgisi);
+      Result := True;
+    except
+      on E: SysUtils.Exception do
+      begin
+        Showmessage(E.Message);
+        Result := False;
+      end;
+    end;
+end;
+
+
+
+destructor TRaporIslem.Destroy;
+begin
+  FreeAndNil(FRaporAraGiris);
+  FreeAndNil(FRaporGiris);
+  FreeAndNil(FRaporCevap);
+  FreeAndNil(FRaporAraCevap);
+ // FreeAndNil(FRaporOku);
+  FreeAndNil(FRaporBilgisi);
+  inherited;
+
+
+
 end;
 
 procedure TRaporIslem.DoAfterExecute(const MethodName: string; SOAPResponse: TStream);
@@ -214,6 +256,12 @@ begin
 
     StrList1.text := StringReplace(StrList1.text,'<raporBilgisiBulTCKimlikNodan xmlns="http://servisler.ws.gss.sgk.gov.tr">','<ser:raporBilgisiBulTCKimlikNodan>',[RfReplaceAll]);
     StrList1.text := StringReplace(StrList1.text,'</raporBilgisiBulTCKimlikNodan>','</ser:raporBilgisiBulTCKimlikNodan>',[RfReplaceAll]);
+
+    StrList1.text := StringReplace(StrList1.text,'<takipNoileRaporBilgisiKaydet xmlns="http://servisler.ws.gss.sgk.gov.tr">','<ser:takipNoileRaporBilgisiKaydet>',[RfReplaceAll]);
+    StrList1.text := StringReplace(StrList1.text,'</takipNoileRaporBilgisiKaydet>','</ser:takipNoileRaporBilgisiKaydet>',[RfReplaceAll]);
+
+    StrList1.text := StringReplace(StrList1.text,'<raporBilgisiSil xmlns="http://servisler.ws.gss.sgk.gov.tr">','<ser:raporBilgisiSil>',[RfReplaceAll]);
+    StrList1.text := StringReplace(StrList1.text,'</raporBilgisiSil>','</ser:raporBilgisiSil>',[RfReplaceAll]);
 
     StrList1.text := StringReplace(StrList1.text,' xmlns=""','',[RfReplaceAll]);
     StrList1.text := UTF8Encode(StrList1.text);
@@ -299,6 +347,13 @@ begin
   Result := FRaporCevap;
 end;
 
+(*
+function TRaporIslem.getRaporOku: raporOkuDVO;
+begin
+  Result := FRaporOku;
+end;
+  *)
+
 function TRaporIslem.getRaporAraGiris: raporOkuTCKimlikNodanDVO;
 begin
    Result := FRaporAraGiris;
@@ -320,7 +375,12 @@ procedure TRaporIslem.setRaporAraCevap(const value: raporCevapTCKimlikNodanDVO);
 begin
    FRaporAraCevap := value;
 end;
-
+   (*
+procedure TRaporIslem.setRaporOku(const value: raporOkuDVO);
+begin
+   FRaporOku := value;
+end;
+     *)
 procedure TRaporIslem.setRaporAraGiris(const value: raporOkuTCKimlikNodanDVO);
 begin
    FRaporAraGiris := value;

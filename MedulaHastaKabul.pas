@@ -87,6 +87,7 @@ type
        procedure DoBeforeExecute(const MethodName: string;SOAPRequest: TStream);override;
        procedure DoAfterExecute(const MethodName: string; SOAPResponse: TStream);override;
        CONSTRUCTOR Create(AOwner: TComponent); override;
+       destructor Destroy; override;
        function TakipAl_3KimlikDorulama : Boolean;
        function TakipSil_3 : Boolean;
        function KabulOku : Boolean;
@@ -142,6 +143,14 @@ begin
   Self.Method := mGercek;
 end;
 
+
+destructor THastaKabul.Destroy;
+begin
+  FreeAndNil(FGirisParametre);
+  FreeAndNil(FTakipOkuGiris);
+  FreeAndNil(FGirisSil);
+  inherited;
+end;
 
 procedure THastaKabul.DoAfterExecute(const MethodName: string; SOAPResponse: TStream);
 var

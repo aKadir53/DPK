@@ -67,6 +67,7 @@ type
        procedure DoAfterExecute(const MethodName: string; SOAPResponse: TStream);override;
 //       function  Send(const ASrc: TStream): Integer;override;
        CONSTRUCTOR Create(AOwner: TComponent); override;
+       destructor Destroy; override;
        function HizmetKaydet(var hatali : TstringList ; var RxKayitliIslem : TdxMemData) : String;
        function HizmetIptal : Boolean;
        function HizmetOku : Boolean;
@@ -122,6 +123,14 @@ begin
   FGirisSil := hizmetIptalGirisDVO.Create;
   FHizmetOkuGiris := hizmetOkuGirisDVO.Create;
   Self.Method := mGercek;
+end;
+
+destructor THizmetKayit.Destroy;
+begin
+  FreeAndNil(FGirisParametre);
+  FreeAndNil(FGirisSil);
+  FreeAndNil(FHizmetOkuGiris);
+  inherited;
 end;
 
 procedure THizmetKayit.DoAfterExecute(const MethodName: string; SOAPResponse: TStream);
@@ -189,6 +198,7 @@ begin
     SOAPRequest.Read(Request[1], Length(Request));
 
     StrList1.SaveToFile(XmlOutPath + '\' + IslemRef + '_' + MethodName + '_Sorgu_' + FormatDateTime('DDMMYYYY_HHMMSS',now)  + '_.XML');
+
 
   finally
     StrList1.Free;

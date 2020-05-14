@@ -71,6 +71,7 @@ type
        procedure DoAfterExecute(const MethodName: string; SOAPResponse: TStream);override;
 //       function  Send(const ASrc: TStream): Integer;override;
        CONSTRUCTOR Create(AOwner: TComponent); override;
+       destructor Destroy; override;
        function FaturaKaydet : String;
        function FaturaIptal : Boolean;
        function FaturaTutarOku : Boolean;
@@ -128,6 +129,14 @@ begin
   FFaturaIptalGiris := faturaIptalGirisDVO.Create;
   FFaturaOkuGiris := faturaOkuGirisDVO.Create;
   Self.Method := mGercek;
+end;
+
+destructor TFaturaKayit.Destroy;
+begin
+  FreeAndNil(FFaturaGiris);
+  FreeAndNil(FFaturaIptalGiris);
+  FreeAndNil(FFaturaOkuGiris);
+  inherited;
 end;
 
 procedure TFaturaKayit.DoAfterExecute(const MethodName: string; SOAPResponse: TStream);

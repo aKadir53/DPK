@@ -112,17 +112,18 @@ begin
   FDamarIziDogrulamaSorguGiris := damarIziDogrulamaSorguGirisDVO.Create;
   FTakipAraGiris := takipAraGirisDVO.Create;
   FYurtDisiYardimHakkiGetirGiris := yurtDisiYardimHakkiGetirGirisDVO.Create;
+  FDamarIziDogrulamaSorguCevap := damarIziDogrulamaSorguCevapDVO.Create;
   Self.Method := mGercek;
 end;
 
 function TYardimciIslem.DamarIziDogrulamaSorgula: Boolean;
 begin
     Result := False;
-    DamarIziDogrulamaSorguCevap := damarIziDogrulamaSorguCevapDVO.Create;
+   // DamarIziDogrulamaSorguCevap := damarIziDogrulamaSorguCevapDVO.Create;
     try
       Application.ProcessMessages;
       url := ifThen(FMethod = mTest,yardimciIslemURLTest,yardimciIslemURL);
-      DamarIziDogrulamaSorguCevap := (self as YardimciIslemler).damarIziDogrulamaSorgu(DamarIziDogrulamaSorguGiris);
+      FDamarIziDogrulamaSorguCevap := (self as YardimciIslemler).damarIziDogrulamaSorgu(DamarIziDogrulamaSorguGiris);
       Result := True;
     except
       on E: SysUtils.Exception do
@@ -136,10 +137,10 @@ end;
 
 destructor TYardimciIslem.Destroy;
 begin
-  FDamarIziDogrulamaSorguGiris.Free;
-  FTakipAraGiris.Free;
-  FYurtDisiYardimHakkiGetirGiris.Free;
-  DamarIziDogrulamaSorguCevap.Free;
+  FreeAndNil(FDamarIziDogrulamaSorguGiris);
+  FreeAndNil(FTakipAraGiris);
+  FreeAndNil(FYurtDisiYardimHakkiGetirGiris);
+  FreeAndNil(FDamarIziDogrulamaSorguCevap);
   inherited;
 end;
 
