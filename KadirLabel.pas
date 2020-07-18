@@ -1715,6 +1715,8 @@ end;
 procedure TcxDonemComboKadir.PopupClick(Sender : TObject);
 begin
   FYil := trim(stringReplace(TMenuItem(sender).Caption,'&','',[rfReplaceAll]));
+  DoEditValueChanged;
+  self.Properties.OnChange(self);
 end;
 
 procedure TcxDonemComboKadir.AfterConstruction;
@@ -1736,7 +1738,7 @@ begin
   yil := strtoint(copy(datetostr(date),7,4))+1;
  // Fyil := inttostr(yil);
 //--  popupYil.Items.Clear;
-  for I := 1 to 5 do
+  for I := 1 to 10 do
   begin
    yil := yil - 1;
    if FpopupYil.items.Find(inttostr(yil)) = nil
@@ -2087,6 +2089,9 @@ begin
         ifthen(FFilter = '','',' where ' + FFilter ) +
         ' ORDER BY ' + ifThen(FOrderField=display,FDisplayField, FValueField);
         ado.Open;
+
+        Height := (ado.RecordCount * 21) + 21;
+
       except
       end;
 
@@ -2999,7 +3004,12 @@ begin
     u := 0;
     ado.Connection := FConn;
     try
+     if ProgramTip = 'O'
+     Then
+       sql := 'exec sp_MenuGetir @kullanici = ' + QuotedStr(FKullaniciAdi)
+     Else
      sql := 'exec sp_MenuGetir @kullanici = ' + QuotedStr(FKullaniciAdi) + ',@LisansTip = ' + IntToStr(FLisansTip) ;/// + ',' + QuotedStr(FProgramTip);
+
      QuerySelect(ado,sql);
      u := ado.RecordCount;
      SetLength(MenuGorunum,0);
@@ -3021,7 +3031,12 @@ begin
              MenuSatir.formId := ado.FieldByName('FormTag').AsInteger;
              MenuSatir.ShowTip := ado.FieldByName('ShowTip').AsInteger;
              MenuSatir.Sira := ado.FieldByName('Sira').AsInteger;
-             MenuSatir.LisansTip := ado.FieldByName('Lisans').AsInteger;
+
+             if ProgramTip = 'O'
+             Then
+               MenuSatir.LisansTip := 3
+             Else
+               MenuSatir.LisansTip := ado.FieldByName('Lisans').AsInteger;
              MenuGorunum[i] := MenuSatir;
            end;
            inc(i);
@@ -3060,7 +3075,13 @@ begin
        Groups[MenuSatir.Sira].UseSmallImages := false;
        if Groups[MenuSatir.Sira].Tag = 500 then Groups[MenuSatir.Sira].Expanded := True;
        Groups[MenuSatir.Sira].Visible := Boolean(MenuSatir.Izin);
+
+       if ProgramTip = 'O'
+       then
+         Groups[MenuSatir.Sira].Visible := True
+       else
        Groups[MenuSatir.Sira].Visible := Boolean(MenuSatir.LisansTip);
+
      end;
      ado.Next;
     end;
@@ -3078,6 +3099,11 @@ begin
        Items[r].Tag := MenuSatir.KAYITID;
        Items[r].SmallImageIndex := MenuSatir.imageIndex;
        Items[r].Visible := Boolean(MenuSatir.Izin);
+
+       if ProgramTip = 'O'
+       then
+        Items[r].Visible := True
+       else
        Items[r].Visible := Boolean(MenuSatir.LisansTip);
 
      Items[r].FormId := MenuSatir.formId;

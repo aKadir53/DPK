@@ -36,6 +36,7 @@ uses
     DonemSonlandir = 'https://medula.sgk.gov.tr/hastane/login.jsf';
     AppalicationVer : integer = 2201;
     ktsHbysKodu : string = 'C740D0288EFAC45FE0407C0A04162BDD';
+    NoktaDll = 'NoktaDLL.dll';
 
 //type
  // TMethods = (mTest,mGercek);
@@ -57,6 +58,17 @@ type
        FCevap : provizyonCevapDVO;
        FTakipOkuGiris : TakipOkuGirisDVO;
        FTakip : TakipDVO;
+       FSysTakipAl : Boolean;
+       FSysTakipNo : string;
+       FSysTakipNoMsj : string;
+       FsaglikNetUsername : string;
+       FsalikNetPassword : string;
+       FSysTakipNoCevapMsj : string;
+       FHastaneRefNo : string;
+       FS0 : string;
+       FS1 : string;
+       FS2 : string;
+
 
        procedure setMethod(const value : TMethods);
        function getMethod : TMethods;
@@ -79,6 +91,8 @@ type
        function getTakipOkuGiris : takipOkuGirisDVO;
        function getTakip : takipDVO;
 
+       function SendMesajGonder(m,t : PWideChar ; var sonuc : PWideChar ; HastaneRefNo : string) : integer;
+       function findMethod(dllHandle : Cardinal; methodname : string) : FARPROC;
 
        procedure Head;
 
@@ -106,7 +120,16 @@ type
        property CevapSil : takipSilCevapDVO read FCevapSil write FCevapSil;
        property TakipOkuGiris : takipOkuGirisDVO read getTakipOkuGiris write setTakipOkuGiris;
        property Takip : takipDVO read getTakip write setTakip;
-
+       property SysTakipAl : Boolean read FSysTakipAl write FSysTakipAl;
+       property SysTakipNo : string read FSysTakipNo write FSysTakipNo;
+       property SysTakipNoMsj : string read FSysTakipNoMsj write FSysTakipNoMsj;
+       property saglikNetUsername : string read FsaglikNetUsername write FsaglikNetUsername;
+       property salikNetPassword : string read FsalikNetPassword write FsalikNetPassword;
+       property SysTakipNoCevapMsj : string read FSysTakipNoCevapMsj write FSysTakipNoCevapMsj;
+       property HastaneRefNo : string read FHastaneRefNo write FHastaneRefNo;
+       property S0 : string read FS0 write FS0;
+       property S1 : string read FS1 write FS1;
+       property S2 : string read FS2 write FS2;
  end;
 
 
@@ -128,15 +151,50 @@ procedure Register;
 
 implementation
 
+
+
 procedure Register;
 begin
   RegisterComponents('Nokta', [THastaKabul]);
+end;
+
+function THastaKabul.findMethod(dllHandle : Cardinal; methodname : string) : FARPROC;
+begin
+ Result := GetProcAddress(dllHandle,pchar(methodname));
+end;
+
+
+function THastaKabul.SendMesajGonder(m,t : PWideChar ; var sonuc : PWideChar ; HastaneRefNo : string) : integer;
+var
+  SendMesaj : KadirType.TENabizSendMesaj;
+  dllHandle: Cardinal;
+  msj,Basarili : integer;
+  TS : TStringList;
+  _sonuc_ : PWideChar;
+begin
+
+  Basarili := 1;
+  dllHandle := LoadLibrary(NoktaDll);
+  if dllHandle = 0 then
+    exit;
+  @SendMesaj := findMethod(dllHandle, 'SendMesajMethod');
+   if addr(SendMesaj) <> nil then
+   SendMesaj(m,t,Basarili,_sonuc_,pwideChar(saglikNetUsername),pwidechar(salikNetPassword),
+             pwidechar('https://sys.sagliknet.saglik.gov.tr/SYS/SYSWS.svc'),pwidechar('Hayýr'),pwidechar(HastaneRefNo));
+   sonuc := _sonuc_;
+   SendMesajGonder := Basarili;
+
+  if not Assigned(SendMesaj) then
+    raise Exception.Create(NoktaDll + ' içersinde SendMesajMethod bulunamadý!');
+  FreeLibrary(dllHandle);
+
 end;
 
 
 constructor THastaKabul.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  SysTakipAl := False;
   FGirisParametre := provizyonGirisDVO.Create;
   FTakipOkuGiris := takipOkuGirisDVO.Create;
   FGirisSil := takipSilGirisDVO.Create;
@@ -365,6 +423,11 @@ begin
 end;
 
 function THastaKabul.TakipAl_3KimlikDorulama : Boolean;
+var
+  sql : string;
+  sonuc : PWideChar;
+  SS : TStringList;
+  s : integer;
 begin
     Result := False;
     Cevap := provizyonCevapDVO.Create;
@@ -373,11 +436,63 @@ begin
       url := ifThen(FMethod = mTest,hastaKabulTestURL,hastaKabulURL);
       GirisParametre.ktsHbysKodu := ktsHbysKodu;
       Cevap := (self as HastaKabulIslemleri).hastaKabulKimlikDogrulama(GirisParametre);
+
+      (*
+      try
+
+        if (Cevap.sonucKodu = '0000') or
+           (Cevap.sonucKodu = '9000')
+        Then
+
+        if SysTakipAl = True
+        then begin
+           SysTakipNoCevapMsj := '';
+           s := SendMesajGonder(pwidechar(SysTakipNoMsj),pwidechar('Hasta Kayýt'),sonuc,HastaneRefNo);
+           if s >= 0
+           then begin
+              if Length(sonuc) > 0
+              then begin
+                 SS := TStringList.Create;
+                 try
+                   ExtractStrings(['|'], [], PChar(sonuc), SS);
+                   if SS[0] = 'S0000'
+                   then begin
+                     S0 := SS[0];
+                     S1 := SS[1];
+                     S2 := SS[2];
+                     SysTakipNo := SS[2];
+                     SysTakipNoCevapMsj := SS[1];
+                   end
+                   else begin
+                     S0 := SS[0];
+                     S1 := SS[1];
+                     S2 := '';
+                     SysTakipNo := '';
+                     SysTakipNoCevapMsj := SS[1];
+                   end;
+                 finally
+                   SS.Free;
+                 end;
+              end;
+           end
+           else begin
+             SysTakipNo := '';
+             SysTakipNoCevapMsj := sonuc;
+             S0 := '-1';
+             S1 := sonuc;
+             S2 := '';
+           end;
+
+        end;
+      except
+        SysTakipNo := '';
+      end;
+        *)
       Result := True;
     except
       on E: SysUtils.Exception do
       begin
-        Showmessage(E.Message);
+        Dialogs.Showmessage(E.Message);
         Result := False;
       end;
     end;
@@ -397,7 +512,7 @@ begin
     except
       on E : sysUtils.Exception do
       begin
-        Showmessage(E.Message);
+        Dialogs.Showmessage(E.Message);
         Result := False;
       end;
     end;
