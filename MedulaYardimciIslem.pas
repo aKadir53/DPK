@@ -8,7 +8,7 @@ uses
   ComCtrls,
   ShellApi,Winapi.Windows,
   System.Variants,
-  yardimciIslemlerWS ;
+  yardimciIslemlerWS;
 
 
   Const
@@ -18,6 +18,7 @@ uses
     YardimciIslemService = 'YardimciIslemlerService';
     YardimciIslemPort = 'YardimciIslemler';
     ktsHbysKodu : string = 'C740D0288EFAC45FE0407C0A04162BDD';
+
 
 (*
 type
@@ -41,6 +42,7 @@ type
        FTakipAraCevap : TakipAraCevapDVO;
        FYurtDisiYardimHakkiGetirGiris : YurtDisiYardimHakkiGetirGirisDVO;
        FYurtDisiYardimHakkiGetirCevap : YurtDisiYardimHakkiGetirCevapDVO;
+
 
        procedure setMethod(const value : TMethods);
        function getMethod : TMethods;
@@ -250,6 +252,7 @@ begin
 end;
 
 
+
 function TYardimciIslem.getUsername: string;
 //var
 // Head : string;
@@ -275,6 +278,7 @@ begin
     '  </wsse:Security>'+
     ' </SOAP-ENV:Header>';
 end;
+
 
 
 procedure TYardimciIslem.setDamarIziDogrulamaSorguCevap(
@@ -304,6 +308,8 @@ end;
 
 
 
+
+
 procedure TYardimciIslem.setMethod(const value: TMethods);
 begin
   FMethod := value;
@@ -311,6 +317,7 @@ begin
   Self.Service := YardimciIslemService;
   Self.Port := YardimciIslemPort;
 end;
+
 
 
 function TYardimciIslem.getDamarIziDogrulamaSorguCevap: DamarIziDogrulamaSorguCevapDVO;

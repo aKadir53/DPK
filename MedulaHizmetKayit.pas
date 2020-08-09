@@ -41,6 +41,7 @@ type
        FHizmetOkuGiris : HizmetOkuGirisDVO;
        FHizmetOkuCevap : HizmetOkuCevapDVO;
        FTimeOut : integer;
+       FXmlCvp : string;
 
 
        procedure setMethod(const value : TMethods);
@@ -86,6 +87,7 @@ type
        property HizmetOkuGiris : HizmetOkuGirisDVO read FHizmetOkuGiris write FHizmetOkuGiris;
        property HizmetOkuCevap : HizmetOkuCevapDVO read FHizmetOkuCevap write FHizmetOkuCevap;
        property TimeOut : integer read FTimeOut write FTimeOut Default 15;
+       property XmlCvp : string read FXmlCvp write FXmlCvp;
  end;
 
 
@@ -139,13 +141,16 @@ var
   R: UTF8String;
 begin
    inherited;
+   FXmlCvp := '';
    SetLength(R, SOAPResponse.Size);
    SOAPResponse.Position := 0;
    SOAPResponse.Read(R[1], Length(R));
    m := TStringList.Create;
+
    try
      m.Add(FormatXMLData(R));
      m.SaveToFile(XmlOutPath + '\' + IslemRef + '_' + MethodName + '_Cevap_' + FormatDateTime('DDMMYYYY_HHMMSS',now)  + '_.XML');
+     XmlCvp := m.Text;
    finally
      m.Free;
    end;
@@ -332,6 +337,7 @@ begin
     Cevap := hizmetKayitCevapDVO.Create;
     try
       Application.ProcessMessages;
+      FXmlCvp := '';
       url := ifThen(FMethod = mTest,hizmetKayitTestURL,hizmetKayitURL);
       GirisParametre.ktsHbysKodu := ktsHbysKodu;
       Cevap := (self as HizmetKayitIslemleriService).hizmetKayit(GirisParametre);
@@ -395,7 +401,8 @@ begin
     except
       on E: SysUtils.Exception do
       begin
-        Showmessage(E.Message);
+        //Showmessage(E.Message);
+        Hatali.Add(E.Message + #13 + XmlCvp);
         Result := '';
       end;
     end;

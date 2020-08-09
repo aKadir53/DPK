@@ -111,6 +111,8 @@ contains
   superobject in '..\Diyaliz\Diyaliz_Klinik2019\superobject.pas',
   supertimezone in '..\Diyaliz\Diyaliz_Klinik2019\supertimezone.pas',
   supertypes in '..\Diyaliz\Diyaliz_Klinik2019\supertypes.pas',
-  superxmlparser in '..\Diyaliz\Diyaliz_Klinik2019\superxmlparser.pas';
+  superxmlparser in '..\Diyaliz\Diyaliz_Klinik2019\superxmlparser.pas',
+  MedEczaneYardimciIslem in 'MedEczaneYardimciIslem.pas',
+  saglikTesisiEczaneYardimciIslemleriWS in '..\Diyaliz\Diyaliz_Klinik2019\saglikTesisiEczaneYardimciIslemleriWS.pas';
 
 end.

@@ -1,11 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.811,=D:\Projeler\DELPHI\Diyaliz\Diyaliz_Klinik2019\PopupForm.PAS</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.819,=D:\Projeler\DELPHI\Diyaliz\Diyaliz_Klinik2019\superobject.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.715,D:\Projeler\DELPHI\Diyaliz\Diyaliz_Klinik2019\PopupForm.PAS=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.882,=D:\Projeler\DELPHI\Diyaliz\Diyaliz_Klinik2019\supertimezone.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.941,=D:\Projeler\DELPHI\Diyaliz\Diyaliz_Klinik2019\supertypes.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.100,=D:\Projeler\DELPHI\Diyaliz\Diyaliz_Klinik2019\GirisUnit.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.558,=D:\Projeler\DELPHI\Diyaliz\Diyaliz_Klinik2019\GetFormClass.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.973,D:\Projeler\DELPHI\Diyaliz\Diyaliz_Klinik2019\GetFormClass.pas=</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.715,D:\Projeler\DELPHI\Diyaliz\Diyaliz_Klinik2019\PopupForm.PAS=</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.811,=D:\Projeler\DELPHI\Diyaliz\Diyaliz_Klinik2019\PopupForm.PAS</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.005,=D:\Projeler\DELPHI\Diyaliz\Diyaliz_Klinik2019\superxmlparser.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.506,D:\Projeler\DELPHI\Diyaliz\Diyaliz_Klinik2019\GirisUnit.pas=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.716,=D:\Projeler\DELPHI\Diyaliz\Diyaliz_Klinik2019\superdate.pas</Transaction>
+    <Transaction>2020.08.01 14:27:09.541,=D:\Projeler\DELPHI\KadirDPK\MedEczaneYardimciIslem.pas</Transaction>
+    <Transaction>2020.08.01 14:29:19.214,=D:\Projeler\DELPHI\Diyaliz\Diyaliz_Klinik2019\saglikTesisiEczaneYardimciIslemleriWS.pas</Transaction>
   </Transactions>
 </BorlandProject>
