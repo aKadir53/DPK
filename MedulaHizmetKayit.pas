@@ -4,7 +4,7 @@ interface
 uses
   SysUtils, Classes, Controls, StdCtrls,Dialogs,Messages,cxButtonEdit,SOAPHTTPClient,IdHTTP,SOAPHTTPTrans,
   forms,adodb,ImgList,Para,strUtils,ExtCtrls, Math,db,buttons, Types, kadirType,cxButtons,
-  registry, ActnList,Menus,ActnMan, Vcl.Graphics,XMLDoc,dxmdaset,Wininet,
+  registry, ActnList,Menus,ActnMan, Vcl.Graphics,XMLDoc,dxmdaset,Wininet,IOUtils,
   cxTextEdit,cxCalendar,cxGrid,ComCtrls,KadirMenus,cxGridDBTableView,cxGridDBBandedTableView,
   cxGridCustomView,cxCustomData,cxImageComboBox,FScxGrid,cxFilter,cxGridExportLink,ShellApi,Winapi.Windows,
   cxCheckBox,cxEdit,cxGroupBox,dxLayoutContainer,cxGridStrs, cxFilterConsts,cxCheckGroup,
@@ -150,6 +150,9 @@ begin
    try
      m.Add(FormatXMLData(R));
      m.SaveToFile(XmlOutPath + '\' + IslemRef + '_' + MethodName + '_Cevap_' + FormatDateTime('DDMMYYYY_HHMMSS',now)  + '_.XML');
+
+    // if length(TDirectory.GetFiles('XmlOutPath'))
+
      XmlCvp := m.Text;
    finally
      m.Free;

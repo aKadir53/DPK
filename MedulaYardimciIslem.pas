@@ -5,7 +5,7 @@ uses
   SysUtils, Classes, Controls, StdCtrls,Dialogs,Messages,SOAPHTTPClient,IdHTTP,SOAPHTTPTrans,
   forms,strUtils,ExtCtrls, Math, Types, kadirType,
   registry, Menus, Vcl.Graphics,XMLDoc,
-  ComCtrls,
+  ComCtrls,WinInet,
   ShellApi,Winapi.Windows,
   System.Variants,
   yardimciIslemlerWS;
@@ -42,7 +42,9 @@ type
        FTakipAraCevap : TakipAraCevapDVO;
        FYurtDisiYardimHakkiGetirGiris : YurtDisiYardimHakkiGetirGirisDVO;
        FYurtDisiYardimHakkiGetirCevap : YurtDisiYardimHakkiGetirCevapDVO;
-
+       FHata : string;
+       FSaglikTesisAraGiris : saglikTesisiAraGirisDVO;
+       FSaglikTesisAraCvp : saglikTesisiAraCevapDVO;
 
        procedure setMethod(const value : TMethods);
        function getMethod : TMethods;
@@ -56,6 +58,8 @@ type
        procedure setTakipAraCevap(const value : takipAraCevapDVO);
        procedure setYurtDisiYardimHakkiGetirGiris(const value : YurtDisiYardimHakkiGetirGirisDVO);
        procedure setYurtDisiYardimHakkiGetirCevap(const value : YurtDisiYardimHakkiGetirCevapDVO);
+       procedure setSaglikTesisAraGiris(const value : saglikTesisiAraGirisDVO);
+       procedure setSaglikTesisAraCevap(const value : saglikTesisiAraCevapDVO);
 
        function getUsername : string;
        function getPassword : string;
@@ -66,6 +70,8 @@ type
        function getTakipAraCevap : takipAraCevapDVO;
        function getYurtDisiYardimHakkiGetirGiris : YurtDisiYardimHakkiGetirGirisDVO;
        function getYurtDisiYardimHakkiGetirCevap : YurtDisiYardimHakkiGetirCevapDVO;
+       function getSaglikTesisAraGiris : saglikTesisiAraGirisDVO;
+       function getSaglikTesisAraCevap : saglikTesisiAraCevapDVO;
 
        procedure Head;
 
@@ -73,11 +79,14 @@ type
     public
        procedure DoBeforeExecute(const MethodName: string;SOAPRequest: TStream);override;
        procedure DoAfterExecute(const MethodName: string; SOAPResponse: TStream);override;
+       procedure HTTPWebNodeBeforePost(const HTTPReqResp: THTTPReqResp; Data: Pointer);
+
        CONSTRUCTOR Create(AOwner: TComponent); override;
        destructor Destroy; override;
        function DamarIziDogrulamaSorgula : Boolean;
        function TakipAra : Boolean;
        function yurtDisiYardimHakkiGetir : Boolean;
+       function TesisSorgula : Boolean;
     published
        property Method : TMethods read getMethod write setMethod;
        property Header : string read FHeader write FHeader;
@@ -92,6 +101,11 @@ type
        property takipAraCevap : takipAraCevapDVO read getTakipAraCevap write setTakipAraCevap;
        property YurtDisiYardimHakkiGetirGiris : YurtDisiYardimHakkiGetirGirisDVO read getYurtDisiYardimHakkiGetirGiris write setYurtDisiYardimHakkiGetirGiris;
        property YurtDisiYardimHakkiGetirCevap : YurtDisiYardimHakkiGetirCevapDVO read getYurtDisiYardimHakkiGetirCevap write setYurtDisiYardimHakkiGetirCevap;
+       property Hata : string read FHata write FHata;
+       property SaglikTesisAraGiris : saglikTesisiAraGirisDVO read getSaglikTesisAraGiris write setSaglikTesisAraGiris;
+       property SaglikTesisAraCvp : saglikTesisiAraCevapDVO read getSaglikTesisAraCevap write setSaglikTesisAraCevap;
+
+
 
  end;
 
@@ -115,7 +129,9 @@ begin
   FTakipAraGiris := takipAraGirisDVO.Create;
   FYurtDisiYardimHakkiGetirGiris := yurtDisiYardimHakkiGetirGirisDVO.Create;
   FDamarIziDogrulamaSorguCevap := damarIziDogrulamaSorguCevapDVO.Create;
+  FSaglikTesisAraGiris := saglikTesisiAraGirisDVO.Create;
   Self.Method := mGercek;
+  HTTPWebNode.OnBeforePost := HTTPWebNodeBeforePost;
 end;
 
 function TYardimciIslem.DamarIziDogrulamaSorgula: Boolean;
@@ -127,10 +143,18 @@ begin
       url := ifThen(FMethod = mTest,yardimciIslemURLTest,yardimciIslemURL);
       FDamarIziDogrulamaSorguCevap := (self as YardimciIslemler).damarIziDogrulamaSorgu(DamarIziDogrulamaSorguGiris);
       Result := True;
+      FHata := '0';
     except
       on E: SysUtils.Exception do
       begin
-        Showmessage(E.Message);
+         if (e is ESOAPHTTPException) and (ESOAPHTTPException(e).StatusCode = ERROR_INTERNET_TIMEOUT) then
+         begin
+           // FExecTime := GetTickCount - FExecTime;
+           // FErrorMsg := Format(' TIMEOUT (%d msec) %s',[FExecTime,sErrExchangeTimeOutINI]);
+          //Hata := '
+         end;
+
+        FHata := E.Message;
         Result := False;
       end;
     end;
@@ -143,6 +167,8 @@ begin
   FreeAndNil(FTakipAraGiris);
   FreeAndNil(FYurtDisiYardimHakkiGetirGiris);
   FreeAndNil(FDamarIziDogrulamaSorguCevap);
+  FreeAndNil(FSaglikTesisAraGiris);
+  FreeAndNil(FSaglikTesisAraCvp);
   inherited;
 end;
 
@@ -165,6 +191,24 @@ begin
     end;
 end;
 
+
+function TYardimciIslem.TesisSorgula: Boolean;
+begin
+    Result := False;
+    SaglikTesisAraCvp := saglikTesisiAraCevapDVO.Create;
+    try
+      Application.ProcessMessages;
+      url := ifThen(FMethod = mTest,yardimciIslemURLTest,yardimciIslemURL);
+      SaglikTesisAraCvp := (self as YardimciIslemler).saglikTesisiAra(SaglikTesisAraGiris);
+      Result := True;
+    except
+      on E: SysUtils.Exception do
+      begin
+        Showmessage(E.Message);
+        Result := False;
+      end;
+    end;
+end;
 
 function TYardimciIslem.yurtDisiYardimHakkiGetir: Boolean;
 begin
@@ -234,6 +278,10 @@ begin
     StrList1.text := StringReplace(StrList1.text,'<yurtDisiYardimHakkiGetir xmlns="http://servisler.ws.gss.sgk.gov.tr">','<ser:yurtDisiYardimHakkiGetir>',[RfReplaceAll]);
     StrList1.text := StringReplace(StrList1.text,'</yurtDisiYardimHakkiGetir>','</ser:yurtDisiYardimHakkiGetir>',[RfReplaceAll]);
 
+    StrList1.text := StringReplace(StrList1.text,'<saglikTesisiAra xmlns="http://servisler.ws.gss.sgk.gov.tr">','<ser:saglikTesisiAra>',[RfReplaceAll]);
+    StrList1.text := StringReplace(StrList1.text,'</saglikTesisiAra>','</ser:saglikTesisiAra>',[RfReplaceAll]);
+
+
     StrList1.text := StringReplace(StrList1.text,' xmlns=""','',[RfReplaceAll]);
     StrList1.text := UTF8Encode(StrList1.text);
 
@@ -280,6 +328,26 @@ begin
 end;
 
 
+
+procedure TYardimciIslem.HTTPWebNodeBeforePost(const HTTPReqResp: THTTPReqResp;
+  Data: Pointer);
+var
+  TimeOut : integer;
+begin
+
+      TimeOut := 60000 * 2; // in milleseconds.
+
+      InternetSetOption(Data,
+      INTERNET_OPTION_RECEIVE_TIMEOUT,
+      Pointer(@TimeOut),
+      SizeOf(TimeOut));
+
+      InternetSetOption(Data,
+      INTERNET_OPTION_SEND_TIMEOUT,
+      Pointer(@TimeOut),
+      SizeOf(TimeOut));
+
+end;
 
 procedure TYardimciIslem.setDamarIziDogrulamaSorguCevap(
   const value: DamarIziDogrulamaSorguCevapDVO);
@@ -354,6 +422,16 @@ begin
 end;
 
 
+function TYardimciIslem.getSaglikTesisAraCevap: saglikTesisiAraCevapDVO;
+begin
+  Result := FSaglikTesisAraCvp;
+end;
+
+function TYardimciIslem.getSaglikTesisAraGiris: saglikTesisiAraGirisDVO;
+begin
+  Result := FSaglikTesisAraGiris;
+end;
+
 function TYardimciIslem.getTakipAraCevap: takipAraCevapDVO;
 begin
   Result := FTakipAraCevap;
@@ -368,6 +446,18 @@ procedure TYardimciIslem.setPassword(const value: string);
 begin
     FPassword := value;
     if (FUserName <> '') and (FPassword <> '') then Head;
+end;
+
+procedure TYardimciIslem.setSaglikTesisAraCevap(
+  const value: saglikTesisiAraCevapDVO);
+begin
+  FSaglikTesisAraCvp := value;
+end;
+
+procedure TYardimciIslem.setSaglikTesisAraGiris(
+  const value: saglikTesisiAraGirisDVO);
+begin
+   FSaglikTesisAraGiris := value;
 end;
 
 procedure TYardimciIslem.setTakipAraCevap(const value: takipAraCevapDVO);
