@@ -38,7 +38,8 @@ type
        FBeklemeSuresi : integer;
        FetkinMaddeSutListesiSorguIstekGiris : etkinMaddeSutListesiSorguIstekDVO;
        FetkinMaddeSutListesiSorguCevap : etkinMaddeSutListesiSorguCevapDVO;
-
+       FRaporTeshisListesiSorguIstekGiris : RaporTeshisListesiSorguIstekDVO;
+       FRaporTeshisListesiSorguCevap  : RaporTeshisListesiSorguCevapDVO;
 
        procedure setMethod(const value : TMethods);
        function getMethod : TMethods;
@@ -48,6 +49,9 @@ type
        procedure setetkinMaddeSutListesiSorguIstekGiris(const value : etkinMaddeSutListesiSorguIstekDVO);
        procedure setetkinMaddeSutListesiSorguIstekCevap(const value : etkinMaddeSutListesiSorguCevapDVO);
 
+       procedure setRaporTeshisListesiSorguIstekGiris (const value : RaporTeshisListesiSorguIstekDVO);
+       procedure setRaporTeshisListesiSorguCevap (const value : RaporTeshisListesiSorguCevapDVO);
+
 
        function getUsername : string;
        function getPassword : string;
@@ -56,6 +60,8 @@ type
        function getetkinMaddeSutListesiSorguIstekGiris : etkinMaddeSutListesiSorguIstekDVO;
        function getetkinMaddeSutListesiSorguIstekCevap : etkinMaddeSutListesiSorguCevapDVO;
 
+       function getRaporTeshisListesiSorguIstekGiris : RaporTeshisListesiSorguIstekDVO;
+       function getRaporTeshisListesiSorguCevap : RaporTeshisListesiSorguCevapDVO;
 
        procedure Head;
 
@@ -66,6 +72,7 @@ type
        CONSTRUCTOR Create(AOwner: TComponent); override;
        destructor Destroy; override;
        function EtkinmaddeSUTKuraligetir : string;
+       function raporTeshisListesiGetir : string;
     published
        property Method : TMethods read getMethod write setMethod;
        property Header : string read FHeader write FHeader;
@@ -76,6 +83,8 @@ type
        property BeklemeSuresi : integer read FBeklemeSuresi write FBeklemeSuresi;
        property etkinMaddeSutListesiSorguIstekGiris : etkinMaddeSutListesiSorguIstekDVO read getetkinMaddeSutListesiSorguIstekGiris write setetkinMaddeSutListesiSorguIstekGiris;
        property etkinMaddeSutListesiSorguCevap : etkinMaddeSutListesiSorguCevapDVO read getetkinMaddeSutListesiSorguIstekCevap write setetkinMaddeSutListesiSorguIstekCevap;
+       property RaporTeshisListesiSorguIstekGiris : RaporTeshisListesiSorguIstekDVO read getRaporTeshisListesiSorguIstekGiris write setRaporTeshisListesiSorguIstekGiris;
+       property RaporTeshisListesiSorguCevap  : RaporTeshisListesiSorguCevapDVO read getRaporTeshisListesiSorguCevap write setRaporTeshisListesiSorguCevap;
 
  end;
 
@@ -97,6 +106,8 @@ begin
   inherited Create(AOwner);
   FetkinMaddeSutListesiSorguIstekGiris := etkinMaddeSutListesiSorguIstekDVO.Create;
   FetkinMaddeSutListesiSorguCevap:= etkinMaddeSutListesiSorguCevapDVO.Create;
+  FRaporTeshisListesiSorguIstekGiris := raporTeshisListesiSorguIstekDVO.Create;
+  FRaporTeshisListesiSorguCevap:= raporTeshisListesiSorguCevapDVO.Create;
   Self.Method := mGercek;
 end;
 
@@ -125,6 +136,8 @@ destructor TMedEczaneYardimciIslem.Destroy;
 begin
   FreeAndNil(FetkinMaddeSutListesiSorguIstekGiris);
   FreeAndNil(FetkinMaddeSutListesiSorguCevap);
+  FreeAndNil(FRaporTeshisListesiSorguIstekGiris);
+  FreeAndNil(FRaporTeshisListesiSorguCevap);
   inherited;
 end;
 
@@ -248,6 +261,31 @@ begin
 end;
 
 
+function TMedEczaneYardimciIslem.raporTeshisListesiGetir: string;
+begin
+      URL := ifThen(URL = '',YardimciIslemURL,URL);
+     try
+       Application.ProcessMessages;
+       FRaporTeshisListesiSorguCevap := (self as SaglikTesisiYardimciIslemleri).raporTeshisListesiSorgula(FRaporTeshisListesiSorguIstekGiris);
+    //   EMaddeCvp.etkinMaddeSutListesi := Em_Cvp.etkinMaddeSutListesi;
+     except
+        on E: SysUtils.Exception do
+        begin
+          //Showmessageskin(E.Message,'','','info');
+          exit;
+        end;
+     end;
+
+     if FRaporTeshisListesiSorguCevap.sonucKodu = '0000'
+     then
+      result := '0000'
+     Else
+      result := FRaporTeshisListesiSorguCevap.sonucMesaji;
+
+  //   EM_Gon.Free;
+  //   Em_Cvp.Free;
+end;
+
 procedure TMedEczaneYardimciIslem.setetkinMaddeSutListesiSorguIstekGiris(
   const value: etkinMaddeSutListesiSorguIstekDVO);
 begin
@@ -297,12 +335,34 @@ end;
 
 
 
+function TMedEczaneYardimciIslem.getRaporTeshisListesiSorguCevap: RaporTeshisListesiSorguCevapDVO;
+begin
+        Result := FRaporTeshisListesiSorguCevap;
+end;
+
+function TMedEczaneYardimciIslem.getRaporTeshisListesiSorguIstekGiris: RaporTeshisListesiSorguIstekDVO;
+begin
+     Result := FRaporTeshisListesiSorguIstekGiris;
+end;
+
 procedure TMedEczaneYardimciIslem.setPassword(const value: string);
 begin
     FPassword := value;
     if (FUserName <> '') and (FPassword <> '') then Head;
 end;
 
+
+procedure TMedEczaneYardimciIslem.setRaporTeshisListesiSorguCevap(
+  const value: RaporTeshisListesiSorguCevapDVO);
+begin
+
+end;
+
+procedure TMedEczaneYardimciIslem.setRaporTeshisListesiSorguIstekGiris(
+  const value: RaporTeshisListesiSorguIstekDVO);
+begin
+
+end;
 
 procedure TMedEczaneYardimciIslem.setUsername(const value: string);
 begin
