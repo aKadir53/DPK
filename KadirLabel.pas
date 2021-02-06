@@ -7,7 +7,7 @@ uses
   forms,adodb,ImgList,Para,strUtils,ExtCtrls, Math,db,buttons, Types, kadirType,cxButtons,
   ListeAcForm,registry,dxNavBarBase, dxNavBar,dxNavBarCollns,ActnList,Menus,ActnMan, Vcl.Graphics,
   cxTextEdit,cxCalendar,cxGrid,ComCtrls,KadirMenus,cxGridDBTableView,cxGridDBBandedTableView,
-  cxNavigator,cxGridCustomTableView, cxGridLevel,XSBuiltIns,DateUtils,
+  cxNavigator,cxGridCustomTableView, cxGridLevel,XSBuiltIns,DateUtils,System.Character,
   cxGridCustomView,cxCustomData,cxImageComboBox,FScxGrid,cxFilter,cxGridExportLink,ShellApi,Winapi.Windows,
   cxCheckBox,cxEdit,cxGroupBox,dxLayoutContainer,cxGridStrs, cxFilterConsts,cxCheckGroup,
   cxFilterControlStrs,cxGridPopupMenuConsts,cxClasses,IdHttp,System.Variants;
@@ -21,8 +21,9 @@ type
   TGoster = (fgEvet,fgHayir);
   TDonusum = (dsRakamToYazi,dsDoktorKodToAdi,dsBransKoduToadi,dsHizmetKoduToAdi,dsTckimlikToHasta,dsTanimToadi);
   TPanelSonuc = (psYan,psDik);
-  TTarihValueTip = (tvDate,tvTime,tvString);
+  TTarihValueTip = (tvDate,tvTime,tvString,tvDateTime);
   TShowTip = (stShow,stModal);
+  TKarakterTip = (ktNone,ktRakam,ktHarf);
   TLoginInOut = (lgnIn,lgnOut);
   TListeAcTableTip = (tpTable,tpSp);
   TCheckGrupSiralamaTip = (value,display);
@@ -343,6 +344,7 @@ type
      FIdentity : Boolean;
      Fkolon3 : string;
      Fkolon4 : string;
+     FsirketKod : string;
      //procedure DoEditKeyDown(var Key: Word; Shift: TShiftState);
    protected
    public
@@ -358,6 +360,7 @@ type
      property Identity : Boolean read FIdentity write FIdentity Default false;
      property kolon3 : string read Fkolon3 write Fkolon3;
      property kolon4 : string read Fkolon4 write Fkolon4;
+     property sirketKod : string read FsirketKod write FsirketKod;
 
 end;
 
@@ -480,13 +483,19 @@ type
   TcxTextEditKadir = class(TcxTextEdit)
    private
      FBosOlamaz : Boolean;
+     FKarakterTip : TKarakterTip;
+     function getKarakterTip : TKarakterTip;
+     procedure setKarakterTip(const value : TKarakterTip);
+     procedure KeyPress(Sender: TObject; var Key: Char);
    protected
 
    public
      constructor Create(AOwner: TComponent) ; override;
      function GetSQLValue : string;
+
    published
      property BosOlamaz : Boolean read FBosOlamaz write FBosOlamaz Default False;
+     property KarakterTip : TKarakterTip read getKarakterTip write setKarakterTip Default ktNone;
 end;
 
 
@@ -506,6 +515,10 @@ type
    private
      FBosOlamaz : Boolean;
      FValueTip : TTarihValueTip;
+
+    function getValueTip : TTarihValueTip;
+    procedure setValueTip(const value : TTarihValueTip);
+
    protected
    public
      constructor Create(AOwner: TComponent) ; override;
@@ -515,7 +528,7 @@ type
      class function GetPropertiesClass: TcxCustomEditPropertiesClass; override;
    published
      property BosOlamaz : Boolean read FBosOlamaz write FBosOlamaz;
-     property ValueTip : TTarihValueTip read FValueTip write FValueTip default tvDate;
+     property ValueTip : TTarihValueTip read getValueTip write setValueTip;
 end;
 
 
@@ -1670,6 +1683,8 @@ begin
 end;
 
 procedure TcxDonemComboKadir.setYil(const value : string);
+var
+ I : integer;
 begin
   Fyil := value;
   if (Fyil <> '') and (Properties.Items.Count < 12)
@@ -1700,6 +1715,13 @@ begin
     FItem := Properties.Items.Add;
     FItem.Value := '12';FItem.Description := 'ARALIK';
   end;
+
+  for I := 1 to 10 do
+  begin
+    if FYil = trim(stringReplace(FpopupYil.Items[I-1].Caption,'&','',[rfReplaceAll]))
+    then
+     FpopupYil.Items[I-1].Checked := True;
+  end;
 end;
 
 function TcxDonemComboKadir.getValueIlkTarih : string;
@@ -1713,8 +1735,15 @@ begin
 
 end;
 procedure TcxDonemComboKadir.PopupClick(Sender : TObject);
+var
+  I : integer;
 begin
   FYil := trim(stringReplace(TMenuItem(sender).Caption,'&','',[rfReplaceAll]));
+  for I := 1 to 10 do
+  begin
+   FpopupYil.Items[I-1].Checked := False;
+  end;
+  TMenuItem(sender).Checked := True;
   DoEditValueChanged;
   self.Properties.OnChange(self);
 end;
@@ -1736,6 +1765,7 @@ begin
   Self.PopupMenu := FPopupYil;
 
   yil := strtoint(copy(datetostr(date),7,4))+1;
+  inc(yil);
  // Fyil := inttostr(yil);
 //--  popupYil.Items.Clear;
   for I := 1 to 10 do
@@ -2251,9 +2281,46 @@ begin
 end;
 
 
+
 function TcxTextEditKadir.GetSQLValue : string;
 begin
   result := QuotedStr(self.EditingValue);
+end;
+
+
+
+
+procedure TcxTextEditKadir.KeyPress(Sender: TObject; var Key: Char);
+begin
+
+   if KarakterTip = ktNone
+   then exit
+   else
+    if KarakterTip = ktHarf
+    then begin
+     if Key in ['0'..'9'] then key := #0;
+    end
+   else
+   if KarakterTip = ktRakam
+   then begin
+    if not(key in ['0'..'9',#8,#35,#36,#37,#38,#39,#40]) then key := #0;
+   end;
+   // if TCharacter.IsLetter(Key) then Key := #0;
+
+   // if Key in
+   // ['a'..'z','A'..'Z','ç','Ç','þ','Þ','ð','Ð','ö','Ö','ü','Ü','Ý'] then key := #0;
+
+
+end;
+
+function TcxTextEditKadir.getKarakterTip: TKarakterTip;
+begin
+  getKarakterTip := FKarakterTip;
+end;
+
+procedure TcxTextEditKadir.setKarakterTip(const value: TKarakterTip);
+begin
+   FKarakterTip := value;
 end;
 
 function TcxCheckBoxKadir.GetSQLValue : string;
@@ -3516,13 +3583,34 @@ constructor TcxTextEditKadir.Create(AOwner: TComponent);
 begin
     inherited;
     FBosOlamaz := false;
+    self.OnKeyPress := KeyPress;
 end;
 
 constructor TcxDateEditKadir.Create(AOwner: TComponent);
 begin
     inherited;
     FBosOlamaz := false;
-    FValueTip := tvString;
+    FValueTip := tvDate;
+end;
+
+function TcxDateEditKadir.getValueTip : TTarihValueTip;
+begin
+    getValueTip := FValueTip;
+end;
+
+procedure TcxDateEditKadir.setValueTip(const value : TTarihValueTip);
+begin
+    FValueTip := value;
+
+    if value = tvDate
+    then
+      TcxDateEdit(Self).Properties.Kind := ckDate
+    else
+    if value = tvDateTime
+    then
+      TcxDateEdit(Self).Properties.Kind := ckDateTime;
+
+
 end;
 
 constructor TcxCheckBoxKadir.Create(AOwner: TComponent);
