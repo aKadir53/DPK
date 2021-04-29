@@ -279,6 +279,7 @@ type
       FGrup : Boolean;
       FGrupCol : integer;
       FKaynakTableTip : TListeAcTableTip;
+      FListString : String;
 
       procedure SetImageIndex(Value: TImageIndex);
 
@@ -328,6 +329,8 @@ type
       property Grup : Boolean read FGrup write FGrup;
       property GrupCol : integer read FGrupCol write FGrupCol default -1;
       property KaynakTableTip : TListeAcTableTip read FKaynakTableTip write FKaynakTableTip default tpTable;
+      property ListString : string read FListString;
+
   end;
 
 
@@ -411,11 +414,17 @@ type
       FDataset : TADOQuery;
       FDataSource : TDataSource;
       FPopupForm : Boolean;
+      FPopupFormIDValue : string;
+
 
       procedure TClick(sender : TObject);
       procedure cxGridToTr;
       procedure DatasetAfterOpen(DataSet: TDataSet);
 
+      function getPopupForm : Boolean;
+      procedure setPopupForm(const value : Boolean);
+
+      procedure NavigatorButtonsButtonClick(Sender: TObject; AButtonIndex: Integer; var ADone: Boolean);
 
 
    protected
@@ -433,7 +442,8 @@ type
      property ExceleGonder : Boolean read FExceleGonder write FExceleGonder;
      property Dataset : TADOQuery read FDataset write FDataset;
      property DataSource : TDataSource read FDataSource write FDataSource;
-     property PopupForm : Boolean read FPopupForm write FPopupForm;
+     property PopupForm : Boolean read getPopupForm write setPopupForm;
+     property PopupFormIDValue : string read FPopupFormIDValue write FPopupFormIDValue;
   end;
 
 
@@ -2419,6 +2429,7 @@ begin
 
 
 
+
   //TcxGridKadir(self).Levels[1].GridView := FGrid;
 
 
@@ -2473,6 +2484,14 @@ begin
         Grid.DataController.GetItemByFieldName(ColonFieldName).Index);
   end;
   Result := _Values_;
+end;
+
+procedure TcxGridKadir.setPopupForm(const value: Boolean);
+begin
+   FPopupForm := value;
+  if Assigned(TcxGridDBTableView(TcxGridKadir(self).ActiveView)) then
+   TcxGridDBTableView(TcxGridKadir(self).ActiveView).Navigator.Buttons.OnButtonClick := NavigatorButtonsButtonClick;
+
 end;
 
 function TcxGridKadir.SelectedCellValue(ColonFieldName : string ; Row : integer) : Variant;
@@ -2900,6 +2919,7 @@ begin
                inttostr(FpressItem.ShowTip) + ',' +
                inttostr(FpressItem.FormID) + ',' +
                QuotedStr(KullaniciAdi) + ')';
+//MenuKadir
 
        ado := TADOQuery.Create(nil);
        ado.Connection := Conn;
@@ -3143,12 +3163,13 @@ begin
        if Groups[MenuSatir.Sira].Tag = 500 then Groups[MenuSatir.Sira].Expanded := True;
        Groups[MenuSatir.Sira].Visible := Boolean(MenuSatir.Izin);
 
+       (*
        if ProgramTip = 'O'
        then
          Groups[MenuSatir.Sira].Visible := True
        else
        Groups[MenuSatir.Sira].Visible := Boolean(MenuSatir.LisansTip);
-
+       *)
      end;
      ado.Next;
     end;
@@ -3175,7 +3196,7 @@ begin
 
      Items[r].FormId := MenuSatir.formId;
      Items[r].ShowTip := MenuSatir.ShowTip;
-
+//MenuKadir
        for i := 0 to Groups.Count - 1 do
        begin
          if Groups[i].Tag = MenuSatir.Kapsam  then
@@ -3436,7 +3457,7 @@ var
   r : integer;
   LstW : TStringList;
  // ListeAc1 : TfrmListeAc;
-
+  Lstring : ListeSecimler;
 begin
 
   if FcolsW = ''
@@ -3522,6 +3543,13 @@ begin
             try
               //ÜÖ 20180118 kayýt yokken recordIndex = -1 olduðu halde varmýþ gibi alýyordu, if'e baðladým
               if r >= 0 then Fstrings := frmListeAc.strings;
+
+              FListString := '';
+              for Lstring in Fstrings do
+              begin
+                 FListString := FListString + ifThen(FListString <> '',','+'') + Lstring.kolon1;
+              end;
+
             except
             end;
             //ÜÖ 20180118 hiç data yoksa bile seçilmiþ gibi iþlem yapýyordu
@@ -3858,6 +3886,13 @@ begin
     end;
 end;
 
+function TcxGridKadir.getPopupForm: Boolean;
+begin
+  Result := FPopupForm;
+
+
+end;
+
 procedure TcxGridKadir.cxGridToTr;
 begin
   { ******************************************************************** }
@@ -4166,6 +4201,28 @@ procedure TcxGridDBTableViewK.NavigatorButtonsButtonClick(Sender: TObject;
 begin
   inherited;
      ShowMessage('s');
+end;
+
+
+
+procedure TcxGridKadir.NavigatorButtonsButtonClick(Sender: TObject;
+  AButtonIndex: Integer; var ADone: Boolean);
+var
+  cc : integer;
+  Fields : string;
+begin
+  inherited;
+
+// PopopForm
+
+
+  for cc := 0 to  TcxGridDBTableView(TcxGridKadir(self).ActiveView).ColumnCount - 1
+  do begin
+     Fields := Fields + ',' + TcxGridDBTableView(TcxGridKadir(self).ActiveView).Columns[cc].DataBinding.FieldName;
+
+  end;
+
+ // ShowMessage(Fields);
 end;
 
 Initialization

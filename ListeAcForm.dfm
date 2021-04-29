@@ -75,6 +75,7 @@ object frmListeAc: TfrmListeAc
       Caption = '&Se'#231'im Yapmadan '#199#305'k'
       ModalResult = 2
       TabOrder = 1
+      Visible = False
       OnClick = btnSec1Click
     end
   end

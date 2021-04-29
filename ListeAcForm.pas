@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, cxGraphics, cxControls, cxLookAndFeels, cxLookAndFeelPainters,
   cxStyles, cxCustomData, cxFilter, cxData, cxDataStorage, cxEdit, DB,
-  cxDBData, cxGridLevel, cxGridCustomTableView, cxGridTableView,
+  cxDBData, cxGridLevel, cxGridCustomTableView, cxGridTableView, cxMemo,
   cxGridDBTableView, cxClasses, cxGridCustomView, cxGrid, StdCtrls,
   ExtCtrls, Buttons, Menus, cxButtons, ImgList, dxSkinsCore,kadirType,
   dxSkinsDefaultPainters, dxSkinscxPCPainter, dxSkinBlack, dxSkinBlue,
@@ -107,8 +107,18 @@ begin
        if grup = True then
        if colon.Index = GrupCol then colon.GroupIndex := 0;
        colon.DataBinding.FieldName := Fields[x];
+
+       if (Fields[x] = 'metin') or (Fields[x] = 'memo')
+       then begin
+         colon.PropertiesClass := TcxMemoProperties;
+       // (colon.Properties as TcxMemoProperties).ScrollBars := ssBoth;
+        Liste.OptionsView.DataRowHeight := 0;
+        Liste.OptionsView.CellAutoHeight := True;
+       end;
+
        try colon.Width := strtoint(FieldsW[x]) except colon.Width := 50 end;
        try colon.Caption := Fieldsb[x] except colon.Caption := '' end;;
+
        ListeW := ListeW + colon.Width;
     end;
 
@@ -332,10 +342,10 @@ begin
                                           Liste.Controller.SelectedRows[i].RecordIndex,0);
            strings[i].kolon2 := Liste.DataController.GetValue(
                                           Liste.Controller.SelectedRows[i].RecordIndex,1);
-           strings[i].kolon3 := Liste.DataController.GetValue(
-                                          Liste.Controller.SelectedRows[i].RecordIndex,2);
-           strings[i].kolon4 := Liste.DataController.GetValue(
-                                          Liste.Controller.SelectedRows[i].RecordIndex,3);
+           strings[i].kolon3 := varToStr(Liste.DataController.GetValue(
+                                          Liste.Controller.SelectedRows[i].RecordIndex,2));
+           strings[i].kolon4 := varToStr(Liste.DataController.GetValue(
+                                          Liste.Controller.SelectedRows[i].RecordIndex,3));
          except
          end;
        end
