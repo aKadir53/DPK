@@ -160,7 +160,7 @@ begin
         then begin
           secimler.Append;
           for i := 0 to count - 1 do begin
-           secimler.FieldByName(secimler.Fields[i].FieldName).AsString := Liste.DataController.GetValue(r ,i);
+           secimler.FieldByName(secimler.Fields[i].FieldName).AsString := VarToStr (Liste.DataController.GetValue(r ,i));
           end;
            secimler.Post;
         end;

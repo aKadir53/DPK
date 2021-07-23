@@ -1755,7 +1755,7 @@ begin
   end;
   TMenuItem(sender).Checked := True;
   DoEditValueChanged;
-  self.Properties.OnChange(self);
+  TcxDonemComboKadir(self).Properties.OnChange(self);
 end;
 
 procedure TcxDonemComboKadir.AfterConstruction;
